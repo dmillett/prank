@@ -1,0 +1,7 @@
+.gradle/
+.idea/
+build/
+out/
+prank.ipr
+prank.iws
+prank.iml
