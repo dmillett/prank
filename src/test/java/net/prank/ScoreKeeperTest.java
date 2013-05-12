@@ -37,9 +37,9 @@ public class ScoreKeeperTest
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 2, 4.0, 50.0);
         ScoreKeeper<ExampleObject> scoreKeeper = buildScoreKeeper(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
-        Request<ExampleObject> example = new Request<ExampleObject>(exampleObject);
+        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
 
-        Set<Future<Result>> futureResult = scoreKeeper.score(example);
+        Set<Future<Result>> futureResult = scoreKeeper.setupScoring(exampleRequest);
 
         for (Future<Result> future : futureResult) {
             try {
@@ -61,25 +61,36 @@ public class ScoreKeeperTest
         assertEquals(50.0, result.getStandardDeviation());
     }
 
+    public void test__updateObjectScore() {
+
+        ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 2, 4.0, 50.0);
+        ScoreKeeper<ExampleObject> scoreKeeper = buildScoreKeeper(exampleScoreCard);
+        ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
+        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
+
+        scoreKeeper.updateObjectScore(exampleRequest, 25);
+
+        assertEquals(1, exampleObject.getScoreSummary().getResults().size());
+
+        Result result = exampleObject.getScoreSummary().getResultByScoreCard(exampleScoreCard.getName());
+        assertNotNull(result);
+
+        assertEquals(5.0, result.getScore());
+        assertEquals(2, result.getPosition());
+        assertEquals(9.0, result.getAverage());
+        assertEquals(50.0, result.getStandardDeviation());
+    }
+
     public void test__execute_disabled() {
 
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 4, 5.0, 0.75);
         ScoreKeeper<ExampleObject> scoreKeeper = buildScoreKeeper(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
 
-        Request<ExampleObject> example = new Request<ExampleObject>(exampleObject);
-        example.addDisabled(exampleScoreCard);
+        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
+        exampleRequest.addDisabled(exampleScoreCard);
 
-        Set<Future<Result>> futureResult = scoreKeeper.score(example);
-
-        for (Future<Result> future : futureResult) {
-            try {
-                // Should return quickly, they were already submitted to the pool
-                future.get(5, TimeUnit.MILLISECONDS);
-            } catch (Exception e) {
-                fail("Should not");
-            }
-        }
+        scoreKeeper.updateObjectScore(exampleRequest, 10);
 
         assertEquals(0, exampleObject.getScoreSummary().getResults().size());
     }
@@ -90,20 +101,11 @@ public class ScoreKeeperTest
         ScoreKeeper<ExampleObject> scoreKeeper = buildScoreKeeper(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
 
-        Request<ExampleObject> example = new Request<ExampleObject>(exampleObject);
-        example.addEnabled(exampleScoreCard);
-        example.addDisabled(exampleScoreCard);
+        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
+        exampleRequest.addEnabled(exampleScoreCard);
+        exampleRequest.addDisabled(exampleScoreCard);
 
-        Set<Future<Result>> futureResult = scoreKeeper.score(example);
-
-        for (Future<Result> future : futureResult) {
-            try {
-                // Should return quickly, they were already submitted to the pool
-                future.get(5, TimeUnit.MILLISECONDS);
-            } catch (Exception e) {
-                fail("Should not");
-            }
-        }
+        scoreKeeper.updateObjectScore(exampleRequest, 5);
 
         assertEquals(0, exampleObject.getScoreSummary().getResults().size());
     }
@@ -116,19 +118,10 @@ public class ScoreKeeperTest
         ScoreKeeper<ExampleObject> scoreKeeper = buildScoreKeeper(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("55.00"));
 
-        Request<ExampleObject> example = new Request<ExampleObject>(exampleObject);
-        example.addEnabled(exampleScoreCard);
+        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
+        exampleRequest.addEnabled(exampleScoreCard);
 
-        Set<Future<Result>> futureResult = scoreKeeper.score(example);
-
-        for (Future<Result> future : futureResult) {
-            try {
-                // Should return quickly, they were already submitted to the pool
-                future.get(5, TimeUnit.MILLISECONDS);
-            } catch (Exception e) {
-                fail("Should not");
-            }
-        }
+        scoreKeeper.updateObjectScore(exampleRequest, 5);
 
         assertEquals(1, exampleObject.getScoreSummary().getResults().size());
 

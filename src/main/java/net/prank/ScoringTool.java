@@ -86,7 +86,7 @@ public class ScoringTool {
 
         for (ScoringRange range : scoringRanges) {
             String output =
-                    String.format("min: %1f, max: %2f, score: %3f", range.getMin(), range.getMax(), range.getScorePoints());
+                    String.format("min: %1f, max: %2f, setupScoring: %3f", range.getMin(), range.getMax(), range.getScorePoints());
 
             sb.append(output).append("\n");
         }

@@ -20,8 +20,8 @@ package net.prank;
 public class ScoreAdjustment {
 
     /**
-     * Adjusts the 'adjusted score' as the result of the "score * factor", where 'score'
-     * is the original score and is never modified.
+     * Adjusts the 'adjusted setupScoring' as the result of the "setupScoring * factor", where 'setupScoring'
+     * is the original setupScoring and is never modified.
      *
      * @param originalResult
      * @param factor

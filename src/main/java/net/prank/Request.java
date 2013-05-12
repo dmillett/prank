@@ -11,7 +11,7 @@ import java.util.Set;
  * <p/>
  * Scenarios:
  * 1) By default, all ScoreCards are enabled
- * 2) A ScoreCard will not score if it is disabled
+ * 2) A ScoreCard will not setupScoring if it is disabled
  * 3) Only the enabled ScoreCards are executed
  *
  * @author dmillett

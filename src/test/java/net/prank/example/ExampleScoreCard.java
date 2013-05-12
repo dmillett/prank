@@ -5,16 +5,16 @@ import net.prank.ScoreCard;
 import net.prank.ScoreSummary;
 
 /**
- * A very simple example of a score card. More complex examples should still be stateless for
- * thread safety. Typically, the higher the score, the better the result.
+ * A very simple example of a setupScoring card. More complex examples should still be stateless for
+ * thread safety. Typically, the higher the setupScoring, the better the result.
  * <p/>
  * The adjustments are just examples of how scoring might be adjusted to make some
- * score cards more/less important than other score cards. If machine learning (ML)
+ * setupScoring cards more/less important than other setupScoring cards. If machine learning (ML)
  * indicates that price is the most important factor for all customers (or individual),
- * then it should have "heavier" weighting and it's score should be adjusted (+)
+ * then it should have "heavier" weighting and it's setupScoring should be adjusted (+)
  * <p/>
  * Examples:
- * Price: the lowest price has the highest score.
+ * Price: the lowest price has the highest setupScoring.
  * Shipping cost: how much to ship the item
  * Shipping time: how long it takes an item to ship
  *

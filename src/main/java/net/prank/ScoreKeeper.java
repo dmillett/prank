@@ -6,10 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * Singleton (via Spring),
@@ -19,26 +16,25 @@ import java.util.concurrent.Future;
  * 3) Score an object T (List of AirPricingSolution)
  * -- update a Map (ScoreCard, Result) for each solution
  * 4) Build a summary of results (discard or not)
- *
- * If it is necessary to update the score points (min, max, slices, or strategy),
+ * <p/>
+ * If it is necessary to update the setupScoring points (min, max, slices, or strategy),
  * then update and reload with "reload()" -- probably via JMX or something similar.
  * This ScoreKeeper could be instantiated for each search service.
  *
- *
  * @author dmillett
- *
- * Copyright 2012 David Millett
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- *  limitations under the License.
+ *         <p/>
+ *         Copyright 2012 David Millett
+ *         Licensed under the Apache License, Version 2.0 (the "License");
+ *         you may not use this file except in compliance with the License.
+ *         You may obtain a copy of the License at
+ *         <p/>
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *         <p/>
+ *         Unless required by applicable law or agreed to in writing, software
+ *         distributed under the License is distributed on an "AS IS" BASIS,
+ *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *         See the License for the specific language governing permissions and
+ *         limitations under the License.
  */
 public class ScoreKeeper<T> {
 
@@ -58,11 +54,14 @@ public class ScoreKeeper<T> {
 
         _maxTimeMillisPerScore = 50;
 
-        if (scoreCards != null) {
+        if (scoreCards != null)
+        {
             LOG.info("Initializing " + scoreCards.size() + " Scoring Thread Pools");
             _scoring = initFixedThreadPools(scoreCards, corePoolSize);
             _corePoolSize = corePoolSize;
-        } else {
+        }
+        else
+        {
             LOG.info("No Scoring Thread Pools To Initialize");
             _scoring = new HashMap<ScoreCard<T>, ExecutorService>(0);
             _corePoolSize = 0;
@@ -71,7 +70,7 @@ public class ScoreKeeper<T> {
 
     /**
      * Stop all existing thread pools and clear out the scoring map.
-     * Reinitialize a new map of score cards.
+     * Reinitialize a new map of setupScoring cards.
      *
      * @param scoreCards
      */
@@ -90,14 +89,16 @@ public class ScoreKeeper<T> {
     }
 
     /**
-     * Shut down each of teh score card thread pools. Try not to execute this at the same time
-     * as reload with multiple threads -- it might deadlock.
+     * Shut down each of teh setupScoring card thread pools.
      */
     public synchronized void gameOver() {
 
-        if (_scoring != null && !_scoring.isEmpty()) {
-            for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet()) {
-                if (entry.getValue().isShutdown() || entry.getValue().isTerminated()) {
+        if (_scoring != null && !_scoring.isEmpty())
+        {
+            for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
+            {
+                if (entry.getValue().isShutdown() || entry.getValue().isTerminated())
+                {
                     continue;
                 }
 
@@ -109,18 +110,52 @@ public class ScoreKeeper<T> {
     }
 
     /**
+     * Submit request and scorables to the work queues and wait the specified time for
+     * them to complete scoring. This eats all exceptions, but there is a chance some
+     * or all of the objects will not be scored.
+     *
+     * @param objectsToScore A single object or collection of objects with type T
+     * @param timeoutInMillis The time to wait for scoring to complete.
+     */
+    public void updateObjectScore(Request<T> objectsToScore, int timeoutInMillis) {
+
+        if ( objectsToScore == null)
+        {
+            LOG.warn("Cannot Score Null Objects!");
+            return;
+        }
+
+        Set<Future<Result>> futures = setupScoring(objectsToScore);
+
+        for (Future<Result> future : futures)
+        {
+            try
+            {
+                // Many of the ScoreCard futures were already submitted and should be in progress
+                future.get(timeoutInMillis, TimeUnit.MILLISECONDS);
+            }
+            catch (Exception e)
+            {
+                LOG.warn("Failed To Complete Scoring For: " + objectsToScore.getRequestObject());
+            }
+        }
+    }
+
+    /**
      * Return a Future with Result of type V. Origin is responsible for maintaining
      * a Set of Future responses and interpreting them.
      *
      * @param scoreIt
      * @return
      */
-    public Set<Future<Result>> score(Request<T> scoreIt) {
+    public Set<Future<Result>> setupScoring(Request<T> scoreIt) {
 
         Set<Future<Result>> futures = new HashSet<Future<Result>>(_scoring.size());
 
-        for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet()) {
-            if (!executeScoreCard(entry.getKey(), scoreIt.getEnabledScoreCards(), scoreIt.getDisabledScoreCards())) {
+        for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
+        {
+            if (!executeScoreCard(entry.getKey(), scoreIt.getEnabledScoreCards(), scoreIt.getDisabledScoreCards()))
+            {
                 continue;
             }
 
@@ -147,15 +182,18 @@ public class ScoreKeeper<T> {
      */
     private boolean executeScoreCard(ScoreCard scoreCard, Set<ScoreCard> enabled, Set<ScoreCard> disabled) {
 
-        if (enabled.isEmpty() && disabled.isEmpty()) {
+        if (enabled.isEmpty() && disabled.isEmpty())
+        {
             return true;
         }
 
-        if (containsScoreCard(scoreCard, disabled)) {
+        if (containsScoreCard(scoreCard, disabled))
+        {
             return false;
         }
 
-        if (containsScoreCard(scoreCard, enabled)) {
+        if (containsScoreCard(scoreCard, enabled))
+        {
             return true;
         }
 
@@ -171,12 +209,15 @@ public class ScoreKeeper<T> {
      */
     private boolean containsScoreCard(ScoreCard scoreCard, Set<ScoreCard> scoreCards) {
 
-        if (scoreCards.contains(scoreCard)) {
+        if (scoreCards.contains(scoreCard))
+        {
             return true;
         }
 
-        for (ScoreCard card : scoreCards) {
-            if (scoreCard.getName().equals(card.getName())) {
+        for (ScoreCard card : scoreCards)
+        {
+            if (scoreCard.getName().equals(card.getName()))
+            {
                 return true;
             }
         }
@@ -196,7 +237,8 @@ public class ScoreKeeper<T> {
         int maxThreads = corePoolSize * 2;
         Map<ScoreCard<T>, ExecutorService> scoring = new HashMap<ScoreCard<T>, ExecutorService>(scoreCards.size());
 
-        for (ScoreCard scoreCard : scoreCards) {
+        for (ScoreCard scoreCard : scoreCards)
+        {
             scoring.put(scoreCard, Executors.newFixedThreadPool(maxThreads));
         }
 
@@ -204,12 +246,12 @@ public class ScoreKeeper<T> {
     }
 
     /**
-     * Create a Callable from a stateless score card execution and some object to score (T).
+     * Create a Callable from a stateless setupScoring card execution and some object to setupScoring (T).
      *
-     * @param <T> The object to score.
+     * @param <T> The object to setupScoring.
      */
     private class ScoreCardCallable<T>
-            implements Callable {
+        implements Callable {
 
         private final ScoreCard<T> _scoreCard;
         private final T _objectToScore;
@@ -221,7 +263,7 @@ public class ScoreKeeper<T> {
         }
 
         public ScoreSummary call()
-                throws Exception {
+            throws Exception {
 
             return _scoreCard.score(_objectToScore);
         }

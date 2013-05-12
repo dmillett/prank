@@ -24,7 +24,7 @@ package net.prank;
 public class Result {
 
     /**
-     * ORIGINAL - score per original scoring
+     * ORIGINAL - setupScoring per original scoring
      * ADJUSTED - indicates that an adjustment (+/-/*) may have occurred
      */
     public static enum ResultScoreType {
@@ -101,34 +101,51 @@ public class Result {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
+
+        if (this == o)
+        {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+
+        if (o == null || getClass() != o.getClass())
+        {
             return false;
         }
 
         Result result = (Result) o;
 
-        if (Double.compare(result._adjustedScore, _adjustedScore) != 0) {
+        if (Double.compare(result._adjustedScore, _adjustedScore) != 0)
+        {
             return false;
         }
-        if (Double.compare(result._average, _average) != 0) {
+
+        if (Double.compare(result._average, _average) != 0)
+        {
             return false;
         }
-        if (Double.compare(result._original, _original) != 0) {
+
+        if (Double.compare(result._original, _original) != 0)
+        {
             return false;
         }
-        if (_position != result._position) {
+
+        if (_position != result._position)
+        {
             return false;
         }
-        if (Double.compare(result._score, _score) != 0) {
+
+        if (Double.compare(result._score, _score) != 0)
+        {
             return false;
         }
-        if (Double.compare(result._standardDeviation, _standardDeviation) != 0) {
+
+        if (Double.compare(result._standardDeviation, _standardDeviation) != 0)
+        {
             return false;
         }
-        if (_scoreCardName != null ? !_scoreCardName.equals(result._scoreCardName) : result._scoreCardName != null) {
+
+        if (_scoreCardName != null ? !_scoreCardName.equals(result._scoreCardName) : result._scoreCardName != null)
+        {
             return false;
         }
 
@@ -137,20 +154,24 @@ public class Result {
 
     @Override
     public int hashCode() {
+
         int result;
         long temp;
+
         result = _scoreCardName != null ? _scoreCardName.hashCode() : 0;
         temp = _score != +0.0d ? Double.doubleToLongBits(_score) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = _adjustedScore != +0.0d ? Double.doubleToLongBits(_adjustedScore) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = _original != +0.0d ? Double.doubleToLongBits(_original) : 0L;
+
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + _position;
         temp = _standardDeviation != +0.0d ? Double.doubleToLongBits(_standardDeviation) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = _average != +0.0d ? Double.doubleToLongBits(_average) : 0L;
         result = 31 * result + (int) (temp ^ (temp >>> 32));
+
         return result;
     }
 
@@ -168,7 +189,7 @@ public class Result {
     }
 
     /**
-     * name, score, adjusted score, position, original, average, std dev
+     * name, setupScoring, adjusted setupScoring, position, original, average, std dev
      */
     public String dump() {
 
@@ -239,7 +260,8 @@ public class Result {
         }
 
         public Result build() {
-            return new Result(_rbCardName, _rbScore, _rbAdjustedScore, _rbPosition, _rbOriginal, _rbAverage, _rbStandardDeviation);
+            return new Result(_rbCardName, _rbScore, _rbAdjustedScore, _rbPosition, _rbOriginal, _rbAverage,
+                              _rbStandardDeviation);
         }
     }
 }

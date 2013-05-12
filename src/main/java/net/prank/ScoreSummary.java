@@ -70,7 +70,7 @@ public class ScoreSummary {
     }
 
     /**
-     * Get the score for a subset of ScoreCards by name.
+     * Get the setupScoring for a subset of ScoreCards by name.
      *
      * @param scoreCardNames
      * @return
@@ -137,7 +137,7 @@ public class ScoreSummary {
     }
 
     /**
-     * Flexible way of determining which adjusted scores to tally based on score type
+     * Flexible way of determining which adjusted scores to tally based on setupScoring type
      * (original or adjusted)
      *
      * @param scoreType Original or Adjusted
