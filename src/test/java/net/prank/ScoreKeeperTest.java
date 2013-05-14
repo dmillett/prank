@@ -35,11 +35,11 @@ public class ScoreKeeperTest
     public void test__execute() {
 
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 2, 4.0, 50.0);
-        ScoreKeeper<ExampleObject> scoreKeeper = buildScoreKeeper(exampleScoreCard);
+        Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
         Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
 
-        Set<Future<Result>> futureResult = scoreKeeper.setupScoring(exampleRequest);
+        Set<Future<Result>> futureResult = prankster.setupScoring(exampleRequest);
 
         for (Future<Result> future : futureResult) {
             try {
@@ -64,11 +64,11 @@ public class ScoreKeeperTest
     public void test__updateObjectScore() {
 
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 2, 4.0, 50.0);
-        ScoreKeeper<ExampleObject> scoreKeeper = buildScoreKeeper(exampleScoreCard);
+        Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
         Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
 
-        scoreKeeper.updateObjectScore(exampleRequest, 25);
+        prankster.updateObjectScore(exampleRequest, 25);
 
         assertEquals(1, exampleObject.getScoreSummary().getResults().size());
 
@@ -84,13 +84,13 @@ public class ScoreKeeperTest
     public void test__execute_disabled() {
 
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 4, 5.0, 0.75);
-        ScoreKeeper<ExampleObject> scoreKeeper = buildScoreKeeper(exampleScoreCard);
+        Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
 
         Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
         exampleRequest.addDisabled(exampleScoreCard);
 
-        scoreKeeper.updateObjectScore(exampleRequest, 10);
+        prankster.updateObjectScore(exampleRequest, 10);
 
         assertEquals(0, exampleObject.getScoreSummary().getResults().size());
     }
@@ -98,14 +98,14 @@ public class ScoreKeeperTest
     public void test__execute_enabled_disabled() {
 
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 4, 5.0, 0.75);
-        ScoreKeeper<ExampleObject> scoreKeeper = buildScoreKeeper(exampleScoreCard);
+        Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
 
         Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
         exampleRequest.addEnabled(exampleScoreCard);
         exampleRequest.addDisabled(exampleScoreCard);
 
-        scoreKeeper.updateObjectScore(exampleRequest, 5);
+        prankster.updateObjectScore(exampleRequest, 5);
 
         assertEquals(0, exampleObject.getScoreSummary().getResults().size());
     }
@@ -115,13 +115,13 @@ public class ScoreKeeperTest
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 4, 5.0, 0.75);
         ScoreCard<Integer> integerScoreCard = mock(ScoreCard.class);
 
-        ScoreKeeper<ExampleObject> scoreKeeper = buildScoreKeeper(exampleScoreCard);
+        Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("55.00"));
 
         Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
         exampleRequest.addEnabled(exampleScoreCard);
 
-        scoreKeeper.updateObjectScore(exampleRequest, 5);
+        prankster.updateObjectScore(exampleRequest, 5);
 
         assertEquals(1, exampleObject.getScoreSummary().getResults().size());
 
@@ -134,13 +134,13 @@ public class ScoreKeeperTest
         assertEquals(0.75, result.getStandardDeviation());
     }
 
-    private ScoreKeeper<ExampleObject> buildScoreKeeper(ScoreCard... scoreCard) {
+    private Prankster<ExampleObject> buildPrankster(ScoreCard... scoreCard) {
 
         Set<ScoreCard<ExampleObject>> scoreCards = new HashSet<ScoreCard<ExampleObject>>();
         for (ScoreCard card : scoreCard) {
             scoreCards.add(card);
         }
 
-        return new ScoreKeeper<ExampleObject>(scoreCards, 1);
+        return new Prankster<ExampleObject>(scoreCards, 1);
     }
 }

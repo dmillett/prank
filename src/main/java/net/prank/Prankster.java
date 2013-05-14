@@ -19,7 +19,7 @@ import java.util.concurrent.*;
  * <p/>
  * If it is necessary to update the setupScoring points (min, max, slices, or strategy),
  * then update and reload with "reload()" -- probably via JMX or something similar.
- * This ScoreKeeper could be instantiated for each search service.
+ * This Prankster could be instantiated for each search service.
  *
  * @author dmillett
  *         <p/>
@@ -36,9 +36,9 @@ import java.util.concurrent.*;
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-public class ScoreKeeper<T> {
+public class Prankster<T> {
 
-    private static final Logger LOG = Logger.getLogger(ScoreKeeper.class);
+    private static final Logger LOG = Logger.getLogger(Prankster.class);
 
     private final Map<ScoreCard<T>, ExecutorService> _scoring;
     /**
@@ -50,7 +50,7 @@ public class ScoreKeeper<T> {
      */
     private final long _maxTimeMillisPerScore;
 
-    public ScoreKeeper(Set<ScoreCard<T>> scoreCards, int corePoolSize) {
+    public Prankster(Set<ScoreCard<T>> scoreCards, int corePoolSize) {
 
         _maxTimeMillisPerScore = 50;
 

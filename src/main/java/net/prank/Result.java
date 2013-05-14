@@ -33,20 +33,20 @@ public class Result {
         ADJUSTED;
     }
 
+    /** Name of the ScoreCard for this result, corresponds to Prankster 'key'  */
     private final String _scoreCardName;
-
-    /**
-     * An overall grade mechanism
-     */
+    /** An overall grade mechanism */
     private final double _score;
-    /**
-     * An overall grade after 'weighting' or 'adjustments' have been applied
-     */
+    /** An overall grade after 'weighting' or 'adjustments' have been applied */
     private final double _adjustedScore;
 
+    /** The value to score on (price, shipping time, etc) */
     private final double _original;
+    /** Initial position prior to scoring and ranking */
     private final int _position;
+    /** Standard deviation from other results */
     private final double _standardDeviation;
+    /** Average across all results */
     private final double _average;
 
     /**

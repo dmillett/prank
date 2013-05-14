@@ -6,7 +6,7 @@ import java.util.Set;
 
 /**
  * Encapsulate the request object and specify any ScoreCards that are explicitly enabled
- * or disabled from execution in the ScoreKeeper thread pools. By default, all defined
+ * or disabled from execution in the Prankster thread pools. By default, all defined
  * ScoreCards are executed for any scoring object.
  * <p/>
  * Scenarios:
