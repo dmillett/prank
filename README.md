@@ -8,11 +8,11 @@ for that object type. plies all ScoreCard evaluations
 ##Features
 * Parallel scoring of a generic collection of objects with 1 - N ScoreCards
 * A result object for every scored object in the collection can contain:
-** calculated score
-** adjusted score
-** average
-** standard deviation
-** original position in the collection
+  1. calculated score
+  2. adjusted score
+  3. average
+  4. standard deviation
+  5. original position in the collection
 * Each ScoreSummary result may be adjusted at any time after initial scoring
 
 ##Usage
