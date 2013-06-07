@@ -16,19 +16,19 @@ import java.util.Set;
  * 2) ScoreTally (V) interface
  *
  * @author dmillett
- *
- * Copyright 2012 David Millett
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- *  limitations under the License.
+ *         <p/>
+ *         Copyright 2012 David Millett
+ *         Licensed under the Apache License, Version 2.0 (the "License");
+ *         you may not use this file except in compliance with the License.
+ *         You may obtain a copy of the License at
+ *         <p/>
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *         <p/>
+ *         Unless required by applicable law or agreed to in writing, software
+ *         distributed under the License is distributed on an "AS IS" BASIS,
+ *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *         See the License for the specific language governing permissions and
+ *         limitations under the License.
  */
 public class ScoreSummary {
 
@@ -81,7 +81,8 @@ public class ScoreSummary {
 
     public Double tallyScoreFor(Set<String> scoreCardNames, Result.ResultScoreType scoreType) {
 
-        if (scoreCardNames == null) {
+        if (scoreCardNames == null)
+        {
             return null;
         }
 
@@ -97,27 +98,35 @@ public class ScoreSummary {
      */
     public Double tallyScore(Set<String> scoreCardNames, Result.ResultScoreType scoreType) {
 
-        if (scoreCardNames.isEmpty()) {
+        if (scoreCardNames.isEmpty())
+        {
             return null;
         }
 
         Double tally = null;
 
-        for (String scoreCardName : scoreCardNames) {
-            if (scoreCardName == null) {
+        for (String scoreCardName : scoreCardNames)
+        {
+            if (scoreCardName == null)
+            {
                 continue;
             }
 
             Result result = _results.get(scoreCardName);
 
-            if (result != null) {
-                if (tally == null) {
+            if (result != null)
+            {
+                if (tally == null)
+                {
                     tally = 0.0;
                 }
 
-                if (scoreType.equals(Result.ResultScoreType.ORIGINAL)) {
+                if (scoreType.equals(Result.ResultScoreType.ORIGINAL))
+                {
                     tally += result.getScore();
-                } else if ( scoreType.equals(Result.ResultScoreType.ADJUSTED)) {
+                }
+                else if (scoreType.equals(Result.ResultScoreType.ADJUSTED))
+                {
                     tally += result.getAdjustedScore();
                 }
             }
@@ -140,27 +149,31 @@ public class ScoreSummary {
      * Flexible way of determining which adjusted scores to tally based on setupScoring type
      * (original or adjusted)
      *
-     * @param scoreType Original or Adjusted
+     * @param scoreType  Original or Adjusted
      * @param scoreCards
-     *
      * @return
      */
     public Double tallyScoreFor(Result.ResultScoreType scoreType, String... scoreCards) {
 
-        if (scoreCards == null || scoreCards.length == 0) {
+        if (scoreCards == null || scoreCards.length == 0)
+        {
             return null;
         }
 
         return tallyScore(new HashSet<String>(Arrays.asList(scoreCards)), scoreType);
     }
 
-    /** Find any of these that are currently part of the summary */
+    /**
+     * Find any of these that are currently part of the summary
+     */
     private Set<String> findScoreCardsByName(Set<String> scoreCardNames) {
 
         Set<String> scoreCards = new HashSet<String>();
 
-        for (String scoreCardName : _results.keySet()) {
-            if (scoreCardNames.contains(scoreCardName)) {
+        for (String scoreCardName : _results.keySet())
+        {
+            if (scoreCardNames.contains(scoreCardName))
+            {
                 scoreCards.add(scoreCardName);
             }
         }

@@ -15,19 +15,19 @@ import java.util.Set;
  * 3) Only the enabled ScoreCards are executed
  *
  * @author dmillett
- *
- * Copyright 2012 David Millett
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- *  limitations under the License.
+ *         <p/>
+ *         Copyright 2012 David Millett
+ *         Licensed under the Apache License, Version 2.0 (the "License");
+ *         you may not use this file except in compliance with the License.
+ *         You may obtain a copy of the License at
+ *         <p/>
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *         <p/>
+ *         Unless required by applicable law or agreed to in writing, software
+ *         distributed under the License is distributed on an "AS IS" BASIS,
+ *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *         See the License for the specific language governing permissions and
+ *         limitations under the License.
  */
 public class Request<T> {
 
@@ -82,26 +82,32 @@ public class Request<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
+
+        if (this == o)
+        {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass())
+        {
             return false;
         }
 
         Request request = (Request) o;
 
         if (_disabledScoreCards != null ? !_disabledScoreCards.equals(request._disabledScoreCards) :
-                request._disabledScoreCards != null) {
+            request._disabledScoreCards != null)
+        {
             return false;
         }
 
         if (_enabledScoreCards != null ? !_enabledScoreCards.equals(request._enabledScoreCards) :
-                request._enabledScoreCards != null) {
+            request._enabledScoreCards != null)
+        {
             return false;
         }
 
-        if (_requestObject != null ? !_requestObject.equals(request._requestObject) : request._requestObject != null) {
+        if (_requestObject != null ? !_requestObject.equals(request._requestObject) : request._requestObject != null)
+        {
             return false;
         }
 
@@ -110,6 +116,7 @@ public class Request<T> {
 
     @Override
     public int hashCode() {
+
         int result = _requestObject != null ? _requestObject.hashCode() : 0;
         result = 31 * result + (_enabledScoreCards != null ? _enabledScoreCards.hashCode() : 0);
         result = 31 * result + (_disabledScoreCards != null ? _disabledScoreCards.hashCode() : 0);

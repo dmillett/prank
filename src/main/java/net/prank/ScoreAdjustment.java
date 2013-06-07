@@ -29,7 +29,8 @@ public class ScoreAdjustment {
      */
     public Result adjustScoreByFactor(Result originalResult, double factor) {
 
-        if (originalResult == null) {
+        if (originalResult == null)
+        {
             return originalResult;
         }
 
