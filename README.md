@@ -21,10 +21,16 @@ See the *example* package in the test directory for other examples. After defini
 individual ScoreCard implementations, usage is as simple as:
 
 ```java
+// Establish score cards
 ScoreCard<List<BookExample>> priceCard = new PriceScoreCard(minPoints, maxPoints, slices);
 ScoreCard<List<BookExample>> deliveryTimeCard = new DeliveryTimeScoreCard(minPoints, maxPoints, slices);
 
+// Setup scoring mechanism (wire up a Prankster with dependency injection)
 Prankster<List<BookExample>> prankster = buildPrankster(priceCard, deliveryTimeCard);
+
+// Score the request (futures will return within specified scoring timeout)
+Request<List<BookExample> request = new Request<List<BookExample>>();
+prankster.updateObjectScore(request, scoringTimeoutInMillis);
 ```
 
 Building unit tests for each ScoreCard implementation is fairly easy. The complexity of the
