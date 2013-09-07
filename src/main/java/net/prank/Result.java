@@ -1,5 +1,7 @@
 package net.prank;
 
+import java.io.Serializable;
+
 /**
  * Each solution should have a Result where 'V' might typically be an integer
  * in a simple point system.
@@ -21,8 +23,10 @@ package net.prank;
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-public class Result {
+public class Result
+    implements Serializable {
 
+    private static final long serialVersionUID = 42L;
     /**
      * ORIGINAL - setupScoring per original scoring
      * ADJUSTED - indicates that an adjustment (+/-/*) may have occurred

@@ -1,5 +1,6 @@
 package net.prank;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,8 +31,10 @@ import java.util.Set;
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-public class ScoreSummary {
+public class ScoreSummary
+    implements Serializable {
 
+    private static final long serialVersionUID = 42L;
     private final Map<String, Result> _results;
     private final String _name;
 
@@ -112,24 +115,30 @@ public class ScoreSummary {
                 continue;
             }
 
-            Result result = _results.get(scoreCardName);
+            tally = updateTallyFromResult(scoreType, tally, scoreCardName);
+        }
 
-            if (result != null)
-            {
-                if (tally == null)
-                {
-                    tally = 0.0;
-                }
+        return tally;
+    }
 
-                if (scoreType.equals(Result.ResultScoreType.ORIGINAL))
-                {
-                    tally += result.getScore();
-                }
-                else if (scoreType.equals(Result.ResultScoreType.ADJUSTED))
-                {
-                    tally += result.getAdjustedScore();
-                }
-            }
+    private Double updateTallyFromResult(Result.ResultScoreType scoreType, Double tally, String scoreCardName) {
+
+        Result result = _results.get(scoreCardName);
+
+        if (result == null) { return tally; }
+
+        if (tally == null)
+        {
+            tally = 0.0;
+        }
+
+        if (scoreType.equals(Result.ResultScoreType.ORIGINAL))
+        {
+            tally += result.getScore();
+        }
+        else if (scoreType.equals(Result.ResultScoreType.ADJUSTED))
+        {
+            tally += result.getAdjustedScore();
         }
 
         return tally;
@@ -179,6 +188,61 @@ public class ScoreSummary {
         }
 
         return scoreCards;
+    }
+
+    /**
+     * @return name: scoreCardName1,result1-dump;scoreCardName2,result2-dump
+     */
+    @Override
+    public String toString() {
+
+        String delim1 = ",";
+        String delim2 = ";";
+        StringBuilder sb = new StringBuilder(_name);
+        sb.append(":");
+
+        for (Map.Entry<String, Result> entry : _results.entrySet())
+        {
+            sb.append(entry.getKey()).append(delim1).append(entry.getValue().dump()).append(delim2);
+        }
+
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o)
+        {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+
+        ScoreSummary that = (ScoreSummary) o;
+
+        if (_name != null ? !_name.equals(that._name) : that._name != null)
+        {
+            return false;
+        }
+
+        if (_results != null ? !_results.equals(that._results) : that._results != null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+
+        int result = _results != null ? _results.hashCode() : 0;
+        result = 31 * result + (_name != null ? _name.hashCode() : 0);
+        return result;
     }
 }
 
