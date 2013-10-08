@@ -21,10 +21,10 @@ package net.prank;
  *  limitations under the License.
  */
 public interface ScoreCard<T> {
-    /**
-     * A stateless method to prevent cross thread corruption.
-     */
+    /** A stateless method to prevent cross thread corruption. */
     public ScoreSummary score(T scoringObject);
+    /** Score it with options, otherwise use defaults */
+    public ScoreSummary scoreWith(T scoringObject, RequestOptions options);
     /** A setupScoring card name to use as a key in ScoreSummary */
     public String getName();
 }

@@ -1,6 +1,7 @@
 package net.prank.example;
 
 import net.prank.NumericTools;
+import net.prank.RequestOptions;
 import net.prank.Result;
 import net.prank.ScoreCard;
 import net.prank.ScoreSummary;
@@ -49,7 +50,8 @@ public class PriceScoreCard
 
     public ScoreSummary score(List<ExampleObject> solutions) {
 
-        if (solutions == null || solutions.isEmpty()) {
+        if (solutions == null || solutions.isEmpty())
+        {
             return null;
         }
 
@@ -60,11 +62,36 @@ public class PriceScoreCard
         double grossMin = NumericTools.min(totalPrices);
 
         ScoringTool tool = new ScoringTool();
-        Set<ScoringRange> scoring = tool.scoreSlicesEvenlyLowValueAsHighScore(_minPoints, _maxPoints,
-                                                                              _pointSlices, grossMin, grossMax);
+        Set<ScoringRange> scoring = tool.scoreBucketsEvenlyLowValueAsHighScore(_minPoints, _maxPoints,
+                                                                               _pointSlices, grossMin, grossMax);
 
         updateSolutionsWithScore(solutions, scoring, average, standardDeviation, tool);
 
+        return null;
+    }
+
+    @Override
+    public ScoreSummary scoreWith(List<ExampleObject> solutions, RequestOptions options) {
+
+        if (solutions == null || solutions.isEmpty())
+        {
+            return null;
+        }
+
+        List<Double> totalPrices = getPrices(solutions);
+        double average = NumericTools.averageForDoubles(totalPrices);
+        double standardDeviation = NumericTools.standardDeviationForDoubles(average, totalPrices);
+        double grossMax = NumericTools.max(totalPrices);
+        double grossMin = NumericTools.min(totalPrices);
+
+        ScoringTool tool = new ScoringTool();
+        Set<ScoringRange> scoring = tool.scoreBucketsEvenlyLowValueAsHighScore(options.getMinPoints(),
+                                                                               options.getMaxPoints(),
+                                                                               options.getBucketCount(),
+                                                                               grossMin,
+                                                                               grossMax);
+
+        updateSolutionsWithScore(solutions, scoring, average, standardDeviation, tool);
         return null;
     }
 

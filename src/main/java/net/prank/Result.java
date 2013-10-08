@@ -197,7 +197,7 @@ public class Result
      */
     public String dump() {
 
-        StringBuilder sb = new StringBuilder(_scoreCardName);
+        StringBuilder sb = new StringBuilder();
         sb.append(",").append(_score).append(",").append(_adjustedScore).append(",").append(_position).append(",")
                 .append(_original).append(",").append(_average).append(",").append(_standardDeviation);
 

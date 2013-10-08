@@ -1,5 +1,6 @@
 package net.prank.example;
 
+import net.prank.RequestOptions;
 import net.prank.Result;
 import net.prank.ScoreCard;
 import net.prank.ScoreSummary;
@@ -78,6 +79,11 @@ public class ExampleScoreCard
 
         // Ignore the summary for now
         return null;
+    }
+
+    @Override
+    public ScoreSummary scoreWith(ExampleObject scoringObject, RequestOptions options) {
+        return score(scoringObject);
     }
 
     public String getName() {

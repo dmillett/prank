@@ -48,11 +48,10 @@ public class Prankster<T> {
     /**
      * How long should the future wait before stopping
      */
-    private final long _maxTimeMillisPerScore;
+    public static final long MAX_TIME_MILLIS_PER_SCORE = 50;
 
     public Prankster(Set<ScoreCard<T>> scoreCards, int corePoolSize) {
 
-        _maxTimeMillisPerScore = 50;
 
         if (scoreCards != null)
         {
@@ -67,6 +66,8 @@ public class Prankster<T> {
             _corePoolSize = 0;
         }
     }
+
+
 
     /**
      * Stop all existing thread pools and clear out the scoring map.
@@ -143,7 +144,8 @@ public class Prankster<T> {
 
     /**
      * Return a Future with Result of type V. Origin is responsible for maintaining
-     * a Set of Future responses and interpreting them.
+     * a Set of Future responses and interpreting them. This submits each ScoreCard
+     * as a Callable and returns a Future.
      *
      * @param scoreIt
      * @return
@@ -154,7 +156,7 @@ public class Prankster<T> {
 
         for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
         {
-            if (!executeScoreCard(entry.getKey(), scoreIt.getEnabledScoreCards(), scoreIt.getDisabledScoreCards()))
+            if (!executeWithScoreCard(entry.getKey(), scoreIt))
             {
                 continue;
             }
@@ -167,37 +169,16 @@ public class Prankster<T> {
         return futures;
     }
 
-    /**
-     * Determines if a ScoreCard and request object should be submitted to the executor pool.
-     * <p/>
-     * true if enabled & disabled are empty
-     * false if disabled contains scoreCard
-     * true if enabled contains scoreCard and disabled does not
-     * otherwise false
-     *
-     * @param scoreCard
-     * @param enabled
-     * @param disabled
-     * @return
-     */
-    private boolean executeScoreCard(ScoreCard scoreCard, Set<ScoreCard> enabled, Set<ScoreCard> disabled) {
+    private boolean executeWithScoreCard(ScoreCard scoreCard, Request request) {
 
-        if (enabled.isEmpty() && disabled.isEmpty())
-        {
-            return true;
-        }
+        RequestOptions options = request.getOptionsForScoreCard(scoreCard.getName());
 
-        if (containsScoreCard(scoreCard, disabled))
+        if (options == null || !options.isEnabled())
         {
             return false;
         }
 
-        if (containsScoreCard(scoreCard, enabled))
-        {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**

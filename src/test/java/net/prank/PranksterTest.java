@@ -5,7 +5,9 @@ import net.prank.example.ExampleObject;
 import net.prank.example.ExampleScoreCard;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +31,7 @@ import static org.mockito.Mockito.mock;
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-public class ScoreKeeperTest
+public class PranksterTest
     extends TestCase {
 
     public void test__execute() {
@@ -37,8 +39,12 @@ public class ScoreKeeperTest
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 2, 4.0, 50.0);
         Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
-        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
 
+        RequestOptions options = new RequestOptions.RequestOptionsBuilder().setEnabledB(false).build();
+        Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
+        optionsMap.put(exampleScoreCard.getName(), options);
+
+        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject, optionsMap);
         Set<Future<Result>> futureResult = prankster.setupScoring(exampleRequest);
 
         for (Future<Result> future : futureResult) {
@@ -87,25 +93,13 @@ public class ScoreKeeperTest
         Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
 
-        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
-        exampleRequest.addDisabled(exampleScoreCard);
+        RequestOptions options = new RequestOptions.RequestOptionsBuilder().setEnabledB(false).build();
+        Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
+        optionsMap.put(exampleScoreCard.getName(), options);
+
+        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject, optionsMap);
 
         prankster.updateObjectScore(exampleRequest, 10);
-
-        assertEquals(0, exampleObject.getScoreSummary().getResults().size());
-    }
-
-    public void test__execute_enabled_disabled() {
-
-        ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 4, 5.0, 0.75);
-        Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
-        ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
-
-        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
-        exampleRequest.addEnabled(exampleScoreCard);
-        exampleRequest.addDisabled(exampleScoreCard);
-
-        prankster.updateObjectScore(exampleRequest, 5);
 
         assertEquals(0, exampleObject.getScoreSummary().getResults().size());
     }
@@ -119,7 +113,6 @@ public class ScoreKeeperTest
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("55.00"));
 
         Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
-        exampleRequest.addEnabled(exampleScoreCard);
 
         prankster.updateObjectScore(exampleRequest, 5);
 
@@ -137,7 +130,8 @@ public class ScoreKeeperTest
     private Prankster<ExampleObject> buildPrankster(ScoreCard... scoreCard) {
 
         Set<ScoreCard<ExampleObject>> scoreCards = new HashSet<ScoreCard<ExampleObject>>();
-        for (ScoreCard card : scoreCard) {
+        for (ScoreCard card : scoreCard)
+        {
             scoreCards.add(card);
         }
 

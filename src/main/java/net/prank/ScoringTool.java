@@ -1,8 +1,6 @@
 package net.prank;
 
 
-import org.apache.log4j.Logger;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,29 +25,29 @@ import java.util.Set;
 public class ScoringTool {
 
     /**
-     * Split the range of grossMax - grossMin and divide it evenly by the sliceCount.
+     * Split the range of grossMax - grossMin and divide it evenly by the bucketCount.
      * Use for larger ranges.
      *
      * @param minPoints
      * @param maxPoints
-     * @param sliceCount
+     * @param bucketCount
      * @param grossMin
      * @param grossMax
      * @return
      */
-    public Set<ScoringRange> scoreSlicesEvenlyLowValueAsHighScore(double minPoints, double maxPoints, int sliceCount,
-                                                                  double grossMin, double grossMax) {
+    public Set<ScoringRange> scoreBucketsEvenlyLowValueAsHighScore(double minPoints, double maxPoints, int bucketCount,
+                                                                   double grossMin, double grossMax) {
 
         Set<ScoringRange> scores = new HashSet<ScoringRange>();
 
-        double pointsPerSlice = (maxPoints - minPoints) / sliceCount;
+        double pointsPerSlice = (maxPoints - minPoints) / bucketCount;
         double range = (grossMax - 1) - (grossMin + 1);
-        double sliceRange = range / sliceCount;
+        double sliceRange = range / bucketCount;
 
         scores.add(new ScoringRange(grossMin, grossMin, maxPoints));
         scores.add(new ScoringRange(grossMax, grossMax, minPoints));
 
-        if (sliceCount < 3)
+        if (bucketCount < 3)
         {
             double averagePoints = minPoints + maxPoints / 2;
             scores.add(new ScoringRange(grossMin + 1, grossMax - 1, averagePoints));
@@ -58,7 +56,7 @@ public class ScoringTool {
 
         double minRange = grossMin + 1;
         double maxRange = minRange + sliceRange;
-        int maxSlice = sliceCount - 1;
+        int maxSlice = bucketCount - 1;
 
         for (int i = maxSlice; i > 0; i--)
         {
