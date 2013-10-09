@@ -2,8 +2,11 @@ package net.prank;
 
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
@@ -67,8 +70,6 @@ public class Prankster<T> {
         }
     }
 
-
-
     /**
      * Stop all existing thread pools and clear out the scoring map.
      * Reinitialize a new map of setupScoring cards.
@@ -116,9 +117,9 @@ public class Prankster<T> {
      * or all of the objects will not be scored.
      *
      * @param objectsToScore A single object or collection of objects with type T
-     * @param timeoutInMillis The time to wait for scoring to complete.
+     * @param defaultTimeoutInMillis The time to wait for scoring to complete.
      */
-    public void updateObjectScore(Request<T> objectsToScore, int timeoutInMillis) {
+    public void updateObjectScore(Request<T> objectsToScore, int defaultTimeoutInMillis) {
 
         if ( objectsToScore == null)
         {
@@ -127,18 +128,21 @@ public class Prankster<T> {
         }
 
         Set<Future<Result>> futures = setupScoring(objectsToScore);
+        List<Long> timeouts = getTimeouts(defaultTimeoutInMillis, objectsToScore.getOptions());
+        int current = 0;
 
         for (Future<Result> future : futures)
         {
             try
             {
-                // Many of the ScoreCard futures were already submitted and should be in progress
-                future.get(timeoutInMillis, TimeUnit.MILLISECONDS);
+                future.get(timeouts.get(current), TimeUnit.MILLISECONDS);
             }
-            catch (Exception e)
+            catch (Throwable t)
             {
                 LOG.warn("Failed To Complete Scoring For: " + objectsToScore.getRequestObject());
             }
+
+            current++;
         }
     }
 
@@ -147,8 +151,8 @@ public class Prankster<T> {
      * a Set of Future responses and interpreting them. This submits each ScoreCard
      * as a Callable and returns a Future.
      *
-     * @param scoreIt
-     * @return
+     * @param scoreIt A request with optional Options
+     * @return A Set of Result Futures
      */
     public Set<Future<Result>> setupScoring(Request<T> scoreIt) {
 
@@ -161,7 +165,7 @@ public class Prankster<T> {
                 continue;
             }
 
-            ScoreCardCallable<T> callable = new ScoreCardCallable<T>(entry.getKey(), scoreIt.getRequestObject());
+            ScoreCardCallable<T> callable = new ScoreCardCallable<T>(entry.getKey(), scoreIt);
             Future<Result> future = entry.getValue().submit(callable);
             futures.add(future);
         }
@@ -169,41 +173,43 @@ public class Prankster<T> {
         return futures;
     }
 
+
+    private List<Long> getTimeouts(long defaultTimeoutMilis, Map<String, RequestOptions> options) {
+
+        if ( options == null )
+        {
+            List<Long> timeouts = new ArrayList<Long>();
+            for (ScoreCard<T> card : _scoring.keySet())
+            {
+                timeouts.add(defaultTimeoutMilis);
+            }
+
+            return timeouts;
+        }
+
+        List<Long> perRequestTimeouts = new ArrayList<Long>();
+
+        for (Map.Entry<String, RequestOptions> entry : options.entrySet())
+        {
+            if (entry.getValue().isEnabled())
+            {
+                perRequestTimeouts.add(entry.getValue().getTimeoutMillis());
+            }
+        }
+
+        return perRequestTimeouts;
+    }
+
     private boolean executeWithScoreCard(ScoreCard scoreCard, Request request) {
 
         RequestOptions options = request.getOptionsForScoreCard(scoreCard.getName());
 
-        if (options == null || !options.isEnabled())
+        if (options != null && !options.isEnabled())
         {
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * If a set of ScoreCard's contains a specific ScoreCard (check by equals(), check by name).
-     *
-     * @param scoreCard
-     * @param scoreCards
-     * @return
-     */
-    private boolean containsScoreCard(ScoreCard scoreCard, Set<ScoreCard> scoreCards) {
-
-        if (scoreCards.contains(scoreCard))
-        {
-            return true;
-        }
-
-        for (ScoreCard card : scoreCards)
-        {
-            if (scoreCard.getName().equals(card.getName()))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -235,18 +241,24 @@ public class Prankster<T> {
         implements Callable {
 
         private final ScoreCard<T> _scoreCard;
-        private final T _objectToScore;
+        private final Request<T> _request;
 
-        private ScoreCardCallable(ScoreCard<T> scoreCard, T objectToScore) {
 
+        private ScoreCardCallable(ScoreCard<T> scoreCard, Request<T> request) {
             _scoreCard = scoreCard;
-            _objectToScore = objectToScore;
+            _request = request;
         }
 
         public ScoreSummary call()
             throws Exception {
 
-            return _scoreCard.score(_objectToScore);
+            if (_request.getOptions() == null)
+            {
+                return _scoreCard.score(_request.getRequestObject());
+            }
+
+            RequestOptions options = _request.getOptionsForScoreCard(_scoreCard.getName());
+            return _scoreCard.scoreWith(_request.getRequestObject(), options);
         }
     }
 }

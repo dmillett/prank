@@ -40,18 +40,22 @@ public class PranksterTest
         Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
 
-        RequestOptions options = new RequestOptions.RequestOptionsBuilder().setEnabledB(false).build();
+        RequestOptions options = new RequestOptions.RequestOptionsBuilder().build();
         Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
         optionsMap.put(exampleScoreCard.getName(), options);
 
         Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject, optionsMap);
         Set<Future<Result>> futureResult = prankster.setupScoring(exampleRequest);
 
-        for (Future<Result> future : futureResult) {
-            try {
+        for (Future<Result> future : futureResult)
+        {
+            try
+            {
                 // Should return quickly, they were already submitted to the pool
-                future.get(25, TimeUnit.MILLISECONDS);
-            } catch (Exception e) {
+                future.get(50,TimeUnit.MILLISECONDS);
+            }
+            catch (Exception e)
+            {
                 fail("Should not");
             }
         }
