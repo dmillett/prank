@@ -1,4 +1,4 @@
-package net.prank;
+package net.prank.tools;
 
 /**
  * Define a minimum, maximum, and point allotment.

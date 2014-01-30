@@ -1,6 +1,6 @@
 package net.prank.example;
 
-import net.prank.ScoreSummary;
+import net.prank.core.ScoreSummary;
 
 import java.math.BigDecimal;
 

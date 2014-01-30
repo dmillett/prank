@@ -1,9 +1,11 @@
 package net.prank.example;
 
-import net.prank.RequestOptions;
-import net.prank.Result;
+import net.prank.core.RequestOptions;
+import net.prank.core.Result;
 import net.prank.ScoreCard;
-import net.prank.ScoreSummary;
+import net.prank.core.ScoreSummary;
+
+import java.math.BigDecimal;
 
 /**
  * A very simple example of a setupScoring card. More complex examples should still be stateless for
@@ -71,8 +73,9 @@ public class ExampleScoreCard
         double standardDeviation = _standardDeviationAdjustment;
 
         // Simple update
-        Result.ResultBuilder resultBuilder = new Result.ResultBuilder(_name, score);
-        resultBuilder.position(position).average(average).standardDeviation(standardDeviation);
+        Result.ResultBuilder resultBuilder = new Result.ResultBuilder(_name, new BigDecimal(String.valueOf(score)));
+        resultBuilder.position(position).average(new BigDecimal(String.valueOf(average)));
+        resultBuilder.standardDeviation(new BigDecimal(String.valueOf(standardDeviation)));
         Result result = resultBuilder.build();
 
         scoringObject.getScoreSummary().addResult(_name, result);

@@ -1,6 +1,8 @@
-package net.prank;
+package net.prank.tools;
 
 import junit.framework.TestCase;
+import net.prank.tools.ScoringRange;
+import net.prank.tools.ScoringTool;
 
 import java.util.Set;
 

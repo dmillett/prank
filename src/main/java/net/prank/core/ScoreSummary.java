@@ -1,4 +1,6 @@
-package net.prank;
+package net.prank.core;
+
+import net.prank.core.Result;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -134,11 +136,11 @@ public class ScoreSummary
 
         if (scoreType.equals(Result.ResultScoreType.ORIGINAL))
         {
-            tally += result.getScore();
+            tally += result.getScore().doubleValue();
         }
         else if (scoreType.equals(Result.ResultScoreType.ADJUSTED))
         {
-            tally += result.getAdjustedScore();
+            tally += result.getAdjustedScore().doubleValue();
         }
 
         return tally;

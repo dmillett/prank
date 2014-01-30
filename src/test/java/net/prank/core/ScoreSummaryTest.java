@@ -1,6 +1,10 @@
-package net.prank;
+package net.prank.core;
 
 import junit.framework.TestCase;
+import net.prank.core.Result;
+import net.prank.core.ScoreSummary;
+
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,7 +26,7 @@ import java.util.Set;
  *  limitations under the License.
  */
 public class ScoreSummaryTest
-        extends TestCase {
+    extends TestCase {
 
     public void test__tallyScore_null() {
 
@@ -39,7 +43,7 @@ public class ScoreSummaryTest
         ScoreSummary simple = new ScoreSummary("Simple");
 
         String scoreCardName = "ExampleScoreCard";
-        Result result = new Result.ResultBuilder(scoreCardName, 1.0).build();
+        Result result = new Result.ResultBuilder(scoreCardName, new BigDecimal("1.0")).build();
         simple.addResult(scoreCardName, result);
 
         assertEquals(1.0, simple.tallyScore());
@@ -53,7 +57,7 @@ public class ScoreSummaryTest
         ScoreSummary simple = new ScoreSummary("Simple");
         assertNull(simple.tallyScoreFor(scoreCardName));
 
-        Result result = new Result.ResultBuilder(scoreCardName, 1.0).build();
+        Result result = new Result.ResultBuilder(scoreCardName, new BigDecimal("1.0")).build();
         simple.addResult(scoreCardName, result);
 
         assertEquals(1.0, simple.tallyScoreFor(scoreCardName));

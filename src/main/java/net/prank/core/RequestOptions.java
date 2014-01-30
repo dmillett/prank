@@ -1,4 +1,4 @@
-package net.prank;
+package net.prank.core;
 
 /**
  * Build request options to accompany each ScoreCard evaluation in Prankster.

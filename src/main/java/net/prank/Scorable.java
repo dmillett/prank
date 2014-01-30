@@ -1,5 +1,7 @@
 package net.prank;
 
+import net.prank.core.ScoreSummary;
+
 /**
  * Use if you are ok updating your scorable object so that
  * you can use a generic comparator on it. Otherwise, just

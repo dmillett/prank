@@ -1,4 +1,8 @@
-package net.prank;
+package net.prank.tools;
+
+import net.prank.core.Result;
+
+import java.math.BigDecimal;
 
 /**
  *
@@ -35,8 +39,8 @@ public class ScoreAdjustment {
         }
 
         Result.ResultBuilder builder = new Result.ResultBuilder(originalResult);
-        double adjusted = originalResult.getScore() * factor;
-        builder.adjustScore(adjusted);
+        double adjusted = originalResult.getScore().doubleValue() * factor;
+        builder.adjustScore(new BigDecimal(String.valueOf(adjusted)));
 
         return builder.build();
     }

@@ -1,5 +1,8 @@
 package net.prank;
 
+import net.prank.core.RequestOptions;
+import net.prank.core.ScoreSummary;
+
 /**
  * A thread pool exists for each configured (spring) ScoreCard where it will examine all
  * the relevant ScoreCards and evaluate them. Implement a separate ScoreCard for ranking

@@ -1,6 +1,7 @@
-package net.prank;
+package net.prank.core;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Each solution should have a Result where 'V' might typically be an integer
@@ -40,18 +41,18 @@ public class Result
     /** Name of the ScoreCard for this result, corresponds to Prankster 'key'  */
     private final String _scoreCardName;
     /** An overall grade mechanism */
-    private final double _score;
+    private final BigDecimal _score;
     /** An overall grade after 'weighting' or 'adjustments' have been applied */
-    private final double _adjustedScore;
+    private final BigDecimal _adjustedScore;
 
     /** The value to score on (price, shipping time, etc) */
-    private final double _original;
+    private final Object _valueToScore;
     /** Initial position prior to scoring and ranking */
-    private final int _position;
+    private final Long _position;
     /** Standard deviation from other results */
-    private final double _standardDeviation;
+    private final BigDecimal _standardDeviation;
     /** Average across all results */
-    private final double _average;
+    private final BigDecimal _average;
 
     /**
      * If this seems like a
@@ -63,35 +64,35 @@ public class Result
      * @param standardDeviation
      * @param average
      */
-    public Result(String scoreCardName, double score, double adjustedScore, int position, double original,
-                  double average, double standardDeviation) {
+    public Result(String scoreCardName, BigDecimal score, BigDecimal adjustedScore, Long position, Object original,
+                  BigDecimal average, BigDecimal standardDeviation) {
 
         _scoreCardName = scoreCardName;
         _score = score;
         _adjustedScore = adjustedScore;
         _position = position;
-        _original = original;
+        _valueToScore = original;
         _standardDeviation = standardDeviation;
         _average = average;
     }
 
-    public double getScore() {
+    public BigDecimal getScore() {
         return _score;
     }
 
-    public double getAdjustedScore() {
+    public BigDecimal getAdjustedScore() {
         return _adjustedScore;
     }
 
-    public int getPosition() {
+    public Long getPosition() {
         return _position;
     }
 
-    public double getStandardDeviation() {
+    public BigDecimal getStandardDeviation() {
         return _standardDeviation;
     }
 
-    public double getAverage() {
+    public BigDecimal getAverage() {
         return _average;
     }
 
@@ -99,56 +100,57 @@ public class Result
         return _scoreCardName;
     }
 
-    public double getOriginal() {
-        return _original;
+    public Object getValueToScore() {
+        return _valueToScore;
     }
 
     @Override
     public boolean equals(Object o) {
 
-        if (this == o)
+        if ( this == o )
         {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass())
+        if ( o == null || getClass() != o.getClass() )
         {
             return false;
         }
 
         Result result = (Result) o;
 
-        if (Double.compare(result._adjustedScore, _adjustedScore) != 0)
+        if ( _adjustedScore != null ? !_adjustedScore.equals(result._adjustedScore) : result._adjustedScore != null )
         {
             return false;
         }
 
-        if (Double.compare(result._average, _average) != 0)
+        if ( _average != null ? !_average.equals(result._average) : result._average != null )
         {
             return false;
         }
 
-        if (Double.compare(result._original, _original) != 0)
+        if ( _position != null ? !_position.equals(result._position) : result._position != null )
         {
             return false;
         }
 
-        if (_position != result._position)
+        if ( _score != null ? !_score.equals(result._score) : result._score != null )
         {
             return false;
         }
 
-        if (Double.compare(result._score, _score) != 0)
+        if ( _scoreCardName != null ? !_scoreCardName.equals(result._scoreCardName) : result._scoreCardName != null )
         {
             return false;
         }
 
-        if (Double.compare(result._standardDeviation, _standardDeviation) != 0)
+        if ( _standardDeviation != null ? !_standardDeviation.equals(result._standardDeviation)
+                                        : result._standardDeviation != null )
         {
             return false;
         }
 
-        if (_scoreCardName != null ? !_scoreCardName.equals(result._scoreCardName) : result._scoreCardName != null)
+        if ( _valueToScore != null ? !_valueToScore.equals(result._valueToScore) : result._valueToScore != null )
         {
             return false;
         }
@@ -158,24 +160,13 @@ public class Result
 
     @Override
     public int hashCode() {
-
-        int result;
-        long temp;
-
-        result = _scoreCardName != null ? _scoreCardName.hashCode() : 0;
-        temp = _score != +0.0d ? Double.doubleToLongBits(_score) : 0L;
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = _adjustedScore != +0.0d ? Double.doubleToLongBits(_adjustedScore) : 0L;
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = _original != +0.0d ? Double.doubleToLongBits(_original) : 0L;
-
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + _position;
-        temp = _standardDeviation != +0.0d ? Double.doubleToLongBits(_standardDeviation) : 0L;
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = _average != +0.0d ? Double.doubleToLongBits(_average) : 0L;
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-
+        int result = _scoreCardName != null ? _scoreCardName.hashCode() : 0;
+        result = 31 * result + (_score != null ? _score.hashCode() : 0);
+        result = 31 * result + (_adjustedScore != null ? _adjustedScore.hashCode() : 0);
+        result = 31 * result + (_valueToScore != null ? _valueToScore.hashCode() : 0);
+        result = 31 * result + (_position != null ? _position.hashCode() : 0);
+        result = 31 * result + (_standardDeviation != null ? _standardDeviation.hashCode() : 0);
+        result = 31 * result + (_average != null ? _average.hashCode() : 0);
         return result;
     }
 
@@ -185,7 +176,7 @@ public class Result
                 "_scoreCardName='" + _scoreCardName + '\'' +
                 ", _score=" + _score +
                 ", _adjustedScore=" + _adjustedScore +
-                ", _original=" + _original +
+                ", _valueToScore=" + _valueToScore +
                 ", _position=" + _position +
                 ", _standardDeviation=" + _standardDeviation +
                 ", _average=" + _average +
@@ -199,7 +190,7 @@ public class Result
 
         StringBuilder sb = new StringBuilder();
         sb.append(",").append(_score).append(",").append(_adjustedScore).append(",").append(_position).append(",")
-                .append(_original).append(",").append(_average).append(",").append(_standardDeviation);
+                .append(_valueToScore).append(",").append(_average).append(",").append(_standardDeviation);
 
         return sb.toString();
     }
@@ -210,13 +201,13 @@ public class Result
     public static class ResultBuilder {
 
         private String _rbCardName;
-        private double _rbScore;
-        private double _rbAdjustedScore;
+        private BigDecimal _rbScore;
+        private BigDecimal _rbAdjustedScore;
 
-        private int _rbPosition = -1;
-        private double _rbOriginal = -1.0;
-        private double _rbAverage = -1;
-        private double _rbStandardDeviation = 0.0;
+        private Long _rbPosition = null;
+        private Object _rbOriginal = null;
+        private BigDecimal _rbAverage = null;
+        private BigDecimal _rbStandardDeviation = null;
 
         public ResultBuilder(Result originalResult) {
 
@@ -226,34 +217,34 @@ public class Result
                 _rbAdjustedScore = originalResult.getAdjustedScore();
 
                 _rbPosition = originalResult.getPosition();
-                _rbOriginal = originalResult.getOriginal();
+                _rbOriginal = originalResult.getValueToScore();
                 _rbAverage = originalResult.getAverage();
                 _rbStandardDeviation = originalResult.getStandardDeviation();
             }
         }
 
-        public ResultBuilder(String name, double score) {
+        public ResultBuilder(String name, BigDecimal score) {
             _rbCardName = name;
             _rbScore = score;
             _rbAdjustedScore = score;
         }
 
-        public ResultBuilder adjustScore(double adjustedScore) {
+        public ResultBuilder adjustScore(BigDecimal adjustedScore) {
             _rbAdjustedScore = adjustedScore;
             return this;
         }
 
-        public ResultBuilder position(int position) {
+        public ResultBuilder position(long position) {
             _rbPosition = position;
             return this;
         }
 
-        public ResultBuilder standardDeviation(double standardDeviation) {
+        public ResultBuilder standardDeviation(BigDecimal standardDeviation) {
             _rbStandardDeviation = standardDeviation;
             return this;
         }
 
-        public ResultBuilder average(double average) {
+        public ResultBuilder average(BigDecimal average) {
             _rbAverage = average;
             return this;
         }

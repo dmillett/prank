@@ -1,4 +1,4 @@
-package net.prank;
+package net.prank.tools;
 
 
 import java.util.HashSet;

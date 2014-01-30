@@ -1,4 +1,4 @@
-package net.prank;
+package net.prank.core;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

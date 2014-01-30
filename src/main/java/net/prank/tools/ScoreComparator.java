@@ -1,4 +1,6 @@
-package net.prank;
+package net.prank.tools;
+
+import net.prank.Scorable;
 
 import java.util.Comparator;
 import java.util.HashSet;
@@ -23,7 +25,7 @@ import java.util.Set;
  *         limitations under the License.
  */
 public class ScoreComparator
-        implements Comparator<Scorable> {
+    implements Comparator<Scorable> {
 
     private final Set<String> _scoreCardNames;
 

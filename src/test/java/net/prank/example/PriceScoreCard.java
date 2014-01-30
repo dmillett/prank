@@ -1,13 +1,14 @@
 package net.prank.example;
 
-import net.prank.NumericTools;
-import net.prank.RequestOptions;
-import net.prank.Result;
+import net.prank.tools.NumericTools;
+import net.prank.core.RequestOptions;
+import net.prank.core.Result;
 import net.prank.ScoreCard;
-import net.prank.ScoreSummary;
-import net.prank.ScoringRange;
-import net.prank.ScoringTool;
+import net.prank.core.ScoreSummary;
+import net.prank.tools.ScoringRange;
+import net.prank.tools.ScoringTool;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -115,11 +116,11 @@ public class PriceScoreCard
             double totalPrice = solution.getPrice().doubleValue();
             double score = scoringTool.getScoreFromRange(totalPrice, scoringRange);
 
-            Result.ResultBuilder rb = new Result.ResultBuilder(NAME, score);
+            Result.ResultBuilder rb = new Result.ResultBuilder(NAME, new BigDecimal(String.valueOf(score)));
             rb.position(i);
             rb.original(totalPrice);
-            rb.average(average);
-            rb.standardDeviation(standardDeviation);
+            rb.average(new BigDecimal(String.valueOf(average)));
+            rb.standardDeviation(new BigDecimal(String.valueOf(standardDeviation)));
             Result result = rb.build();
 
             solution.getScoreSummary().addResult(NAME, result);

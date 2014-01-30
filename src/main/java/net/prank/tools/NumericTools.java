@@ -1,4 +1,4 @@
-package net.prank;
+package net.prank.tools;
 
 import java.util.List;
 
@@ -21,7 +21,13 @@ import java.util.List;
 public class NumericTools {
 
     /**
-     * Average a list of numbers
+     * Average a list of numbers by taking the doubleValue() of each
+     * non-null Number in the list. If any value is null, then it is
+     * skipped and the divisor is reduced by 1.
+     *
+     * Ex:
+     * (1,2,null,3) --> 6.0 / 3 = 2.0
+     *
      */
     public static double average(List<? extends Number> values) {
 
@@ -37,6 +43,7 @@ public class NumericTools {
         {
             if (value == null)
             {
+                count--;
                 continue;
             }
 
@@ -69,6 +76,41 @@ public class NumericTools {
         return Math.sqrt(squaredSum / (values.size() - 1));
     }
 
+    public static Double meanDeviation(Number mean, List<? extends Number> values) {
+
+        if (mean == null || values == null || values.isEmpty())
+        {
+            return null;
+        }
+
+        double deviationSum = 0.0;
+        double average = mean.doubleValue();
+        int count = values.size();
+
+        for (Number n : values)
+        {
+            if (n == null)
+            {
+                count--;
+                continue;
+            }
+
+            deviationSum += Math.abs(n.doubleValue() - average);
+        }
+
+        return deviationSum / count;
+    }
+
+    public static Double meanDeviation(List<? extends Number> values) {
+
+        if (values == null || values.isEmpty())
+        {
+            return null;
+        }
+
+        double average = average(values);
+        return meanDeviation(average, values);
+    }
 
     /**
      * Could replace this with commons-math:Mean
