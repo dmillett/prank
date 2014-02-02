@@ -1,5 +1,7 @@
 package net.prank.example;
 
+import net.prank.core.ScoreData;
+import net.prank.core.Statistics;
 import net.prank.tools.NumericTools;
 import net.prank.core.RequestOptions;
 import net.prank.core.Result;
@@ -103,7 +105,7 @@ public class PriceScoreCard
     void updateSolutionsWithScore(List<ExampleObject> solutions, Set<ScoringRange> scoringRange,
                                   double average, double standardDeviation, ScoringTool scoringTool) {
 
-        int i = 0;
+        long i = 0;
 
         for ( ExampleObject solution : solutions )
         {
@@ -116,11 +118,19 @@ public class PriceScoreCard
             double totalPrice = solution.getPrice().doubleValue();
             double score = scoringTool.getScoreFromRange(totalPrice, scoringRange);
 
-            Result.ResultBuilder rb = new Result.ResultBuilder(NAME, new BigDecimal(String.valueOf(score)));
-            rb.position(i);
-            rb.original(totalPrice);
-            rb.average(new BigDecimal(String.valueOf(average)));
-            rb.standardDeviation(new BigDecimal(String.valueOf(standardDeviation)));
+            // Calculate stats with primitives for performance
+            // Create BigDecimal's from String for consistent values
+            ScoreData.Builder scoreBuilder = new ScoreData.Builder();
+            scoreBuilder.setScore(new BigDecimal(String.valueOf(score)));
+
+            Statistics.Builder statsBuilder = new Statistics.Builder();
+            statsBuilder.setAverage(new BigDecimal(String.valueOf(average)));
+            statsBuilder.setStandardDeviation(new BigDecimal(String.valueOf(standardDeviation)));
+
+            Result.Builder rb = new Result.Builder(NAME, scoreBuilder.build());
+            rb.setPosition(i);
+            rb.setOriginal(totalPrice);
+            rb.setStatistics(statsBuilder.build());
             Result result = rb.build();
 
             solution.getScoreSummary().addResult(NAME, result);

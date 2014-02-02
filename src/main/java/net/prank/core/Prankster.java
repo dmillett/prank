@@ -16,7 +16,7 @@ import java.util.concurrent.*;
  * <p/>
  * 1) Spring configured list of ScoreCard implementations
  * 2) Thread pool for each ScoreCard (core = max peak concurrent searches)
- * 3) Score an object T (List of AirPricingSolution)
+ * 3) ScoreData an object T (List of AirPricingSolution)
  * -- update a Map (ScoreCard, Result) for each solution
  * 4) Build a summary of results (discard or not)
  * <p/>
@@ -123,7 +123,7 @@ public class Prankster<T> {
 
         if ( objectsToScore == null)
         {
-            LOG.warn("Cannot Score Null Objects!");
+            LOG.warn("Cannot ScoreData Null Objects!");
             return;
         }
 

@@ -1,8 +1,7 @@
 package net.prank.core;
 
-import net.prank.core.Result;
-
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,11 +65,11 @@ public class ScoreSummary
      *
      * @return The sum of all Result.getScore() or null
      */
-    public Double tallyScore() {
+    public BigDecimal tallyScore() {
         return tallyScore(_results.keySet(), Result.ResultScoreType.ORIGINAL);
     }
 
-    public Double tallyScore(Result.ResultScoreType scoreType) {
+    public BigDecimal tallyScore(Result.ResultScoreType scoreType) {
         return tallyScore(_results.keySet(), scoreType);
     }
 
@@ -80,11 +79,11 @@ public class ScoreSummary
      * @param scoreCardNames
      * @return
      */
-    public Double tallyScoreFor(Set<String> scoreCardNames) {
+    public BigDecimal tallyScoreFor(Set<String> scoreCardNames) {
         return tallyScoreFor(scoreCardNames, Result.ResultScoreType.ORIGINAL);
     }
 
-    public Double tallyScoreFor(Set<String> scoreCardNames, Result.ResultScoreType scoreType) {
+    public BigDecimal tallyScoreFor(Set<String> scoreCardNames, Result.ResultScoreType scoreType) {
 
         if (scoreCardNames == null)
         {
@@ -101,14 +100,14 @@ public class ScoreSummary
      * @param scoreCardNames
      * @return null if there are no matching ScoreCards, otherwise the tally(+)
      */
-    public Double tallyScore(Set<String> scoreCardNames, Result.ResultScoreType scoreType) {
+    public BigDecimal tallyScore(Set<String> scoreCardNames, Result.ResultScoreType scoreType) {
 
         if (scoreCardNames.isEmpty())
         {
             return null;
         }
 
-        Double tally = null;
+        BigDecimal tally = null;
 
         for (String scoreCardName : scoreCardNames)
         {
@@ -123,7 +122,8 @@ public class ScoreSummary
         return tally;
     }
 
-    private Double updateTallyFromResult(Result.ResultScoreType scoreType, Double tally, String scoreCardName) {
+    private BigDecimal updateTallyFromResult(Result.ResultScoreType scoreType, BigDecimal tally,
+                                             String scoreCardName) {
 
         Result result = _results.get(scoreCardName);
 
@@ -131,16 +131,22 @@ public class ScoreSummary
 
         if (tally == null)
         {
-            tally = 0.0;
+            tally = new BigDecimal("0.0");
         }
 
         if (scoreType.equals(Result.ResultScoreType.ORIGINAL))
         {
-            tally += result.getScore().doubleValue();
+            if (result.getScoreData().getScore() != null)
+            {
+                tally = tally.add(result.getScoreData().getScore());
+            }
         }
         else if (scoreType.equals(Result.ResultScoreType.ADJUSTED))
         {
-            tally += result.getAdjustedScore().doubleValue();
+            if (result.getScoreData().getAdjustedScore() != null)
+            {
+                tally = tally.add(result.getScoreData().getAdjustedScore());
+            }
         }
 
         return tally;
@@ -152,7 +158,7 @@ public class ScoreSummary
      * @param scoreCards
      * @return
      */
-    public Double tallyScoreFor(String... scoreCards) {
+    public BigDecimal tallyScoreFor(String... scoreCards) {
         return tallyScoreFor(Result.ResultScoreType.ORIGINAL, scoreCards);
     }
 
@@ -164,7 +170,7 @@ public class ScoreSummary
      * @param scoreCards
      * @return
      */
-    public Double tallyScoreFor(Result.ResultScoreType scoreType, String... scoreCards) {
+    public BigDecimal tallyScoreFor(Result.ResultScoreType scoreType, String... scoreCards) {
 
         if (scoreCards == null || scoreCards.length == 0)
         {

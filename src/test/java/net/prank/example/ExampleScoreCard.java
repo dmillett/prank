@@ -3,7 +3,9 @@ package net.prank.example;
 import net.prank.core.RequestOptions;
 import net.prank.core.Result;
 import net.prank.ScoreCard;
+import net.prank.core.ScoreData;
 import net.prank.core.ScoreSummary;
+import net.prank.core.Statistics;
 
 import java.math.BigDecimal;
 
@@ -68,14 +70,22 @@ public class ExampleScoreCard
     public ScoreSummary score(ExampleObject scoringObject) {
 
         int score = scoringObject.getAverageShippingTime() + _scoreAdjustment;
-        int position = _positionAdjustment;
+        long position = _positionAdjustment;
         double average = scoringObject.getShippingCost().doubleValue() + _averageAdjustment;
         double standardDeviation = _standardDeviationAdjustment;
 
-        // Simple update
-        Result.ResultBuilder resultBuilder = new Result.ResultBuilder(_name, new BigDecimal(String.valueOf(score)));
-        resultBuilder.position(position).average(new BigDecimal(String.valueOf(average)));
-        resultBuilder.standardDeviation(new BigDecimal(String.valueOf(standardDeviation)));
+        // Calculate stats with primitives for performance
+        // Create BigDecimal's from String for consistent values
+        ScoreData.Builder scoreBuilder = new ScoreData.Builder();
+        scoreBuilder.setScore(new BigDecimal(String.valueOf(score)));
+
+        Statistics.Builder statsBuilder = new Statistics.Builder();
+        statsBuilder.setAverage(new BigDecimal(String.valueOf(average)));
+        statsBuilder.setStandardDeviation(new BigDecimal(String.valueOf(standardDeviation)));
+
+        Result.Builder resultBuilder = new Result.Builder(_name, scoreBuilder.build());
+        resultBuilder.setPosition(position);
+        resultBuilder.setStatistics(statsBuilder.build());
         Result result = resultBuilder.build();
 
         scoringObject.getScoreSummary().addResult(_name, result);
@@ -96,17 +106,20 @@ public class ExampleScoreCard
     @Override
     public boolean equals(Object o) {
 
-        if (this == o) {
+        if (this == o)
+        {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass())
+        {
             return false;
         }
 
         ExampleScoreCard that = (ExampleScoreCard) o;
 
-        if (!_name.equals(that._name)) {
+        if (!_name.equals(that._name))
+        {
             return false;
         }
 

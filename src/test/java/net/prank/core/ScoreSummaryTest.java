@@ -1,8 +1,6 @@
 package net.prank.core;
 
 import junit.framework.TestCase;
-import net.prank.core.Result;
-import net.prank.core.ScoreSummary;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -43,12 +41,16 @@ public class ScoreSummaryTest
         ScoreSummary simple = new ScoreSummary("Simple");
 
         String scoreCardName = "ExampleScoreCard";
-        Result result = new Result.ResultBuilder(scoreCardName, new BigDecimal("1.0")).build();
+        ScoreData.Builder scoreBuilder = new ScoreData.Builder();
+        scoreBuilder.setScore(new BigDecimal("1.0"));
+        scoreBuilder.setAdjustedScore(new BigDecimal("1.0"));
+
+        Result result = new Result.Builder(scoreCardName, scoreBuilder.build()).build();
         simple.addResult(scoreCardName, result);
 
-        assertEquals(1.0, simple.tallyScore());
-        assertEquals(1.0, simple.tallyScore(Result.ResultScoreType.ORIGINAL));
-        assertEquals(1.0, simple.tallyScore(Result.ResultScoreType.ADJUSTED));
+        assertEquals(new BigDecimal("1.0"), simple.tallyScore());
+        assertEquals(new BigDecimal("1.0"), simple.tallyScore(Result.ResultScoreType.ORIGINAL));
+        assertEquals(new BigDecimal("1.0"), simple.tallyScore(Result.ResultScoreType.ADJUSTED));
     }
 
     public void test__tallyScoreFor() {
@@ -57,10 +59,13 @@ public class ScoreSummaryTest
         ScoreSummary simple = new ScoreSummary("Simple");
         assertNull(simple.tallyScoreFor(scoreCardName));
 
-        Result result = new Result.ResultBuilder(scoreCardName, new BigDecimal("1.0")).build();
+        ScoreData.Builder scoreBuilder = new ScoreData.Builder();
+        scoreBuilder.setScore(new BigDecimal("1.0"));
+
+        Result result = new Result.Builder(scoreCardName, scoreBuilder.build()).build();
         simple.addResult(scoreCardName, result);
 
-        assertEquals(1.0, simple.tallyScoreFor(scoreCardName));
-        assertEquals(1.0, simple.tallyScoreFor(Result.ResultScoreType.ORIGINAL, scoreCardName));
+        assertEquals(new BigDecimal("1.0"), simple.tallyScoreFor(scoreCardName));
+        assertEquals(new BigDecimal("1.0"), simple.tallyScoreFor(Result.ResultScoreType.ORIGINAL, scoreCardName));
     }
 }

@@ -8,6 +8,12 @@ import java.math.RoundingMode;
 import java.util.Formatter;
 
 /**
+ * An encapsulation of statistics to surface in the Results object
+ * for ScoreCard evaluation. Use your favorite statistics library
+ * or the included NumericTools to populate. Please note it is
+ * probably better to perform calculations with primitives where
+ * possible and store them as objects in this class.
+ *
  * Store calculated values like:
  * average
  * mean absolute deviation
@@ -18,28 +24,34 @@ import java.util.Formatter;
  * does not support formatting
  *
  * @author dmillett
- *         <p/>
- *         Copyright 2012 David Millett
- *         Licensed under the Apache License, Version 2.0 (the "License");
- *         you may not use this file except in compliance with the License.
- *         You may obtain a copy of the License at
- *         <p/>
- *         http://www.apache.org/licenses/LICENSE-2.0
- *         <p/>
- *         Unless required by applicable law or agreed to in writing, software
- *         distributed under the License is distributed on an "AS IS" BASIS,
- *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *         See the License for the specific language governing permissions and
- *         limitations under the License.
+ *
+ *
+ * @author dmillett
+ *
+ * Copyright 2012 David Millett
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 public class Statistics
     implements Serializable {
 
     private static final long serialVersionUID = 42L;
-
+    /** Use your favorite stats library or NumericTools */
     private final BigDecimal _average;
+    /** Use your favorite stats library or NumericTools */
     private final BigDecimal _meanDeviation;
+    /** Use your favorite stats library or NumericTools */
     private final BigDecimal _medianDeviation;
+    /** Use your favorite stats library or NumericTools */
     private final BigDecimal _standardDeviation;
 
     public Statistics(BigDecimal average, BigDecimal meanAbsoluteDeviation, BigDecimal medianAbsoluteDeviation,
@@ -213,5 +225,43 @@ public class Statistics
                 ", _medianDeviation=" + _medianDeviation +
                 ", _standardDeviation=" + _standardDeviation +
                 '}';
+    }
+
+    /** More flexibility for creating a Statistics object. */
+    public static class Builder {
+
+        /** Use your favorite stats library or NumericTools */
+        private BigDecimal _bAverage;
+        /** Use your favorite stats library or NumericTools */
+        private BigDecimal _bMeanDeviation;
+        /** Use your favorite stats library or NumericTools */
+        private BigDecimal _bMedianDeviation;
+        /** Use your favorite stats library or NumericTools */
+        private BigDecimal _bStandardDeviation;
+
+        public Statistics build() {
+            return new Statistics(_bAverage, _bMeanDeviation, _bMedianDeviation, _bStandardDeviation);
+        }
+
+        public Builder setStandardDeviation(BigDecimal bStandardDeviation) {
+            _bStandardDeviation = bStandardDeviation;
+            return this;
+        }
+
+        public Builder setAverage(BigDecimal bAverage) {
+            _bAverage = bAverage;
+            return this;
+        }
+
+        public Builder setMeanDeviation(BigDecimal bMeanDeviation) {
+            _bMeanDeviation = bMeanDeviation;
+            return this;
+        }
+
+        public Builder setMedianDeviation(BigDecimal bMedianDeviation) {
+            _bMedianDeviation = bMedianDeviation;
+            return this;
+        }
+
     }
 }

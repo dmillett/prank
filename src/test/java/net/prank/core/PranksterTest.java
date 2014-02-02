@@ -2,7 +2,7 @@ package net.prank.core;
 
 import junit.framework.TestCase;
 import net.prank.ScoreCard;
-import net.prank.core.*;
+
 import net.prank.example.ExampleObject;
 import net.prank.example.ExampleScoreCard;
 
@@ -67,10 +67,10 @@ public class PranksterTest
         Result result = exampleObject.getScoreSummary().getResultByScoreCard(exampleScoreCard.getName());
         assertNotNull(result);
 
-        assertEquals(new BigDecimal("5"), result.getScore());
+        assertEquals(new BigDecimal("5"), result.getScoreData().getScore());
         assertEquals(2L, result.getPosition().longValue());
-        assertEquals(9.0, result.getAverage().doubleValue());
-        assertEquals(50.0, result.getStandardDeviation().doubleValue());
+        assertEquals(9.0, result.getStatistics().getAverage().doubleValue());
+        assertEquals(50.0, result.getStatistics().getStandardDeviation().doubleValue());
     }
 
     public void test__updateObjectScore() {
@@ -87,10 +87,10 @@ public class PranksterTest
         Result result = exampleObject.getScoreSummary().getResultByScoreCard(exampleScoreCard.getName());
         assertNotNull(result);
 
-        assertEquals(5.0, result.getScore().doubleValue());
+        assertEquals(5.0, result.getScoreData().getScore() .doubleValue());
         assertEquals(2, result.getPosition().longValue());
-        assertEquals(9.0, result.getAverage().doubleValue());
-        assertEquals(50.0, result.getStandardDeviation().doubleValue());
+        assertEquals(9.0, result.getStatistics().getAverage().doubleValue());
+        assertEquals(50.0, result.getStatistics().getStandardDeviation().doubleValue());
     }
 
     public void test__execute_disabled() {
@@ -127,10 +127,10 @@ public class PranksterTest
         Result result = exampleObject.getScoreSummary().getResultByScoreCard(exampleScoreCard.getName());
         assertNotNull(result);
 
-        assertEquals(5.0, result.getScore().doubleValue());
+        assertEquals(5.0, result.getScoreData().getScore().doubleValue());
         assertEquals(4, result.getPosition().longValue());
-        assertEquals(10.0, result.getAverage().doubleValue());
-        assertEquals(0.75, result.getStandardDeviation().doubleValue());
+        assertEquals(10.0, result.getStatistics().getAverage().doubleValue());
+        assertEquals(0.75, result.getStatistics().getStandardDeviation().doubleValue());
     }
 
     private Prankster<ExampleObject> buildPrankster(ScoreCard... scoreCard) {

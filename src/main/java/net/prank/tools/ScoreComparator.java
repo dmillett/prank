@@ -2,6 +2,7 @@ package net.prank.tools;
 
 import net.prank.Scorable;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -53,8 +54,8 @@ public class ScoreComparator
             return -1;
         }
 
-        Double score1;
-        Double score2;
+        BigDecimal score1;
+        BigDecimal score2;
 
         if (_scoreCardNames.isEmpty())
         {
