@@ -59,16 +59,6 @@ public class Result<T>
         _statistics = stats;
     }
 
-    /**
-     * name, setupScoring, adjusted setupScoring, position, original, average, std dev
-     */
-    public String dump() {
-
-        StringBuilder sb = new StringBuilder();
-        // todo:
-        return sb.toString();
-    }
-
     public String getScoreCardName() {
         return _scoreCardName;
     }

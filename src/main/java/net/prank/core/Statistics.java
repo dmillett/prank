@@ -64,6 +64,8 @@ public class Statistics
     }
 
     public BigDecimal getAverage() {
+
+
         return _average;
     }
 

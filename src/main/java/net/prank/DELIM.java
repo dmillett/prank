@@ -25,6 +25,7 @@ public enum DELIM {
     COLON(":"),
     SEMI_COLON(";"),
     PIPE("|"),
+    EMPTY(""),
     ;
 
     private final String _delim;

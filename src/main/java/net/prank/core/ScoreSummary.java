@@ -1,5 +1,8 @@
 package net.prank.core;
 
+import net.prank.DELIM;
+import net.prank.tools.ScoreFormatter;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -198,20 +201,24 @@ public class ScoreSummary
         return scoreCards;
     }
 
-    /**
-     * @return name: scoreCardName1,result1-dump;scoreCardName2,result2-dump
-     */
     @Override
     public String toString() {
+        return "ScoreSummary{" +
+                "_results=" + _results +
+                ", _name='" + _name + '\'' +
+                '}';
+    }
 
-        String delim1 = ",";
-        String delim2 = ";";
+    /** Uses ScoreFormatter.dumpResult() for each ScoreCard result. */
+    public String dump() {
+
+        ScoreFormatter scf = new ScoreFormatter();
         StringBuilder sb = new StringBuilder(_name);
-        sb.append(":");
+        sb.append(DELIM.COLON.get());
 
         for (Map.Entry<String, Result> entry : _results.entrySet())
         {
-            sb.append(entry.getKey()).append(delim1).append(entry.getValue().dump()).append(delim2);
+            sb.append(scf.dumpResult(entry.getValue())).append(DELIM.SEMI_COLON.get());
         }
 
         return sb.toString();

@@ -4,36 +4,36 @@ import java.util.List;
 
 /**
  * @author dmillett
- *         <p/>
- *         Copyright 2012 David Millett
- *         Licensed under the Apache License, Version 2.0 (the "License");
- *         you may not use this file except in compliance with the License.
- *         You may obtain a copy of the License at
- *         <p/>
- *         http://www.apache.org/licenses/LICENSE-2.0
- *         <p/>
- *         Unless required by applicable law or agreed to in writing, software
- *         distributed under the License is distributed on an "AS IS" BASIS,
- *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *         See the License for the specific language governing permissions and
- *         limitations under the License.
+ * <p/>
+ * Copyright 2012 David Millett
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 public class NumericTools {
 
     /**
-     * Average a list of numbers by taking the doubleValue() of each
-     * non-null Number in the list. If any value is null, then it is
-     * skipped and the divisor is reduced by 1.
+     * Average a list of numbers by taking the doubleValue()
+     *
+     * Any null number in 'values' will generate an NPE
      *
      * Ex:
      * (1,2,null,3) --> 6.0 / 3 = 2.0
      *
      */
-    public static double average(List<? extends Number> values) {
+    public static Double average(List<? extends Number> values) {
 
         if (values == null || values.isEmpty())
         {
-            return 0.0;
+            return null;
         }
 
         double total = 0.0;
@@ -41,46 +41,63 @@ public class NumericTools {
 
         for (Number value : values)
         {
-            if (value == null)
-            {
-                count--;
-                continue;
-            }
-
             total += value.doubleValue();
         }
 
         return total / count;
     }
 
-    public static double standardDeviation(double mean, List<? extends Number> values) {
+    /**
+     * Could replace this with commons-math:Mean
+     *
+     * @param values
+     * @return
+     */
+    public static Double averageForLongs(List<Long> values) {
 
-        if (values.size() < 2)
+        if (values == null || values.isEmpty())
         {
-            return 0.0;
+            return null;
         }
 
-        double squaredSum = 0.0;
-
-        for (Number value : values)
+        double total = 0.0;
+        for (Long time : values)
         {
-            if (value == null)
-            {
-                continue;
-            }
-
-            double delta = value.doubleValue() - mean;
-            squaredSum += (delta * delta);
+            total += time;
         }
 
-        return Math.sqrt(squaredSum / (values.size() - 1));
+        return total / values.size();
     }
 
+    /** Average for a list of Double(s), will throw a NPE for any null in 'values' */
+    public static Double averageForDoubles(List<Double> values) {
+
+        if (values == null || values.isEmpty())
+        {
+            return null;
+        }
+
+        double sum = 0.0;
+
+        for (Double value : values)
+        {
+            sum += value;
+        }
+
+        return sum / values.size();
+    }
+
+    /** Will throw an NPE for any null value in 'values' */
     public static Double meanDeviation(Number mean, List<? extends Number> values) {
 
         if (mean == null || values == null || values.isEmpty())
         {
             return null;
+        }
+
+        if (values.size() < 2)
+        {
+            return 0.0;
         }
 
         double deviationSum = 0.0;
@@ -89,12 +106,6 @@ public class NumericTools {
 
         for (Number n : values)
         {
-            if (n == null)
-            {
-                count--;
-                continue;
-            }
-
             deviationSum += Math.abs(n.doubleValue() - average);
         }
 
@@ -113,35 +124,25 @@ public class NumericTools {
     }
 
     /**
-     * Could replace this with commons-math:Mean
+     * Reference Knuth --
      *
-     * @param values
-     * @return
-     */
-    public static double averageForLongs(List<Long> values) {
-
-        if (values == null || values.isEmpty())
-        {
-            return 0.0;
-        }
-
-        double total = 0.0;
-        for (Long time : values)
-        {
-            total += time;
-        }
-
-        return total / values.size();
-    }
-
-    /**
-     * Could replace this with commons-math:StandardDeviation
+     * sum the (square the difference from the average),
+     * then take the square root of the squared-sum / sample-size
      *
-     * @param mean
-     * @param values
-     * @return
+     * This will throw a NPE for any null in 'values'
+     *
+     * @param mean The mean/average of a collection of numbers
+     * @param values The list of numeric values
+     * @return null (for null values)
+     *         0.0 (for values.size() = 1)
+     *         standard deviation (for normal list of numbers)
      */
-    public static double standardDeviationForLongs(double mean, List<Long> values) {
+    public static Double standardDeviation(double mean, List<? extends Number> values) {
+
+        if (values == null)
+        {
+            return null;
+        }
 
         if (values.size() < 2)
         {
@@ -149,9 +150,10 @@ public class NumericTools {
         }
 
         double squaredSum = 0.0;
-        for (Long time : values)
+
+        for (Number value : values)
         {
-            double delta = time - mean;
+            double delta = value.doubleValue() - mean;
             squaredSum += (delta * delta);
         }
 
@@ -159,32 +161,14 @@ public class NumericTools {
     }
 
     /**
-     * Average for a list of Double(s)
+     * Could replace this with commons-math:StandardDeviation
+     * It will throw an NPE for any null in 'values'
+     *
+     * @param mean
+     * @param values
+     * @return
      */
-    public static double averageForDoubles(List<Double> values) {
-
-        if (values == null || values.isEmpty())
-        {
-            return 0.0;
-        }
-
-        double sum = 0.0;
-
-        for (Double value : values)
-        {
-            if (value != null)
-            {
-                sum += value;
-            }
-        }
-
-        return sum / values.size();
-    }
-
-    /**
-     * Standard deviation for a list of doubles
-     */
-    public static double standardDeviationForDoubles(double mean, List<Double> values) {
+    public static Double standardDeviationForLongs(double mean, List<Long> values) {
 
         if (values.size() < 2)
         {
@@ -192,66 +176,76 @@ public class NumericTools {
         }
 
         double squaredSum = 0.0;
-        for (Double value : values)
+
+        for (Long value : values)
         {
-            if (value != null)
-            {
-                double delta = value - mean;
-                squaredSum += (delta * delta);
-            }
+            double delta = value - mean;
+            squaredSum += (delta * delta);
         }
 
         return Math.sqrt(squaredSum / (values.size() - 1));
     }
 
-    public static double max(List<? extends Number> values) {
+    /**
+     * Standard deviation for a list of doubles.
+     */
+    public static Double standardDeviationForDoubles(double mean, List<Double> values) {
+
+        if (values.size() < 2)
+        {
+            return 0.0;
+        }
+
+        double squaredSum = 0.0;
+
+        for (Double value : values)
+        {
+            double delta = value - mean;
+            squaredSum += (delta * delta);
+        }
+
+        return Math.sqrt(squaredSum / (values.size() - 1));
+    }
+
+    /**
+     * Max for a list of Numbers, a null value will throw an NPE
+     * @param values
+     * @return
+     */
+    public static Double max(List<? extends Number> values) {
 
         if (values == null || values.isEmpty())
         {
             return 0.0;
         }
 
-        Double max = null;
+        double max = 0.0;
 
         for (Number value : values)
         {
-            if (max == null)
-            {
-                max = value.doubleValue();
-            }
-
-            if (value == null)
-            {
-                continue;
-            }
-
             max = Math.max(max, value.doubleValue());
         }
 
         return max;
     }
 
-    public static double min(List<? extends Number> values) {
+    /**
+     * Calculate the minimum value for a collection of Numbers.
+     *
+     * @param values
+     * @return
+     */
+    public static Double min(List<? extends Number> values) {
 
         if (values == null || values.isEmpty())
         {
             return 0.0;
         }
 
-        Double min = null;
+        double min = 0.0;
 
         for (Number value : values)
         {
-            if (min == null)
-            {
-                min = value.doubleValue();
-            }
-
-            if (min == null)
-            {
-                continue;
-            }
-
             min = Math.min(min, value.doubleValue());
         }
 
