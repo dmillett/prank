@@ -30,7 +30,7 @@ public class ScoreFormatter {
 
     public static final String DEFAULT_INTERNAL_DELIM = DELIM.COLON.get();
     public static final String DEFAULT_SEPARATOR = DELIM.COMMA.get();
-    public static final int DEFAULT_SCALE = 2;
+    public static final int DEFAULT_SCALE = 4;
     public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
     public String dumpResult(Result result) {

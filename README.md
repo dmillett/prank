@@ -1,19 +1,25 @@
 prank
 =====
 
-Is a java library supporting parallel ranking and scoring of Java objects and collections.
-Add a ScoreSummary to each object in a collection and then define a Set of ScoreCard objects
-for that object type. plies all ScoreCard evaluations
+Is a java library supporting asynchronous/parallel ranking and scoring of Java objects and collections.
+Add a ScoreSummary to each object in a collection and then define a Set of ScoreCard objects for that
+object type. Applies all configured ScoreCard evaluations.
+
+This is useful for distributed transactions where Customer selection is important. For example,
+selecting books from used booksellers where price, delivery time, shipping cost, user ratings,
+etc may be important. Scoring is completed once in the distributed transaction but produces
+data that can be used for sorting (see tallyScore()), personalization (adjusted score from
+user preferences), and Machine Learning (summary statistics that help differentiate a selected
+option).
 
 ##Features
 * Parallel scoring of a generic collection of objects with 1 - N ScoreCards
 * A result object for every scored object in the collection can contain:
-  1. calculated score
-  2. adjusted score
-  3. average
-  4. standard deviation
-  5. original position in the collection
-  6. per request scoring conditions
+  1. scored value
+  2. original position index
+  3. ScoreData (calculated score, adjusted Score, min points, max points, number of score buckets)
+  4. Statistics average, mean deviation, median deviation, standard deviation
+  5. per request scoring conditions
 * Each ScoreSummary result may be adjusted at any time after initial scoring
 
 ##Usage

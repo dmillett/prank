@@ -37,14 +37,12 @@ public class NumericTools {
         }
 
         double total = 0.0;
-        int count = values.size();
-
         for (Number value : values)
         {
             total += value.doubleValue();
         }
 
-        return total / count;
+        return total / values.size();
     }
 
     /**
@@ -77,14 +75,14 @@ public class NumericTools {
             return null;
         }
 
-        double sum = 0.0;
+        double total = 0.0;
 
         for (Double value : values)
         {
-            sum += value;
+            total += value;
         }
 
-        return sum / values.size();
+        return total / values.size();
     }
 
     /** Will throw an NPE for any null value in 'values' */
@@ -158,6 +156,13 @@ public class NumericTools {
         }
 
         return Math.sqrt(squaredSum / (values.size() - 1));
+    }
+
+    /** Calculate the average here, then hand off to the standard deviations */
+    public static Double standardDeviation(List<? extends Number> values) {
+
+        double average = NumericTools.average(values);
+        return standardDeviation(average, values);
     }
 
     /**
