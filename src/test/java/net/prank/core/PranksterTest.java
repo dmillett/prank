@@ -1,7 +1,6 @@
 package net.prank.core;
 
 import junit.framework.TestCase;
-import net.prank.ScoreCard;
 
 import net.prank.example.ExampleObject;
 import net.prank.example.ExampleScoreCard;

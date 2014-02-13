@@ -1,6 +1,6 @@
 package net.prank.core;
 
-import net.prank.DELIM;
+import net.prank.tools.DELIM;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

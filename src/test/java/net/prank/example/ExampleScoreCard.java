@@ -2,7 +2,7 @@ package net.prank.example;
 
 import net.prank.core.RequestOptions;
 import net.prank.core.Result;
-import net.prank.ScoreCard;
+import net.prank.core.ScoreCard;
 import net.prank.core.ScoreData;
 import net.prank.core.ScoreSummary;
 import net.prank.core.Statistics;

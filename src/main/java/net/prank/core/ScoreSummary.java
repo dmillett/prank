@@ -1,6 +1,6 @@
 package net.prank.core;
 
-import net.prank.DELIM;
+import net.prank.tools.DELIM;
 import net.prank.tools.ScoreFormatter;
 
 import java.io.Serializable;

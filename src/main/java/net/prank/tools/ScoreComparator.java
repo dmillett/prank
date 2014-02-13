@@ -1,6 +1,6 @@
 package net.prank.tools;
 
-import net.prank.Scorable;
+import net.prank.core.Scorable;
 
 import java.math.BigDecimal;
 import java.util.Comparator;

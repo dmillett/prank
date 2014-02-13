@@ -1,6 +1,5 @@
 package net.prank.core;
 
-import net.prank.*;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;

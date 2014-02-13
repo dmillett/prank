@@ -1,13 +1,11 @@
 package net.prank.tools;
 
-import net.prank.DELIM;
 import net.prank.core.Result;
 import net.prank.core.ScoreData;
 import net.prank.core.Statistics;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Formatter;
 
 /**
  * Tools to format Results, ScoreData, and Statistics --

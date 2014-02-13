@@ -5,7 +5,7 @@ import net.prank.core.Statistics;
 import net.prank.tools.NumericTools;
 import net.prank.core.RequestOptions;
 import net.prank.core.Result;
-import net.prank.ScoreCard;
+import net.prank.core.ScoreCard;
 import net.prank.core.ScoreSummary;
 import net.prank.tools.ScoringRange;
 import net.prank.tools.ScoringTool;

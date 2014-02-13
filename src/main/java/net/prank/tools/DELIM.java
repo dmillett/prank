@@ -1,4 +1,4 @@
-package net.prank;
+package net.prank.tools;
 
 /**
  * Delimters for dump() which are abbreviated in format vs
