@@ -24,15 +24,52 @@ import java.util.Set;
  *  limitations under the License.
  */
 public class ScoringToolTest
-        extends TestCase {
-
+    extends TestCase {
 
     public void test__scoreSlicesEvenly() {
 
         ScoringTool tool = new ScoringTool();
 
+        // min, max, bucketCount, grossMin, grossMax
         Set<ScoringRange> scores = tool.scoreBucketsEvenlyLowValueAsHighScore(0, 10, 5, 100.0, 575.0);
         assertNotNull(scores);
+
+        // 0.0 -- 10.0 (5 buckets + 1 best score)
+        assertEquals(6, scores.size());
+
+        for ( ScoringRange scr : scores )
+        {
+            if (scr.getScorePoints() == 10.0)
+            {
+                assertEquals(100.0, scr.getMax());
+                assertEquals(100.0, scr.getMin());
+            }
+            else if (scr.getScorePoints() == 8.0)
+            {
+                assertEquals(101, (int)scr.getMin());
+                assertEquals(195, (int)scr.getMax());
+            }
+            else if (scr.getScorePoints() == 6.0)
+            {
+                assertEquals(195, (int)scr.getMin());
+                assertEquals(290, (int)scr.getMax());
+            }
+            else if (scr.getScorePoints() == 4.0)
+            {
+                assertEquals(290, (int)scr.getMin());
+                assertEquals(384, (int)scr.getMax());
+            }
+            else if (scr.getScorePoints() == 2.0)
+            {
+                assertEquals(384, (int)scr.getMin());
+                assertEquals(479, (int)scr.getMax());
+            }
+            else if (scr.getScorePoints() == 0.0)
+            {
+                assertEquals(575.0, scr.getMax());
+                assertEquals(575.0, scr.getMin());
+            }
+        }
     }
 
     public void test__scoreSlicesEvenly_small_range() {
@@ -40,5 +77,25 @@ public class ScoringToolTest
         ScoringTool tool = new ScoringTool();
         Set<ScoringRange> scores = tool.scoreBucketsEvenlyLowValueAsHighScore(0, 10, 3, 0, 2);
         assertNotNull(scores);
+        assertEquals(3, scores.size());
+
+        for ( ScoringRange scr : scores )
+        {
+            if (scr.getScorePoints() == 10.0)
+            {
+                assertEquals(0.0, scr.getMax());
+                assertEquals(0.0, scr.getMin());
+            }
+            else if (scr.getScorePoints() == 5.0)
+            {
+                assertEquals(1.0, scr.getMin());
+                assertEquals(1.0, scr.getMax());
+            }
+            else if (scr.getScorePoints() == 4.0)
+            {
+                assertEquals(2.0, scr.getMin());
+                assertEquals(2.0, scr.getMax());
+            }
+        }
     }
 }

@@ -47,7 +47,7 @@ public class ScoringTool {
         scores.add(new ScoringRange(grossMin, grossMin, maxPoints));
         scores.add(new ScoringRange(grossMax, grossMax, minPoints));
 
-        if (bucketCount < 3)
+        if (bucketCount <= 3)
         {
             double averagePoints = minPoints + maxPoints / 2;
             scores.add(new ScoringRange(grossMin + 1, grossMax - 1, averagePoints));
