@@ -86,6 +86,50 @@ public class NumericToolsTest
         }
     }
 
+    public void test_min() {
+
+        assertNull(NumericTools.min(null));
+        assertNull(NumericTools.min(new ArrayList<Double>()));
+
+        List<Double> values = getSmallDoublesList(10);
+        double min = NumericTools.min(values);
+
+        assertEquals(1.0, min);
+
+        try
+        {
+            values.add(null);
+            NumericTools.min(values);
+            fail("Should have puked out on null");
+        }
+        catch (NullPointerException e)
+        {
+            // success
+        }
+    }
+
+    public void test_max() {
+
+        assertNull(NumericTools.max(null));
+        assertNull(NumericTools.max(new ArrayList<Double>()));
+
+        List<Double> values = getSmallDoublesList(10);
+        double max = NumericTools.max(values);
+
+        assertEquals(10.0, max);
+
+        try
+        {
+            values.add(null);
+            NumericTools.max(values);
+            fail("Should have puked out on null");
+        }
+        catch (NullPointerException e)
+        {
+            // success
+        }
+    }
+
     public void test_standardDeviation() {
 
         List<Double> values = getSmallDoublesList(4);

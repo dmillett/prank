@@ -213,18 +213,22 @@ public class NumericTools {
     }
 
     /**
-     * Max for a list of Numbers, a null value will throw an NPE
+     * Calculate the maximum value for a collection of Numbers
+     * via each Number's doubleValue().
+     *
+     * Will throw NPE as it assumes all numbers are not-null.
      * @param values
-     * @return
+     * @return null for any invalid List, NPE for any null in List,
+     *         or the maximum double value from List
      */
     public static Double max(List<? extends Number> values) {
 
         if (values == null || values.isEmpty())
         {
-            return 0.0;
+            return null;
         }
 
-        double max = 0.0;
+        double max = values.get(0).doubleValue();
 
         for (Number value : values)
         {
@@ -235,19 +239,22 @@ public class NumericTools {
     }
 
     /**
-     * Calculate the minimum value for a collection of Numbers.
+     * Calculate the minimum value for a collection of Numbers
+     * via each Number's doubleValue().
      *
+     * Will throw NPE as it assumes all numbers are not-null.
      * @param values
-     * @return
+     * @return null for any invalid List, NPE for any null in List,
+     *         or the minimum double value from List
      */
     public static Double min(List<? extends Number> values) {
 
         if (values == null || values.isEmpty())
         {
-            return 0.0;
+            return null;
         }
 
-        double min = 0.0;
+        double min = values.get(0).doubleValue();
 
         for (Number value : values)
         {
