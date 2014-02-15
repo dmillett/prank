@@ -1,6 +1,7 @@
 package net.prank.tools;
 
 import junit.framework.TestCase;
+import net.prank.core.Indices;
 import net.prank.core.ScoreData;
 import net.prank.core.Statistics;
 
@@ -25,6 +26,17 @@ import java.math.BigDecimal;
  */
 public class ScoreFormatterTest
     extends TestCase {
+
+    public void test_dumpIndices() {
+
+        Indices indices = new Indices(10);
+        ScoreFormatter scf = new ScoreFormatter();
+
+        assertEquals("10:10", scf.dumpIndices(indices));
+
+        Indices indices2 = new Indices(5, 2);
+        assertEquals("5:2", scf.dumpIndices(indices2));
+    }
 
     public void test_dumpScoreData__with_defaults() {
 

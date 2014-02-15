@@ -67,7 +67,7 @@ public class PranksterTest
         assertNotNull(result);
 
         assertEquals(new BigDecimal("5"), result.getScoreData().getScore());
-        assertEquals(2L, result.getPosition().longValue());
+        assertEquals(2, result.getPosition().getOriginalIndex());
         assertEquals(9.0, result.getStatistics().getAverage().doubleValue());
         assertEquals(50.0, result.getStatistics().getStandardDeviation().doubleValue());
     }
@@ -87,7 +87,7 @@ public class PranksterTest
         assertNotNull(result);
 
         assertEquals(5.0, result.getScoreData().getScore() .doubleValue());
-        assertEquals(2, result.getPosition().longValue());
+        assertEquals(2, result.getPosition().getOriginalIndex());
         assertEquals(9.0, result.getStatistics().getAverage().doubleValue());
         assertEquals(50.0, result.getStatistics().getStandardDeviation().doubleValue());
     }
@@ -127,7 +127,7 @@ public class PranksterTest
         assertNotNull(result);
 
         assertEquals(5.0, result.getScoreData().getScore().doubleValue());
-        assertEquals(4, result.getPosition().longValue());
+        assertEquals(4, result.getPosition().getOriginalIndex());
         assertEquals(10.0, result.getStatistics().getAverage().doubleValue());
         assertEquals(0.75, result.getStatistics().getStandardDeviation().doubleValue());
     }

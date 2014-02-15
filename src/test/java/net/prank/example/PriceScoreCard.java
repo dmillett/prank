@@ -1,5 +1,6 @@
 package net.prank.example;
 
+import net.prank.core.Indices;
 import net.prank.core.ScoreData;
 import net.prank.core.Statistics;
 import net.prank.tools.NumericTools;
@@ -105,7 +106,7 @@ public class PriceScoreCard
     void updateSolutionsWithScore(List<ExampleObject> solutions, Set<ScoringRange> scoringRange,
                                   double average, double standardDeviation, ScoringTool scoringTool) {
 
-        long i = 0;
+        int i = 0;
 
         for ( ExampleObject solution : solutions )
         {
@@ -128,7 +129,7 @@ public class PriceScoreCard
             statsBuilder.setStandardDeviation(new BigDecimal(String.valueOf(standardDeviation)));
 
             Result.Builder rb = new Result.Builder(NAME, scoreBuilder.build());
-            rb.setPosition(i);
+            rb.setPosition(new Indices(i));
             rb.setOriginal(totalPrice);
             rb.setStatistics(statsBuilder.build());
             Result result = rb.build();

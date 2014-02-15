@@ -42,7 +42,7 @@ public class Result<T>
     /** The value to score on (price, shipping time, etc) */
     private final T _scoredValue;
     /** Initial position prior to scoring and ranking */
-    private final Long _position;
+    private final Indices _indices;
 
     /** Encapsulating score, adjusted score, max points, min points, number of buckets, etc */
     private final ScoreData _score;
@@ -50,11 +50,11 @@ public class Result<T>
     private final Statistics _statistics;
 
     /** Instantiate directly or use the Builder */
-    public Result(String scoreCardName, T scoredValue, Long position, ScoreData score, Statistics stats) {
+    public Result(String scoreCardName, T scoredValue, Indices indices, ScoreData score, Statistics stats) {
 
         _scoreCardName = scoreCardName;
         _scoredValue = scoredValue;
-        _position = position;
+        _indices = indices;
         _score = score;
         _statistics = stats;
     }
@@ -67,8 +67,8 @@ public class Result<T>
         return _scoredValue;
     }
 
-    public Long getPosition() {
-        return _position;
+    public Indices getPosition() {
+        return _indices;
     }
 
     public ScoreData getScoreData() {
@@ -94,7 +94,7 @@ public class Result<T>
 
         Result result = (Result) o;
 
-        if ( _position != null ? !_position.equals(result._position) : result._position != null )
+        if ( _indices != null ? !_indices.equals(result._indices) : result._indices != null )
         {
             return false;
         }
@@ -127,7 +127,7 @@ public class Result<T>
 
         int result = _scoreCardName != null ? _scoreCardName.hashCode() : 0;
         result = 31 * result + (_scoredValue != null ? _scoredValue.hashCode() : 0);
-        result = 31 * result + (_position != null ? _position.hashCode() : 0);
+        result = 31 * result + (_indices != null ? _indices.hashCode() : 0);
         result = 31 * result + (_score != null ? _score.hashCode() : 0);
         result = 31 * result + (_statistics != null ? _statistics.hashCode() : 0);
 
@@ -139,7 +139,7 @@ public class Result<T>
         return "Result{" +
                 "_scoreCardName='" + _scoreCardName + '\'' +
                 ", _scoredValue=" + _scoredValue +
-                ", _position=" + _position +
+                ", _position=" + _indices +
                 ", _score=" + _score +
                 ", _statistics=" + _statistics +
                 '}';
@@ -152,7 +152,7 @@ public class Result<T>
 
         private String _bCardName;
         private T _bOriginal;
-        private Long _bPosition;
+        private Indices _bIndices;
         private ScoreData _bScore;
         private Statistics _bStatistics;
 
@@ -164,7 +164,7 @@ public class Result<T>
             {
                 _bCardName = original._scoreCardName;
                 _bOriginal = original._scoredValue;
-                _bPosition = original._position;
+                _bIndices = original._indices;
                 _bScore = original._score;
                 _bStatistics = original._statistics;
             }
@@ -175,8 +175,8 @@ public class Result<T>
             _bScore = score;
         }
 
-        public Builder setPosition(Long bPosition) {
-            _bPosition = bPosition;
+        public Builder setPosition(Indices bPosition) {
+            _bIndices = bPosition;
             return this;
         }
 
@@ -201,7 +201,7 @@ public class Result<T>
         }
 
         public Result build() {
-            return new Result<T>(_bCardName, _bOriginal, _bPosition, _bScore, _bStatistics);
+            return new Result<T>(_bCardName, _bOriginal, _bIndices, _bScore, _bStatistics);
         }
     }
 }

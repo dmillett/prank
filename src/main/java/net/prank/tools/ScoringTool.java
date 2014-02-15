@@ -1,7 +1,12 @@
 package net.prank.tools;
 
 
+import net.prank.core.Result;
+import net.prank.core.ScoreSummary;
+
+import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -93,6 +98,12 @@ public class ScoringTool {
         return sb.toString();
     }
 
+    /**
+     * Determine what the bucketed score is for a particular value.
+     * @param value
+     * @param scoringRange
+     * @return
+     */
     public double getScoreFromRange(double value, Set<ScoringRange> scoringRange) {
 
         for (ScoringRange range : scoringRange)
@@ -104,6 +115,114 @@ public class ScoringTool {
         }
 
         return 0.0;
+    }
+
+    /**
+     * Add up all the scores for each Result.
+     *
+     * @return The sum of all Result.getScore() or null
+     */
+    public BigDecimal tallyScore(ScoreSummary summary) {
+        return tallyScore(summary, Result.ResultScoreType.ORIGINAL);
+    }
+
+    public BigDecimal tallyScore(ScoreSummary summary, Result.ResultScoreType scoreType) {
+        return tallyScore(summary, scoreType);
+    }
+
+    /**
+     * Get the setupScoring for a subset of ScoreCards by name.
+     *
+     * @param scoreCardNames
+     * @return
+     */
+    public BigDecimal tallyScoreFor(ScoreSummary summary, Set<String> scoreCardNames) {
+        return tallyScoreFor(summary, scoreCardNames, Result.ResultScoreType.ORIGINAL);
+    }
+
+    public BigDecimal tallyScoreFor(ScoreSummary summary, Set<String> scoreCardNames,
+                                    Result.ResultScoreType scoreType) {
+
+        if (scoreCardNames == null)
+        {
+            return null;
+        }
+
+        Set<String> scoreCards = new HashSet<String>();
+        for (String scoreCardName : summary.getResults().keySet())
+        {
+            if (scoreCardNames.contains(scoreCardName))
+            {
+                scoreCards.add(scoreCardName);
+            }
+        }
+
+        return tallyScore(summary, scoreCards, scoreType);
+    }
+
+    /**
+     * Tally
+     *
+     * @param summary The summary of results
+     * @param scoreCardNames
+     * @return null if there are no matching ScoreCards, otherwise the tally(+)
+     */
+    private BigDecimal tallyScore(ScoreSummary summary, Set<String> scoreCardNames,
+                                  Result.ResultScoreType scoreType) {
+
+        if (scoreCardNames.isEmpty())
+        {
+            return null;
+        }
+
+        BigDecimal tally = null;
+
+        for (String scoreCardName : scoreCardNames)
+        {
+            if (scoreCardName == null)
+            {
+                continue;
+            }
+
+            tally = updateTallyFromResult(summary.getResults(), scoreType, tally, scoreCardName);
+        }
+
+        return tally;
+    }
+
+    private BigDecimal updateTallyFromResult(Map<String, Result> results, Result.ResultScoreType scoreType,
+                                             BigDecimal tally, String scoreCardName) {
+
+        if (results == null)
+        {
+            return null;
+        }
+
+        Result result = results.get(scoreCardName);
+
+        if (result == null) { return tally; }
+
+        if (tally == null)
+        {
+            tally = new BigDecimal("0.0");
+        }
+
+        if (scoreType.equals(Result.ResultScoreType.ORIGINAL))
+        {
+            if (result.getScoreData().getScore() != null)
+            {
+                tally = tally.add(result.getScoreData().getScore());
+            }
+        }
+        else if (scoreType.equals(Result.ResultScoreType.ADJUSTED))
+        {
+            if (result.getScoreData().getAdjustedScore() != null)
+            {
+                tally = tally.add(result.getScoreData().getAdjustedScore());
+            }
+        }
+
+        return tally;
     }
 }
 

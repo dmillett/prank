@@ -1,5 +1,6 @@
 package net.prank.tools;
 
+import net.prank.core.Indices;
 import net.prank.core.Result;
 import net.prank.core.ScoreData;
 import net.prank.core.Statistics;
@@ -43,11 +44,29 @@ public class ScoreFormatter {
         StringBuilder sb = new StringBuilder();
         sb.append(result.getScoreCardName()).append(DELIM.COMMA)
           .append(result.getScoredValue()).append(DELIM.COMMA)
-          .append(result.getPosition()).append(DELIM.COMMA)
+          .append(dumpIndices(result.getPosition())).append(DELIM.COMMA)
           .append(dumpScoreData(result.getScoreData())).append(DELIM.COMMA)
           .append(dumpStatistics(result.getStatistics()));
 
         return sb.toString();
+    }
+
+    /** originalIndex:adjustedIndex */
+    public String dumpIndices(Indices indices) {
+        return dumpIndices(indices, DEFAULT_INTERNAL_DELIM);
+    }
+
+    /** Similar to dumpIndices(indices), except with specific delimiter */
+    public String dumpIndices(Indices indices, String delimiter) {
+
+        if (indices == null)
+        {
+            return null;
+        }
+
+        return new StringBuilder().append(indices.getOriginalIndex())
+                                  .append(delimiter)
+                                  .append(indices.getAdjustedIndex()).toString();
     }
 
     /** Uses DEFAULT_INTERNAL_DELIM, DEFAULT_SCALE, DEFAULT_ROUNDING_MODE */

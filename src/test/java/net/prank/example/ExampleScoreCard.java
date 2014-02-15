@@ -1,5 +1,6 @@
 package net.prank.example;
 
+import net.prank.core.Indices;
 import net.prank.core.RequestOptions;
 import net.prank.core.Result;
 import net.prank.core.ScoreCard;
@@ -70,7 +71,7 @@ public class ExampleScoreCard
     public ScoreSummary score(ExampleObject scoringObject) {
 
         int score = scoringObject.getAverageShippingTime() + _scoreAdjustment;
-        long position = _positionAdjustment;
+        int position = _positionAdjustment;
         double average = scoringObject.getShippingCost().doubleValue() + _averageAdjustment;
         double standardDeviation = _standardDeviationAdjustment;
 
@@ -84,7 +85,7 @@ public class ExampleScoreCard
         statsBuilder.setStandardDeviation(new BigDecimal(String.valueOf(standardDeviation)));
 
         Result.Builder resultBuilder = new Result.Builder(_name, scoreBuilder.build());
-        resultBuilder.setPosition(position);
+        resultBuilder.setPosition(new Indices(position));
         resultBuilder.setStatistics(statsBuilder.build());
         Result result = resultBuilder.build();
 

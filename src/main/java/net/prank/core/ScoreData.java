@@ -28,7 +28,6 @@ public class ScoreData
     implements Serializable {
 
     private static final long serialVersionUID = 42L;
-    //public static final String DELIM = ":";
 
     /** The value given by a ScoreCard */
     private final BigDecimal _score;

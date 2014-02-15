@@ -86,6 +86,7 @@ public class ScoreSummary
         return tallyScoreFor(scoreCardNames, Result.ResultScoreType.ORIGINAL);
     }
 
+    /** todo: use ScoringTool.tallyScoreFor()? */
     public BigDecimal tallyScoreFor(Set<String> scoreCardNames, Result.ResultScoreType scoreType) {
 
         if (scoreCardNames == null)
@@ -98,7 +99,7 @@ public class ScoreSummary
     }
 
     /**
-     * Tally
+     * todo: use ScoringTool.tallyScoreFor()?
      *
      * @param scoreCardNames
      * @return null if there are no matching ScoreCards, otherwise the tally(+)
