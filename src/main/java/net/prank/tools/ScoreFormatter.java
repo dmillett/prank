@@ -3,10 +3,13 @@ package net.prank.tools;
 import net.prank.core.Indices;
 import net.prank.core.Result;
 import net.prank.core.ScoreData;
+import net.prank.core.ScoreSummary;
 import net.prank.core.Statistics;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Tools to format Results, ScoreData, and Statistics --
@@ -31,9 +34,32 @@ public class ScoreFormatter {
 
     public static final String DEFAULT_INTERNAL_DELIM = DELIM.COLON.get();
     public static final String DEFAULT_SEPARATOR = DELIM.COMMA.get();
+    public static final String DEFAULT_CARD_SEPARATOR = DELIM.SEMI_COLON.get();
     public static final int DEFAULT_SCALE = 4;
     public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
+    /**
+     * Dumps the ScoreSummary name followed by each ScoreCard result (see dumpResults()).
+     * Example: BookSellersScoring:scoreResult 1;scoreResult2;scoreResult3
+     */
+    public String dumpScoreSummary(ScoreSummary summary) {
+
+        StringBuilder sb = new StringBuilder(summary.getName());
+        sb.append(DEFAULT_INTERNAL_DELIM);
+
+        for ( Map.Entry<String, Result> entry : summary.getResults().entrySet() )
+        {
+            sb.append(dumpResult(entry.getValue())).append(DEFAULT_CARD_SEPARATOR);
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Dumps a result with the following format:
+     * scoreCardName,value that was scored, sort indices, score data, statistics
+     * Where indices, score data, and statistics have internal delimiters (default ":")
+     */
     public String dumpResult(Result result) {
 
         if (result == null)
@@ -42,10 +68,10 @@ public class ScoreFormatter {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append(result.getScoreCardName()).append(DELIM.COMMA)
-          .append(result.getScoredValue()).append(DELIM.COMMA)
-          .append(dumpIndices(result.getPosition())).append(DELIM.COMMA)
-          .append(dumpScoreData(result.getScoreData())).append(DELIM.COMMA)
+        sb.append(result.getScoreCardName()).append(DEFAULT_SEPARATOR)
+          .append(result.getScoredValue()).append(DEFAULT_SEPARATOR)
+          .append(dumpIndices(result.getPosition())).append(DEFAULT_SEPARATOR)
+          .append(dumpScoreData(result.getScoreData())).append(DEFAULT_SEPARATOR)
           .append(dumpStatistics(result.getStatistics()));
 
         return sb.toString();
@@ -64,9 +90,20 @@ public class ScoreFormatter {
             return null;
         }
 
-        return new StringBuilder().append(indices.getOriginalIndex())
-                                  .append(delimiter)
-                                  .append(indices.getAdjustedIndex()).toString();
+        StringBuilder sb = new StringBuilder();
+        Iterator<Integer> it = indices.getIndices().iterator();
+        while ( it.hasNext() )
+        {
+            int current = it.next();
+            sb.append(current);
+
+            if ( it.hasNext() )
+            {
+                sb.append(delimiter);
+            }
+        }
+
+        return sb.toString();
     }
 
     /** Uses DEFAULT_INTERNAL_DELIM, DEFAULT_SCALE, DEFAULT_ROUNDING_MODE */

@@ -1,10 +1,6 @@
 package net.prank.core;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Encapsulate the request object and specify any ScoreCards that are explicitly enabled

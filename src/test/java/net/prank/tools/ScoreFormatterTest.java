@@ -2,7 +2,9 @@ package net.prank.tools;
 
 import junit.framework.TestCase;
 import net.prank.core.Indices;
+import net.prank.core.Result;
 import net.prank.core.ScoreData;
+import net.prank.core.ScoreSummary;
 import net.prank.core.Statistics;
 
 import java.math.BigDecimal;
@@ -31,11 +33,13 @@ public class ScoreFormatterTest
 
         Indices indices = new Indices(10);
         ScoreFormatter scf = new ScoreFormatter();
+        String result1 = scf.dumpIndices(indices);
+        assertEquals("10", result1);
 
-        assertEquals("10:10", scf.dumpIndices(indices));
-
-        Indices indices2 = new Indices(5, 2);
-        assertEquals("5:2", scf.dumpIndices(indices2));
+        Indices indices2 = new Indices(5);
+        indices2.updateWithCurrentIndex(3);
+        String result2 = scf.dumpIndices(indices2);
+        assertEquals("5:3", result2);
     }
 
     public void test_dumpScoreData__with_defaults() {
@@ -72,6 +76,32 @@ public class ScoreFormatterTest
 
         String result = scf.dumpStatistics(stats);
         assertEquals("1.3600:0.1800::", result);
+    }
+
+    public void test_dumpResult() {
+
+        Result r = buildSimpleResult("Foo");
+        String result = new ScoreFormatter().dumpResult(r);
+
+        assertEquals("Foo,20,3,20.0000:20.0000:0.0000:20.0000:10,10.4500:3.2400::", result);
+    }
+
+    public void test_dumpScoreScummary() {
+
+        ScoreSummary summary = new ScoreSummary("FOO");
+        summary.addResult("FooBar", buildSimpleResult("FooBar"));
+        String result = new ScoreFormatter().dumpScoreSummary(summary);
+
+        assertEquals("FOO:FooBar,20,3,20.0000:20.0000:0.0000:20.0000:10,10.4500:3.2400::;", result);
+    }
+
+    private Result buildSimpleResult(String scoreCardName) {
+
+        Indices indices = new Indices(3);
+        ScoreData scoreData = buildScoreData("20", "20", "0.00", "20.00", 10);
+        Statistics stats = buildStatistics("10.45", "3.24", null, null);
+
+        return new Result(scoreCardName, 20, indices, scoreData, stats);
     }
 
     private ScoreData buildScoreData(String score, String adjScore, String min, String max, int buckets) {

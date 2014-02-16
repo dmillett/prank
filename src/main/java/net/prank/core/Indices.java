@@ -1,6 +1,8 @@
 package net.prank.core;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Keep track of the original index of a solution in a collection and
@@ -27,39 +29,28 @@ public class Indices
     implements Serializable {
 
     private static final long serialVersionUID = 42L;
-    /** The original index of a solution in a collection */
-    private final int _originalIndex;
-    /** The index after a specific collection sort */
-    private final int _adjustedIndex;
+    /** A collection of indices for any object that is subject to multiple sorts */
+    private final List<Integer> _indices;
 
     public Indices(int originalIndex) {
-        _originalIndex = originalIndex;
-        _adjustedIndex = originalIndex;
-    }
-
-    public Indices(int original, int adjusted) {
-        _originalIndex = original;
-        _adjustedIndex = adjusted;
+        _indices = new ArrayList<Integer>();
+        _indices.add(originalIndex);
     }
 
     public int getOriginalIndex() {
-        return _originalIndex;
+        return _indices.get(0);
     }
 
-    public int getAdjustedIndex() {
-        return _adjustedIndex;
+    public int getLastIndex() {
+        return _indices.get(_indices.size() - 1);
     }
 
-    public Indices updateAdjusted(int updatedAdjusted) {
-        return new Indices(_originalIndex, updatedAdjusted);
+    public List<Integer> getIndices() {
+        return new ArrayList<Integer>(_indices);
     }
 
-    @Override
-    public String toString() {
-        return "Indices{" +
-                "_originalIndex=" + _originalIndex +
-                ", _adjustedIndex=" + _adjustedIndex +
-                '}';
+    public void updateWithCurrentIndex(int currentIndex) {
+        _indices.add(currentIndex);
     }
 
     @Override
@@ -77,12 +68,7 @@ public class Indices
 
         Indices indices = (Indices) o;
 
-        if ( _adjustedIndex != indices._adjustedIndex )
-        {
-            return false;
-        }
-
-        if ( _originalIndex != indices._originalIndex )
+        if ( !_indices.equals(indices._indices) )
         {
             return false;
         }
@@ -92,8 +78,13 @@ public class Indices
 
     @Override
     public int hashCode() {
-        int result = _originalIndex;
-        result = 31 * result + _adjustedIndex;
-        return result;
+        return _indices.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Indices{" +
+                "_indices=" + _indices +
+                '}';
     }
 }

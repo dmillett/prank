@@ -2,10 +2,13 @@ package net.prank.tools;
 
 
 import net.prank.core.Result;
+import net.prank.core.Scorable;
 import net.prank.core.ScoreSummary;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -140,6 +143,13 @@ public class ScoringTool {
         return tallyScoreFor(summary, scoreCardNames, Result.ResultScoreType.ORIGINAL);
     }
 
+    /**
+     *
+     * @param summary
+     * @param scoreCardNames
+     * @param scoreType
+     * @return The tallied score for specified ScoreCards, otherwise null
+     */
     public BigDecimal tallyScoreFor(ScoreSummary summary, Set<String> scoreCardNames,
                                     Result.ResultScoreType scoreType) {
 
@@ -158,6 +168,27 @@ public class ScoringTool {
         }
 
         return tallyScore(summary, scoreCards, scoreType);
+    }
+
+    /**
+     * Update the current position index for every ScoreCard result. Position implies that
+     * this is part of a collection (~usually is), perhaps this should be part of
+     * a ScoreSummary instead of a result (easier to use if grouped with results though)
+     */
+    public void updateSortedCollectionIndices(Collection<Scorable> sortedScorables) {
+
+        int i = 0;
+        for ( Scorable scorable : sortedScorables )
+        {
+            if (scorable != null)
+            {
+                for ( Map.Entry<String, Result> entry : scorable.getScoreSummary().getResults().entrySet() )
+                {
+                    entry.getValue().getPosition().updateWithCurrentIndex(i);
+                }
+            }
+            i++;
+        }
     }
 
     /**
