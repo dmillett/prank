@@ -214,15 +214,7 @@ public class ScoreSummary
     public String dump() {
 
         ScoreFormatter scf = new ScoreFormatter();
-        StringBuilder sb = new StringBuilder(_name);
-        sb.append(DELIM.COLON.get());
-
-        for (Map.Entry<String, Result> entry : _results.entrySet())
-        {
-            sb.append(scf.dumpResult(entry.getValue())).append(DELIM.SEMI_COLON.get());
-        }
-
-        return sb.toString();
+        return scf.dumpScoreSummary(this);
     }
 
     @Override
