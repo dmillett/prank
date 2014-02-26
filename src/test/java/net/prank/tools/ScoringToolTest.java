@@ -99,6 +99,30 @@ public class ScoringToolTest
         }
     }
 
+    public void test__scoreBucketsEvenlyHighValueAsHighScore() {
 
+        ScoringTool tool = new ScoringTool();
+        Set<ScoringRange> ranges = tool.scoreBucketsEvenlyHighValueAsHighScore(0, 10, 10, -1.0, 95.0);
+        System.out.println(tool.dumpScoringRanges(ranges, "High value as high score"));
+        assertNotNull(ranges);
 
+        for ( ScoringRange scr : ranges )
+        {
+            if (scr.getScorePoints() == 10.0)
+            {
+                assertEquals(95.0, scr.getMax());
+                assertEquals(95.0, scr.getMin());
+            }
+            else if (scr.getScorePoints() == 0.0)
+            {
+                assertEquals(-1.0, scr.getMax());
+                assertEquals(-1.0, scr.getMin());
+            }
+            else if (scr.getScorePoints() == 7.0)
+            {
+                assertEquals(56.4, scr.getMin());
+                assertEquals(65.8, scr.getMax());
+            }
+        }
+    }
 }

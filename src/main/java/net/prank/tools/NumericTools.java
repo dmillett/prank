@@ -3,6 +3,9 @@ package net.prank.tools;
 import java.util.List;
 
 /**
+ * Some simple numeric calculation tools. Feel free to use your
+ * own or Apache, etc.
+ *
  * @author dmillett
  * <p/>
  * Copyright 2012 David Millett

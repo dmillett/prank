@@ -47,9 +47,14 @@ public class ScoringTool {
                                                                    double grossMin, double grossMax) {
 
         Set<ScoringRange> scores = new HashSet<ScoringRange>();
+        if (minPoints == maxPoints)
+        {
+            scores.add(new ScoringRange(grossMin, grossMax, maxPoints));
+            return scores;
+        }
 
         double pointsPerSlice = (maxPoints - minPoints) / bucketCount;
-        double range = (grossMax - 1) - (grossMin + 1);
+        double range = findRange(grossMin + 1, grossMax - 1);
         double sliceRange = range / bucketCount;
 
         scores.add(new ScoringRange(grossMin, grossMin, maxPoints));
@@ -67,6 +72,46 @@ public class ScoringTool {
         int maxSlice = bucketCount - 1;
 
         for (int i = maxSlice; i > 0; i--)
+        {
+            double points = i * pointsPerSlice;
+            scores.add(new ScoringRange(minRange, maxRange, points));
+            minRange = maxRange;
+            maxRange += sliceRange;
+        }
+
+        return scores;
+    }
+
+    public Set<ScoringRange> scoreBucketsEvenlyHighValueAsHighScore(double minPoints, double maxPoints, int bucketCount,
+                                                                    double grossMin, double grossMax) {
+
+        Set<ScoringRange> scores = new HashSet<ScoringRange>();
+        if (grossMin == grossMax)
+        {
+            scores.add(new ScoringRange(grossMin, grossMax, maxPoints));
+            return scores;
+        }
+
+        double pointsPerSlice = (maxPoints - minPoints) / bucketCount;
+        // adjust for negative values
+        double range = findRange(grossMin + 1, grossMax - 1);
+        double sliceRange = range / bucketCount;
+
+        scores.add(new ScoringRange(grossMin, grossMin, minPoints));
+        scores.add(new ScoringRange(grossMax, grossMax, maxPoints));
+
+        if (bucketCount <= 3)
+        {
+            double averagePoints = minPoints + maxPoints / 2;
+            scores.add(new ScoringRange(grossMin + 1, grossMax - 1, averagePoints));
+            return scores;
+        }
+
+        double minRange = grossMin + 1;
+        double maxRange = minRange + sliceRange;
+        int maxSlice = bucketCount - 1;
+
+        for (int i = 1; i < maxSlice; i++)
         {
             double points = i * pointsPerSlice;
             scores.add(new ScoringRange(minRange, maxRange, points));
@@ -254,6 +299,30 @@ public class ScoringTool {
         }
 
         return tally;
+    }
+
+    /** Return a positive range */
+    private double findRange(double min, double max) {
+
+        if (min >= 0 && max >= 0)
+        {
+            return max - min;
+        }
+        else if (min < 0 && max > 0)
+        {
+            return max - min;
+        }
+        else if (min > 0 && max < 0)
+        {
+            return min - max;
+        }
+
+        if (max > min)
+        {
+
+        }
+
+        return (max > min) ? -1 * (max - min) : max - min;
     }
 }
 
