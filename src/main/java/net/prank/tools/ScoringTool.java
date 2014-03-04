@@ -228,6 +228,26 @@ public class ScoringTool {
     }
 
     /**
+     * Normalize a tallied score with a maximum possible value and normalize target.
+     * @see normalize()
+     * @see tallyScoreFor()
+     *
+     * @param summary
+     * @param scoreCards
+     * @param scoreType
+     * @param maximumValue
+     * @param normalizedTarget
+     * @return
+     */
+    public BigDecimal normalizeTalliedScore(ScoreSummary summary, Set<String> scoreCards,
+                                            Result.ResultScoreType scoreType,BigDecimal maximumValue,
+                                            BigDecimal normalizedTarget) {
+
+        BigDecimal tallied = tallyScoreFor(summary, scoreCards, scoreType);
+        return normalize(tallied, maximumValue, normalizedTarget);
+    }
+
+    /**
      * Update the current position index for every ScoreCard result. Position implies that
      * this is part of a collection (~usually is), perhaps this should be part of
      * a ScoreSummary instead of a result (easier to use if grouped with results though)
