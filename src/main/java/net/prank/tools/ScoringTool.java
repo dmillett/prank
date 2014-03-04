@@ -6,6 +6,7 @@ import net.prank.core.Scorable;
 import net.prank.core.ScoreSummary;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -82,6 +83,17 @@ public class ScoringTool {
         return scores;
     }
 
+    /**
+     * Provide a point range and number of buckets for that range. Then apply the highest score
+     * to the highest value and the lowest score to the lowest value.
+     *
+     * @param minPoints
+     * @param maxPoints
+     * @param bucketCount
+     * @param grossMin
+     * @param grossMax
+     * @return
+     */
     public Set<ScoringRange> scoreBucketsEvenlyHighValueAsHighScore(double minPoints, double maxPoints, int bucketCount,
                                                                     double grossMin, double grossMax) {
 
@@ -234,6 +246,34 @@ public class ScoringTool {
             }
             i++;
         }
+    }
+
+    /**
+     * Normalize a value against a target value. If 'original' or 'maximum' are null,
+     * then this function returns null. If 'normalizer' is null or 'maximum' == 'normalizer',
+     * then this function returns the original value.
+     *
+     * This could be used to set the adjusted score.
+     *
+     * @param original
+     * @param maximum
+     * @param normalizer
+     * @return A normalized value
+     */
+    public BigDecimal normalize(BigDecimal original, BigDecimal maximum, BigDecimal normalizer) {
+
+        if (original == null || maximum == null)
+        {
+            return null;
+        }
+
+        if (normalizer == null || maximum.compareTo(normalizer) == 0)
+        {
+            return original;
+        }
+
+        BigDecimal normalizeFactor = maximum.divide(normalizer, RoundingMode.HALF_EVEN);
+        return original.divide(normalizeFactor, RoundingMode.HALF_EVEN);
     }
 
     /**

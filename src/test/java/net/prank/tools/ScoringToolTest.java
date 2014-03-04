@@ -1,9 +1,8 @@
 package net.prank.tools;
 
 import junit.framework.TestCase;
-import net.prank.tools.ScoringRange;
-import net.prank.tools.ScoringTool;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 /**
@@ -124,5 +123,40 @@ public class ScoringToolTest
                 assertEquals(65.8, scr.getMax());
             }
         }
+    }
+
+    public void test__normalize_bad_values() {
+
+        ScoringTool tool = new ScoringTool();
+
+        assertNull(tool.normalize(null, null, null));
+        assertNull(tool.normalize(new BigDecimal("1.0"), null, null));
+
+        BigDecimal original = new BigDecimal("1.0");
+        BigDecimal max = new BigDecimal("10.0");
+        assertEquals(original, tool.normalize(original, max, null));
+        assertEquals(original, tool.normalize(original, max, new BigDecimal("10.0")));
+    }
+
+    public void test__normalize_max_less_than_normalize_target() {
+
+        ScoringTool tool = new ScoringTool();
+        BigDecimal value = new BigDecimal("10.0");
+        BigDecimal max = new BigDecimal("20.0");
+        BigDecimal normalizeTarget = new BigDecimal("100.0");
+
+        BigDecimal normalized = tool.normalize(value, max, normalizeTarget);
+        assertEquals(new BigDecimal("50.0"), normalized);
+    }
+
+    public void test__normalize_max_more_than_normalize_target() {
+
+        ScoringTool tool = new ScoringTool();
+        BigDecimal value = new BigDecimal("10.0");
+        BigDecimal max = new BigDecimal("110.0");
+        BigDecimal normalizeTarget = new BigDecimal("100.0");
+
+        BigDecimal normalized = tool.normalize(value, max, normalizeTarget);
+        assertEquals(new BigDecimal("9.1"), normalized);
     }
 }
