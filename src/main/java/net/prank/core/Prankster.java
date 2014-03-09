@@ -24,19 +24,19 @@ import java.util.concurrent.*;
  * This Prankster could be instantiated for each search service.
  *
  * @author dmillett
- *         <p/>
- *         Copyright 2012 David Millett
- *         Licensed under the Apache License, Version 2.0 (the "License");
- *         you may not use this file except in compliance with the License.
- *         You may obtain a copy of the License at
- *         <p/>
- *         http://www.apache.org/licenses/LICENSE-2.0
- *         <p/>
- *         Unless required by applicable law or agreed to in writing, software
- *         distributed under the License is distributed on an "AS IS" BASIS,
- *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *         See the License for the specific language governing permissions and
- *         limitations under the License.
+ * <p/>
+ * Copyright 2012 David Millett
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 public class Prankster<T> {
 
@@ -64,6 +64,29 @@ public class Prankster<T> {
         else
         {
             LOG.info("No Scoring Thread Pools To Initialize");
+            _scoring = new HashMap<ScoreCard<T>, ExecutorService>(0);
+            _corePoolSize = 0;
+        }
+    }
+
+    /**
+     * Uses a specified factory class to create thread pools for each ScoreCard. Note the number
+     * of core threads per thread pool should be higher than expected current traffic.
+     *
+     * @param scoreCards
+     * @param corePoolSize
+     * @param threadPoolFactory
+     */
+    public Prankster(Set<ScoreCard<T>> scoreCards, int corePoolSize, PrankThreadPoolFactory threadPoolFactory) {
+
+        if (scoreCards != null)
+        {
+            _scoring = initThreadPools(scoreCards, threadPoolFactory);
+            _corePoolSize = corePoolSize;
+        }
+        else
+        {
+            LOG.info("No Scoring Thread Pool To Initialize!");
             _scoring = new HashMap<ScoreCard<T>, ExecutorService>(0);
             _corePoolSize = 0;
         }
@@ -226,6 +249,19 @@ public class Prankster<T> {
         for (ScoreCard scoreCard : scoreCards)
         {
             scoring.put(scoreCard, Executors.newFixedThreadPool(maxThreads));
+        }
+
+        return scoring;
+    }
+
+    private Map<ScoreCard<T>, ExecutorService> initThreadPools(Set<ScoreCard<T>> scoreCards,
+                                                               PrankThreadPoolFactory threadPoolFactory) {
+
+        Map<ScoreCard<T>, ExecutorService> scoring = new HashMap<ScoreCard<T>, ExecutorService>(scoreCards.size());
+
+        for ( ScoreCard<T> scoreCard : scoreCards )
+        {
+            scoring.put(scoreCard, threadPoolFactory.createThreadPool());
         }
 
         return scoring;
