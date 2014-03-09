@@ -1,6 +1,7 @@
 package net.prank.core;
 
 import net.prank.tools.DELIM;
+import net.prank.tools.ScoreFormatter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -45,6 +46,12 @@ public class Statistics
     implements Serializable {
 
     private static final long serialVersionUID = 42L;
+    /** The minimum value within a collection */
+    private final BigDecimal _min;
+    /** The maximum value within a collection */
+    private final BigDecimal _max;
+    /** The sample size */
+    private final int _sampleSize;
     /** Use your favorite stats library or NumericTools */
     private final BigDecimal _average;
     /** Use your favorite stats library or NumericTools */
@@ -54,18 +61,32 @@ public class Statistics
     /** Use your favorite stats library or NumericTools */
     private final BigDecimal _standardDeviation;
 
-    public Statistics(BigDecimal average, BigDecimal meanAbsoluteDeviation, BigDecimal medianAbsoluteDeviation,
+    public Statistics(BigDecimal min, BigDecimal max, int sampleSize, BigDecimal average,
+                      BigDecimal meanAbsoluteDeviation,BigDecimal medianAbsoluteDeviation,
                       BigDecimal standardDeviation) {
 
+        _min = min;
+        _max = max;
+        _sampleSize = sampleSize;
         _average = average;
         _meanDeviation = meanAbsoluteDeviation;
         _medianDeviation = medianAbsoluteDeviation;
         _standardDeviation = standardDeviation;
     }
 
+    public BigDecimal getMin() {
+        return _min;
+    }
+
+    public BigDecimal getMax() {
+        return _max;
+    }
+
+    public int getSampleSize() {
+        return _sampleSize;
+    }
+
     public BigDecimal getAverage() {
-
-
         return _average;
     }
 
@@ -84,19 +105,22 @@ public class Statistics
     /**
      *
      * Builds a String representation of these values with their
-     * original scale. If null, then just appends a ":" delimiter.
+     * original scale. If value is null, then just appends a ":" delimiter.
      *
-     * average:mean deviation:median devation:standard deviation
+     * min:max:sample size:average:mean deviation:median devation:standard deviation
      *
      * Example:
      * ::::                    // all values are null
      * 40.00:5.31::            // average, mean devation not null
      * 5.10:1.144:1.00:1.654   // no null values
      *
+     * Option:
+     * Use a custom Formatter and the Statistics object
+     *
      * @return
      */
     public String dump() {
-        return dump(null, RoundingMode.UNNECESSARY);
+        return dump(-1, RoundingMode.UNNECESSARY);
     }
 
     /**
@@ -114,58 +138,10 @@ public class Statistics
      * @param roundingMode
      * @return
      */
-    public String dump(Integer scale, RoundingMode roundingMode) {
+    public String dump(int scale, RoundingMode roundingMode) {
 
-        String delim = DELIM.COLON.get();
-
-        StringBuilder sb = new StringBuilder();
-        addToBuilder(sb, _average, delim, scale, roundingMode);
-        addToBuilder(sb, _meanDeviation, delim, scale, roundingMode);
-        addToBuilder(sb, _medianDeviation, delim, scale, roundingMode);
-        addToBuilder(sb, _standardDeviation, delim, scale, roundingMode);
-
-        return sb.toString();
-    }
-
-    /**
-     * Applies any non-null formatter/format combination with objects in the
-     * following order: _average, _meanDeviation, _medianDeviation, _standardDeviation
-     *
-     * @param formatter
-     * @param format
-     *
-     * @return null if formatter or format are null, otherwise a formatted String
-     */
-    public String dump(Formatter formatter, String format) {
-
-        if (formatter == null || format == null)
-        {
-            return null;
-        }
-
-        return formatter.format(format, _average, _meanDeviation, _medianDeviation, _standardDeviation).toString();
-    }
-
-    /**  */
-    private void addToBuilder(StringBuilder sb, BigDecimal value, String delim, Integer scale, RoundingMode mode) {
-
-        RoundingMode rm = mode != null ? mode : RoundingMode.HALF_EVEN;
-
-        if (value != null)
-        {
-            if (scale != null)
-            {
-                sb.append(value.setScale(scale, rm)).append(delim);
-            }
-            else
-            {
-                sb.append(value).append(delim);
-            }
-        }
-        else
-        {
-            sb.append(delim);
-        }
+        ScoreFormatter formatter = new ScoreFormatter();
+        return formatter.dumpStatistics(this, scale, roundingMode);
     }
 
     @Override
@@ -183,25 +159,39 @@ public class Statistics
 
         Statistics that = (Statistics) o;
 
+        if ( _sampleSize != that._sampleSize )
+        {
+            return false;
+        }
+
         if ( _average != null ? !_average.equals(that._average) : that._average != null )
         {
             return false;
         }
 
-        if ( _meanDeviation != null ? !_meanDeviation.equals(that._meanDeviation)
-                                            : that._meanDeviation != null )
+        if ( _max != null ? !_max.equals(that._max) : that._max != null )
         {
             return false;
         }
 
-        if ( _medianDeviation != null ? !_medianDeviation.equals(that._medianDeviation)
-                                              : that._medianDeviation != null )
+        if ( _meanDeviation != null ? !_meanDeviation.equals(that._meanDeviation) : that._meanDeviation != null )
         {
             return false;
         }
 
-        if ( _standardDeviation != null ? !_standardDeviation.equals(that._standardDeviation)
-                                        : that._standardDeviation != null )
+        if ( _medianDeviation != null ? !_medianDeviation.equals(that._medianDeviation) :
+                                        that._medianDeviation != null )
+        {
+            return false;
+        }
+
+        if ( _min != null ? !_min.equals(that._min) : that._min != null )
+        {
+            return false;
+        }
+
+        if ( _standardDeviation != null ? !_standardDeviation.equals(that._standardDeviation) :
+                                          that._standardDeviation != null )
         {
             return false;
         }
@@ -212,26 +202,23 @@ public class Statistics
     @Override
     public int hashCode() {
 
-        int result = _average != null ? _average.hashCode() : 0;
+        int result = _min != null ? _min.hashCode() : 0;
+        result = 31 * result + (_max != null ? _max.hashCode() : 0);
+        result = 31 * result + _sampleSize;
+        result = 31 * result + (_average != null ? _average.hashCode() : 0);
+
         result = 31 * result + (_meanDeviation != null ? _meanDeviation.hashCode() : 0);
         result = 31 * result + (_medianDeviation != null ? _medianDeviation.hashCode() : 0);
         result = 31 * result + (_standardDeviation != null ? _standardDeviation.hashCode() : 0);
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "Statistics{" +
-                "_average=" + _average +
-                ", _meanDeviation=" + _meanDeviation +
-                ", _medianDeviation=" + _medianDeviation +
-                ", _standardDeviation=" + _standardDeviation +
-                '}';
-    }
-
     /** More flexibility for creating a Statistics object. */
     public static class Builder {
 
+        private BigDecimal _bMin;
+        private BigDecimal _bMax;
+        private int _bSampleSize;
         /** Use your favorite stats library or NumericTools */
         private BigDecimal _bAverage;
         /** Use your favorite stats library or NumericTools */
@@ -242,7 +229,23 @@ public class Statistics
         private BigDecimal _bStandardDeviation;
 
         public Statistics build() {
-            return new Statistics(_bAverage, _bMeanDeviation, _bMedianDeviation, _bStandardDeviation);
+            return new Statistics(_bMin, _bMax, _bSampleSize, _bAverage, _bMeanDeviation, _bMedianDeviation,
+                                  _bStandardDeviation);
+        }
+
+        public Builder setMin(BigDecimal bMin) {
+            _bMin = bMin;
+            return this;
+        }
+
+        public Builder setSampleSize(int bSampleSize) {
+            _bSampleSize = bSampleSize;
+            return this;
+        }
+
+        public Builder setMax(BigDecimal bMax) {
+            _bMax = bMax;
+            return this;
         }
 
         public Builder setStandardDeviation(BigDecimal bStandardDeviation) {

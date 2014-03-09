@@ -183,6 +183,9 @@ public class ScoreFormatter {
         String delim = delimiter != null ? delimiter : DEFAULT_INTERNAL_DELIM;
 
         StringBuilder sb = new StringBuilder();
+        addToBuilder(sb, statistics.getMin(), delim, scale, rm);
+        addToBuilder(sb, statistics.getMax(), delim, scale, rm);
+        sb.append(statistics.getSampleSize()).append(delim);
         addToBuilder(sb, statistics.getAverage(), delim, scale, rm);
         addToBuilder(sb, statistics.getMeanDeviation(), delim, scale, rm);
         addToBuilder(sb, statistics.getMedianDeviation(), delim, scale, rm);
@@ -192,13 +195,13 @@ public class ScoreFormatter {
     }
 
     /**  */
-    private void addToBuilder(StringBuilder sb, BigDecimal value, String delim, Integer scale, RoundingMode mode) {
+    private void addToBuilder(StringBuilder sb, BigDecimal value, String delim, int scale, RoundingMode mode) {
 
         RoundingMode rm = mode != null ? mode : RoundingMode.HALF_EVEN;
 
         if (value != null)
         {
-            if (scale != null)
+            if (scale > -1)
             {
                 sb.append(value.setScale(scale, rm)).append(delim);
             }

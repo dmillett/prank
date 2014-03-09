@@ -33,6 +33,8 @@ public class ScoreData
     private final BigDecimal _score;
     /** The value of adjusting '_score' */
     private final BigDecimal _adjustedScore;
+    /** A normalized score (if necessary) */
+    private final BigDecimal _normalizedScore;
     /** The number of buckets allocated across the range given by '_minPoints' and '_maxPoints' */
     private final int _buckets;
     /** The maximum possible score */
@@ -41,11 +43,12 @@ public class ScoreData
     private final BigDecimal _minPoints;
 
     /** Use this or the builder to create a ScoreData object in your ScoreCard implementation */
-    public ScoreData(BigDecimal score, BigDecimal adjustedScore, int buckets, BigDecimal maxPoints,
-                     BigDecimal minPoints) {
+    public ScoreData(BigDecimal score, BigDecimal adjustedScore, BigDecimal normalizedScore, int buckets,
+                     BigDecimal maxPoints, BigDecimal minPoints) {
 
         _score = score;
         _adjustedScore = adjustedScore;
+        _normalizedScore = normalizedScore;
         _buckets = buckets;
         _maxPoints = maxPoints;
         _minPoints = minPoints;
@@ -76,6 +79,12 @@ public class ScoreData
             return false;
         }
 
+        if ( _normalizedScore != null ? !_normalizedScore.equals(score._normalizedScore) :
+                                        score._normalizedScore != null )
+        {
+            return false;
+        }
+
         if ( _maxPoints != null ? !_maxPoints.equals(score._maxPoints) : score._maxPoints != null )
         {
             return false;
@@ -99,6 +108,7 @@ public class ScoreData
 
         int result = _score != null ? _score.hashCode() : 0;
         result = 31 * result + (_adjustedScore != null ? _adjustedScore.hashCode() : 0);
+        result = 31 * result + (_normalizedScore != null ? _normalizedScore.hashCode() : 0);
         result = 31 * result + _buckets;
         result = 31 * result + (_maxPoints != null ? _maxPoints.hashCode() : 0);
         result = 31 * result + (_minPoints != null ? _minPoints.hashCode() : 0);
@@ -110,6 +120,7 @@ public class ScoreData
         return "ScoreData{" +
                 "_score=" + _score +
                 ", _adjustedScore=" + _adjustedScore +
+                ", _normalizedScore=" + _normalizedScore +
                 ", _buckets=" + _buckets +
                 ", _maxPoints=" + _maxPoints +
                 ", _minPoints=" + _minPoints +
@@ -131,7 +142,7 @@ public class ScoreData
         }
 
         BigDecimal adjustedScore = _score.multiply(multiplier);
-        return new ScoreData(_score, adjustedScore, _buckets, _maxPoints, _minPoints);
+        return new ScoreData(_score, adjustedScore, _normalizedScore, _buckets, _maxPoints, _minPoints);
     }
 
     /**
@@ -142,6 +153,7 @@ public class ScoreData
 
         StringBuilder sb = new StringBuilder();
         sb.append(_score).append(DELIM.COLON).append(_adjustedScore).append(DELIM.COLON)
+          .append(_normalizedScore).append(DELIM.COLON)
           .append(_maxPoints).append(DELIM.COLON).append(_minPoints).append(DELIM.COLON)
           .append(_buckets);
 
@@ -154,6 +166,10 @@ public class ScoreData
 
     public BigDecimal getAdjustedScore() {
         return _adjustedScore;
+    }
+
+    public BigDecimal getNormalizedScore() {
+        return _normalizedScore;
     }
 
     public int getBuckets() {
@@ -172,12 +188,13 @@ public class ScoreData
 
         private BigDecimal _bScore;
         private BigDecimal _bAdjustedScore;
+        private BigDecimal _bNormalizedScore;
         private int _bBuckets;
         private BigDecimal _bMaxPoints;
         private BigDecimal _bMinPoints;
 
         public ScoreData build() {
-            return new ScoreData(_bScore, _bAdjustedScore, _bBuckets, _bMaxPoints, _bMinPoints);
+            return new ScoreData(_bScore, _bAdjustedScore, _bNormalizedScore, _bBuckets, _bMaxPoints, _bMinPoints);
         }
 
         public Builder setScore(BigDecimal score) {
@@ -187,6 +204,11 @@ public class ScoreData
 
         public Builder setAdjustedScore(BigDecimal adjustedScore) {
             _bAdjustedScore = adjustedScore;
+            return this;
+        }
+
+        public Builder setNormalizedScore(BigDecimal normalizedScore) {
+            _bNormalizedScore = normalizedScore;
             return this;
         }
 

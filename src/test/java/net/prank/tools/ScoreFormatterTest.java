@@ -62,20 +62,21 @@ public class ScoreFormatterTest
 
     public void test_dumpStatistics__with_defaults() {
 
-        Statistics stats = buildStatistics("1.36", "0.18", "0.25", "0.40");
+        // These stats are not actually correct (or rather, I have not calculated the correct values)
+        Statistics stats = buildStatistics("1.0", "3.23", 3, "1.36", "0.18", "0.25", "0.40");
         ScoreFormatter scf = new ScoreFormatter();
 
         String result = scf.dumpStatistics(stats);
-        assertEquals("1.3600:0.1800:0.2500:0.4000", result);
+        assertEquals("1.0000:3.2300:3:1.3600:0.1800:0.2500:0.4000", result);
     }
 
     public void test_dumpStatistics__with_null() {
 
-        Statistics stats = buildStatistics("1.36", "0.18", null, null);
+        Statistics stats = buildStatistics("1.0", "3.2", 4, "1.36", "0.18", null, null);
         ScoreFormatter scf = new ScoreFormatter();
 
         String result = scf.dumpStatistics(stats);
-        assertEquals("1.3600:0.1800::", result);
+        assertEquals("1.0000:3.2000:4:1.3600:0.1800::", result);
     }
 
     public void test_dumpResult() {
@@ -83,7 +84,7 @@ public class ScoreFormatterTest
         Result r = buildSimpleResult("Foo");
         String result = new ScoreFormatter().dumpResult(r);
 
-        assertEquals("Foo,20,3,20.0000:20.0000:0.0000:20.0000:10,10.4500:3.2400::", result);
+        assertEquals("Foo,20,3,20.0000:20.0000:0.0000:20.0000:10,3.4500:14.3500:5:10.4500:3.2400::", result);
     }
 
     public void test_dumpScoreScummary() {
@@ -92,14 +93,14 @@ public class ScoreFormatterTest
         summary.addResult("FooBar", buildSimpleResult("FooBar"));
         String result = new ScoreFormatter().dumpScoreSummary(summary);
 
-        assertEquals("FOO:FooBar,20,3,20.0000:20.0000:0.0000:20.0000:10,10.4500:3.2400::;", result);
+        assertEquals("FOO:FooBar,20,3,20.0000:20.0000:0.0000:20.0000:10,3.4500:14.3500:5:10.4500:3.2400::;", result);
     }
 
     private Result buildSimpleResult(String scoreCardName) {
 
         Indices indices = new Indices(3);
         ScoreData scoreData = buildScoreData("20", "20", "0.00", "20.00", 10);
-        Statistics stats = buildStatistics("10.45", "3.24", null, null);
+        Statistics stats = buildStatistics("3.45", "14.35", 5, "10.45", "3.24", null, null);
 
         return new Result(scoreCardName, 20, indices, scoreData, stats);
     }
@@ -121,15 +122,21 @@ public class ScoreFormatterTest
         return sdb.build();
     }
 
-    private Statistics buildStatistics(String avg, String meanDev, String medDev, String stdDev) {
+    private Statistics buildStatistics(String min, String max, int size, String avg, String meanDev,
+                                       String medDev, String stdDev) {
 
+        BigDecimal minBd = min != null ? new BigDecimal(min) : null;
+        BigDecimal maxBd = max != null ? new BigDecimal(max) : null;
         BigDecimal avgBd = avg != null ? new BigDecimal(avg) : null;
         BigDecimal meanDevBd = meanDev != null ? new BigDecimal(meanDev) : null;
         BigDecimal medianDevBd = medDev != null ? new BigDecimal(medDev) : null;
         BigDecimal stdDevBd = stdDev != null ? new BigDecimal(stdDev) : null;
 
         Statistics.Builder sd = new Statistics.Builder();
-        sd.setAverage(avgBd)
+        sd.setMin(minBd)
+          .setMax(maxBd)
+          .setSampleSize(size)
+          .setAverage(avgBd)
           .setMeanDeviation(meanDevBd)
           .setMedianDeviation(medianDevBd)
           .setStandardDeviation(stdDevBd);

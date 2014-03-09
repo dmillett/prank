@@ -24,13 +24,16 @@ import java.util.Formatter;
 public class StatisticsTest
     extends TestCase {
 
-    public void test_dump__with_formatter() {
+    public void test__dump() {
 
-        Statistics stats = new Statistics(new BigDecimal("1.15"), new BigDecimal("1.29"), null, null);
-        Formatter formatter = new Formatter();
-        String format = "v1:%1s, v2:%2s, v3:%3s, v4:%s";
+        BigDecimal min = new BigDecimal("1.0");
+        BigDecimal max = new BigDecimal("3.0");
+        int sampleSize = 2;
+        BigDecimal average = new BigDecimal("2.0");
+        BigDecimal meanDev = new BigDecimal("1.0");
 
-        String dumped = stats.dump(formatter, format);
-        assertEquals("v1:1.15, v2:1.29, v3:null, v4:null", dumped);
+        Statistics stats = new Statistics(min, max, sampleSize, average, meanDev, null, null);
+        String dumped = stats.dump();
+        assertEquals("1.0:3.0:2:2.0:1.0::", dumped);
     }
 }
