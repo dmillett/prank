@@ -48,7 +48,7 @@ public class ScoreFormatterTest
         ScoreFormatter scf = new ScoreFormatter();
 
         String defaultDump = scf.dumpScoreData(sd);
-        assertEquals("20.0000:22.5000:0.0000:30.0000:50", defaultDump);
+        assertEquals("20.0000:22.5000::0.0000:30.0000:50", defaultDump);
     }
 
     public void test_dumpScoreData__with_scale() {
@@ -57,7 +57,7 @@ public class ScoreFormatterTest
         ScoreFormatter scf = new ScoreFormatter();
 
         String defaultDump = scf.dumpScoreData(sd, 1);
-        assertEquals("20.0:22.6:0.0:30.1:50", defaultDump);
+        assertEquals("20.0:22.6::0.0:30.1:50", defaultDump);
     }
 
     public void test_dumpStatistics__with_defaults() {
@@ -84,7 +84,7 @@ public class ScoreFormatterTest
         Result r = buildSimpleResult("Foo");
         String result = new ScoreFormatter().dumpResult(r);
 
-        assertEquals("Foo,20,3,20.0000:20.0000:0.0000:20.0000:10,3.4500:14.3500:5:10.4500:3.2400::", result);
+        assertEquals("Foo,20,3,20.0000:20.0000::0.0000:20.0000:10,3.4500:14.3500:5:10.4500:3.2400::", result);
     }
 
     public void test_dumpScoreScummary() {
@@ -93,7 +93,7 @@ public class ScoreFormatterTest
         summary.addResult("FooBar", buildSimpleResult("FooBar"));
         String result = new ScoreFormatter().dumpScoreSummary(summary);
 
-        assertEquals("FOO:FooBar,20,3,20.0000:20.0000:0.0000:20.0000:10,3.4500:14.3500:5:10.4500:3.2400::;", result);
+        assertEquals("FOO:FooBar,20,3,20.0000:20.0000::0.0000:20.0000:10,3.4500:14.3500:5:10.4500:3.2400::;", result);
     }
 
     private Result buildSimpleResult(String scoreCardName) {

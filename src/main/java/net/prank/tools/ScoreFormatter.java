@@ -139,6 +139,7 @@ public class ScoreFormatter {
         StringBuilder sb = new StringBuilder();
         addToBuilder(sb, scoreData.getScore(), delim, scale, roundingMode);
         addToBuilder(sb, scoreData.getAdjustedScore(), delim, scale, roundingMode);
+        addToBuilder(sb, scoreData.getNormalizedScore(), delim, scale, roundingMode);
         addToBuilder(sb, scoreData.getMinPoints(), delim, scale, roundingMode);
         addToBuilder(sb, scoreData.getMaxPoints(), delim, scale, roundingMode);
         sb.append(scoreData.getBuckets());
