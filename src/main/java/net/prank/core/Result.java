@@ -34,6 +34,7 @@ public class Result<T>
     public static enum ResultScoreType {
 
         ORIGINAL,
+        NORMALIZED,
         ADJUSTED;
     }
 

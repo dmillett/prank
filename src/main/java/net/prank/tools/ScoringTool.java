@@ -187,7 +187,48 @@ public class ScoringTool {
     }
 
     public BigDecimal tallyScore(ScoreSummary summary, Result.ResultScoreType scoreType) {
-        return tallyScore(summary, scoreType);
+
+        if ( summary == null )
+        {
+            return null;
+        }
+
+        BigDecimal tally = null;
+
+        for ( Map.Entry<String, Result> entry : summary.getResults().entrySet() )
+        {
+            BigDecimal score = getScoreByType(entry.getValue(), scoreType);
+            if (tally == null && score != null)
+            {
+                tally = score;
+            }
+            else if (score != null)
+            {
+                tally = tally.add(score);
+            }
+        }
+
+        return tally;
+    }
+
+    private BigDecimal getScoreByType(Result result, Result.ResultScoreType type) {
+
+        if (result == null)
+        {
+            return null;
+        }
+
+        switch (type)
+        {
+            case ORIGINAL:
+                return result.getScoreData().getScore();
+            case NORMALIZED:
+                return result.getScoreData().getNormalizedScore();
+            case ADJUSTED:
+                return result.getScoreData().getAdjustedScore();
+            default:
+                return null;
+        }
     }
 
     /**

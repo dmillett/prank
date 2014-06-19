@@ -2,6 +2,7 @@ package net.prank.tools;
 
 import net.prank.core.Scorable;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -26,7 +27,9 @@ import java.util.Set;
  *         limitations under the License.
  */
 public class ScoreComparator
-    implements Comparator<Scorable> {
+    implements Comparator<Scorable>, Serializable {
+
+    private static final long serialVersionUID = 42L;
 
     private final Set<String> _scoreCardNames;
 
@@ -49,7 +52,7 @@ public class ScoreComparator
         {
             return 1;
         }
-        else if (one == null && two != null)
+        else if (one == null)
         {
             return -1;
         }
@@ -72,11 +75,11 @@ public class ScoreComparator
         {
             return 0;
         }
-        else if (one != null && two == null)
+        else if (score1 != null && score2 == null)
         {
             return 1;
         }
-        else if (one == null && two != null)
+        else if (score1 == null)
         {
             return -1;
         }
