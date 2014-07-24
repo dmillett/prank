@@ -159,4 +159,15 @@ public class ScoringToolTest
         BigDecimal normalized = tool.normalize(value, max, normalizeTarget);
         assertEquals(new BigDecimal("9.1"), normalized);
     }
+
+    public void test__normalize_max_more_than_normalize_target2() {
+
+        ScoringTool tool = new ScoringTool();
+        BigDecimal value = new BigDecimal("121.0");
+        BigDecimal max = new BigDecimal("125.0");
+        BigDecimal normalizeTarget = new BigDecimal("100.0");
+
+        BigDecimal normalized = tool.normalize(value, max, normalizeTarget);
+        assertEquals(new BigDecimal("96.8"), normalized);
+    }
 }

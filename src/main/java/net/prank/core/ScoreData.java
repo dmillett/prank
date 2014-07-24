@@ -1,6 +1,5 @@
 package net.prank.core;
 
-import net.prank.tools.DELIM;
 import net.prank.tools.ScoreFormatter;
 
 import java.io.Serializable;
@@ -154,15 +153,6 @@ public class ScoreData
 
         ScoreFormatter formatter = new ScoreFormatter();
         return formatter.dumpScoreData(this);
-//        StringBuilder sb = new StringBuilder();
-//        sb.append(_score).append(DELIM.COLON)
-//          .append(_adjustedScore).append(DELIM.COLON)
-//          .append(_normalizedScore).append(DELIM.COLON)
-//          .append(_maxPoints).append(DELIM.COLON)
-//          .append(_minPoints).append(DELIM.COLON)
-//          .append(_buckets);
-//
-//        return sb.toString();
     }
 
     public BigDecimal getScore() {

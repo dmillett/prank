@@ -312,7 +312,7 @@ public class ScoringTool {
     /**
      * Normalize a value against a target value. If 'original' or 'maximum' are null,
      * then this function returns null. If 'normalizer' is null or 'maximum' == 'normalizer',
-     * then this function returns the original value.
+     * then this function returns the original value. This uses ROUND_HALF_DOWN
      *
      * This could be used to set the adjusted score.
      *
@@ -333,8 +333,9 @@ public class ScoringTool {
             return original;
         }
 
-        BigDecimal normalizeFactor = maximum.divide(normalizer, RoundingMode.HALF_EVEN);
-        return original.divide(normalizeFactor, RoundingMode.HALF_EVEN);
+        int targetScale = normalizer.scale();
+        BigDecimal ratio = normalizer.divide(maximum,targetScale + 1, BigDecimal.ROUND_HALF_DOWN);
+        return original.multiply(ratio).setScale(targetScale, BigDecimal.ROUND_HALF_DOWN);
     }
 
     /**
