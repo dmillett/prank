@@ -1,6 +1,7 @@
 package net.prank.core;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ import java.util.concurrent.*;
  */
 public class Prankster<T> {
 
-    private static final Logger LOG = Logger.getLogger(Prankster.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Prankster.class);
 
     private final Map<ScoreCard<T>, ExecutorService> _scoring;
     /**

@@ -1,5 +1,6 @@
 package net.prank.core;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -37,7 +38,7 @@ public class Request<T> {
     /** Using this relies on options specified in each ScoreCard implementation */
     public Request(T requestObject) {
         _requestObject = requestObject;
-        _options = null;
+        _options = new HashMap<String, RequestOptions>();
     }
 
     /** Use specific scoring options that override defaults in ScoreCard implementation */
