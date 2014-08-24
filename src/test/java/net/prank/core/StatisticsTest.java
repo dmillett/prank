@@ -1,9 +1,9 @@
 package net.prank.core;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import java.math.BigDecimal;
-import java.util.Formatter;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author dmillett
@@ -21,9 +21,9 @@ import java.util.Formatter;
  *         See the License for the specific language governing permissions and
  *         limitations under the License.
  */
-public class StatisticsTest
-    extends TestCase {
+public class StatisticsTest {
 
+    @Test
     public void test__dump() {
 
         BigDecimal min = new BigDecimal("1.0");

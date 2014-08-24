@@ -1,9 +1,8 @@
 package net.prank.core;
 
-import junit.framework.TestCase;
-
 import net.prank.example.ExampleObject;
 import net.prank.example.ExampleScoreCard;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -13,6 +12,9 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -32,9 +34,12 @@ import static org.mockito.Mockito.mock;
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-public class PranksterTest
-    extends TestCase {
+public class PranksterTest {
 
+    private static final double DELTA = 1e-10;
+
+
+    @Test
     public void test__execute() {
 
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 2, 4.0, 50.0);
@@ -68,10 +73,11 @@ public class PranksterTest
 
         assertEquals(new BigDecimal("5"), result.getScoreData().getScore());
         assertEquals(2, result.getPosition().getOriginalIndex());
-        assertEquals(9.0, result.getStatistics().getAverage().doubleValue());
-        assertEquals(50.0, result.getStatistics().getStandardDeviation().doubleValue());
+        assertEquals(9.0, result.getStatistics().getAverage().doubleValue(), DELTA);
+        assertEquals(50.0, result.getStatistics().getStandardDeviation().doubleValue(), DELTA);
     }
 
+    @Test
     public void test__updateObjectScore() {
 
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 2, 4.0, 50.0);
@@ -86,12 +92,13 @@ public class PranksterTest
         Result result = exampleObject.getScoreSummary().getResultByScoreCard(exampleScoreCard.getName());
         assertNotNull(result);
 
-        assertEquals(5.0, result.getScoreData().getScore() .doubleValue());
+        assertEquals(5.0, result.getScoreData().getScore() .doubleValue(), DELTA);
         assertEquals(2, result.getPosition().getOriginalIndex());
-        assertEquals(9.0, result.getStatistics().getAverage().doubleValue());
-        assertEquals(50.0, result.getStatistics().getStandardDeviation().doubleValue());
+        assertEquals(9.0, result.getStatistics().getAverage().doubleValue(), DELTA);
+        assertEquals(50.0, result.getStatistics().getStandardDeviation().doubleValue(), DELTA);
     }
 
+    @Test
     public void test__execute_disabled() {
 
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 4, 5.0, 0.75);
@@ -109,6 +116,7 @@ public class PranksterTest
         assertEquals(0, exampleObject.getScoreSummary().getResults().size());
     }
 
+    @Test
     public void test__execute_enabled() {
 
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 4, 5.0, 0.75);
@@ -126,10 +134,10 @@ public class PranksterTest
         Result result = exampleObject.getScoreSummary().getResultByScoreCard(exampleScoreCard.getName());
         assertNotNull(result);
 
-        assertEquals(5.0, result.getScoreData().getScore().doubleValue());
+        assertEquals(5.0, result.getScoreData().getScore().doubleValue(), DELTA);
         assertEquals(4, result.getPosition().getOriginalIndex());
-        assertEquals(10.0, result.getStatistics().getAverage().doubleValue());
-        assertEquals(0.75, result.getStatistics().getStandardDeviation().doubleValue());
+        assertEquals(10.0, result.getStatistics().getAverage().doubleValue(), DELTA);
+        assertEquals(0.75, result.getStatistics().getStandardDeviation().doubleValue(), DELTA);
     }
 
     private Prankster<ExampleObject> buildPrankster(ScoreCard... scoreCard) {

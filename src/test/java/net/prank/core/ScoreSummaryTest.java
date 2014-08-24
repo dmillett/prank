@@ -1,10 +1,13 @@
 package net.prank.core;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  *
@@ -23,9 +26,9 @@ import java.util.Set;
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-public class ScoreSummaryTest
-    extends TestCase {
+public class ScoreSummaryTest {
 
+    @Test
     public void test__tallyScore_null() {
 
         ScoreSummary foo = new ScoreSummary("Foo");
@@ -36,6 +39,7 @@ public class ScoreSummaryTest
         assertNull(foo.tallyScore());
     }
 
+    @Test
     public void test__tallyScore_simple_unadjusted_score() {
 
         ScoreSummary simple = new ScoreSummary("Simple");
@@ -53,6 +57,7 @@ public class ScoreSummaryTest
         assertEquals(new BigDecimal("1.0"), simple.tallyScore(Result.ResultScoreType.ADJUSTED));
     }
 
+    @Test
     public void test__tallyScoreFor() {
 
         String scoreCardName = "ExampleScoreCard";

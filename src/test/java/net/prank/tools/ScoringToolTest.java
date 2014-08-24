@@ -1,9 +1,13 @@
 package net.prank.tools;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  *
@@ -22,9 +26,12 @@ import java.util.Set;
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-public class ScoringToolTest
-    extends TestCase {
+public class ScoringToolTest {
 
+    private static final double DELTA = 1e-10;
+
+
+    @Test
     public void test__scoreSlicesEvenly() {
 
         ScoringTool tool = new ScoringTool();
@@ -40,37 +47,38 @@ public class ScoringToolTest
         {
             if (scr.getScorePoints() == 10.0)
             {
-                assertEquals(100.0, scr.getMax());
-                assertEquals(100.0, scr.getMin());
+                assertEquals(100.0, scr.getMax(), DELTA);
+                assertEquals(100.0, scr.getMin(), DELTA);
             }
             else if (scr.getScorePoints() == 8.0)
             {
-                assertEquals(101, (int)scr.getMin());
-                assertEquals(195, (int)scr.getMax());
+                assertEquals(101, (int)scr.getMin(), DELTA);
+                assertEquals(195, (int)scr.getMax(), DELTA);
             }
             else if (scr.getScorePoints() == 6.0)
             {
-                assertEquals(195, (int)scr.getMin());
-                assertEquals(290, (int)scr.getMax());
+                assertEquals(195, (int)scr.getMin(), DELTA);
+                assertEquals(290, (int)scr.getMax(), DELTA);
             }
             else if (scr.getScorePoints() == 4.0)
             {
-                assertEquals(290, (int)scr.getMin());
-                assertEquals(384, (int)scr.getMax());
+                assertEquals(290, (int)scr.getMin(), DELTA);
+                assertEquals(384, (int)scr.getMax(), DELTA);
             }
             else if (scr.getScorePoints() == 2.0)
             {
-                assertEquals(384, (int)scr.getMin());
-                assertEquals(479, (int)scr.getMax());
+                assertEquals(384, (int)scr.getMin(), DELTA);
+                assertEquals(479, (int)scr.getMax(), DELTA);
             }
             else if (scr.getScorePoints() == 0.0)
             {
-                assertEquals(575.0, scr.getMax());
-                assertEquals(575.0, scr.getMin());
+                assertEquals(575.0, scr.getMax(), DELTA);
+                assertEquals(575.0, scr.getMin(), DELTA);
             }
         }
     }
 
+    @Test
     public void test__scoreSlicesEvenly_small_range() {
 
         ScoringTool tool = new ScoringTool();
@@ -82,22 +90,23 @@ public class ScoringToolTest
         {
             if (scr.getScorePoints() == 10.0)
             {
-                assertEquals(0.0, scr.getMax());
-                assertEquals(0.0, scr.getMin());
+                assertEquals(0.0, scr.getMax(), DELTA);
+                assertEquals(0.0, scr.getMin(), DELTA);
             }
             else if (scr.getScorePoints() == 5.0)
             {
-                assertEquals(1.0, scr.getMin());
-                assertEquals(1.0, scr.getMax());
+                assertEquals(1.0, scr.getMin(), DELTA);
+                assertEquals(1.0, scr.getMax(), DELTA);
             }
             else if (scr.getScorePoints() == 4.0)
             {
-                assertEquals(2.0, scr.getMin());
-                assertEquals(2.0, scr.getMax());
+                assertEquals(2.0, scr.getMin(), DELTA);
+                assertEquals(2.0, scr.getMax(), DELTA);
             }
         }
     }
 
+    @Test
     public void test__scoreBucketsEvenlyHighValueAsHighScore() {
 
         ScoringTool tool = new ScoringTool();
@@ -109,22 +118,23 @@ public class ScoringToolTest
         {
             if (scr.getScorePoints() == 10.0)
             {
-                assertEquals(95.0, scr.getMax());
-                assertEquals(95.0, scr.getMin());
+                assertEquals(95.0, scr.getMax(), DELTA);
+                assertEquals(95.0, scr.getMin(), DELTA);
             }
             else if (scr.getScorePoints() == 0.0)
             {
-                assertEquals(-1.0, scr.getMax());
-                assertEquals(-1.0, scr.getMin());
+                assertEquals(-1.0, scr.getMax(), DELTA);
+                assertEquals(-1.0, scr.getMin(), DELTA);
             }
             else if (scr.getScorePoints() == 7.0)
             {
-                assertEquals(56.4, scr.getMin());
-                assertEquals(65.8, scr.getMax());
+                assertEquals(56.4, scr.getMin(), DELTA);
+                assertEquals(65.8, scr.getMax(), DELTA);
             }
         }
     }
 
+    @Test
     public void test__normalize_bad_values() {
 
         ScoringTool tool = new ScoringTool();
@@ -138,6 +148,7 @@ public class ScoringToolTest
         assertEquals(original, tool.normalize(original, max, new BigDecimal("10.0")));
     }
 
+    @Test
     public void test__normalize_max_less_than_normalize_target() {
 
         ScoringTool tool = new ScoringTool();
@@ -149,6 +160,7 @@ public class ScoringToolTest
         assertEquals(new BigDecimal("50.0"), normalized);
     }
 
+    @Test
     public void test__normalize_max_more_than_normalize_target() {
 
         ScoringTool tool = new ScoringTool();
@@ -160,6 +172,7 @@ public class ScoringToolTest
         assertEquals(new BigDecimal("9.1"), normalized);
     }
 
+    @Test
     public void test__normalize_max_more_than_normalize_target2() {
 
         ScoringTool tool = new ScoringTool();

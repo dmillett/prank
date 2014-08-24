@@ -199,7 +199,7 @@ public class Prankster<T> {
 
     private List<Long> getTimeouts(long defaultTimeoutMilis, Map<String, RequestOptions> options) {
 
-        if ( options == null )
+        if ( options == null || options.isEmpty() )
         {
             List<Long> timeouts = new ArrayList<Long>();
             for (ScoreCard<T> card : _scoring.keySet())

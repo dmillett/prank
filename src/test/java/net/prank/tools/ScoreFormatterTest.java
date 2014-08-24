@@ -1,13 +1,15 @@
 package net.prank.tools;
 
-import junit.framework.TestCase;
 import net.prank.core.Indices;
 import net.prank.core.Result;
 import net.prank.core.ScoreData;
 import net.prank.core.ScoreSummary;
 import net.prank.core.Statistics;
+import org.junit.Test;
 
 import java.math.BigDecimal;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -26,9 +28,9 @@ import java.math.BigDecimal;
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-public class ScoreFormatterTest
-    extends TestCase {
+public class ScoreFormatterTest {
 
+    @Test
     public void test_dumpIndices() {
 
         Indices indices = new Indices(10);
@@ -42,6 +44,7 @@ public class ScoreFormatterTest
         assertEquals("5:3", result2);
     }
 
+    @Test
     public void test_dumpScoreData__with_defaults() {
 
         ScoreData sd = buildScoreData("20.00", "22.50", "0.00", "30.00", 50);
@@ -51,6 +54,7 @@ public class ScoreFormatterTest
         assertEquals("20.0000:22.5000::0.0000:30.0000:50", defaultDump);
     }
 
+    @Test
     public void test_dumpScoreData__with_scale() {
 
         ScoreData sd = buildScoreData("20.00", "22.55", "0.00", "30.14", 50);
@@ -60,6 +64,7 @@ public class ScoreFormatterTest
         assertEquals("20.0:22.6::0.0:30.1:50", defaultDump);
     }
 
+    @Test
     public void test_dumpStatistics__with_defaults() {
 
         // These stats are not actually correct (or rather, I have not calculated the correct values)
@@ -70,6 +75,7 @@ public class ScoreFormatterTest
         assertEquals("1.0000:3.2300:3:1.3600:0.1800:0.2500:0.4000", result);
     }
 
+    @Test
     public void test_dumpStatistics__with_null() {
 
         Statistics stats = buildStatistics("1.0", "3.2", 4, "1.36", "0.18", null, null);
@@ -79,6 +85,7 @@ public class ScoreFormatterTest
         assertEquals("1.0000:3.2000:4:1.3600:0.1800::", result);
     }
 
+    @Test
     public void test_dumpResult() {
 
         Result r = buildSimpleResult("Foo");
@@ -87,6 +94,7 @@ public class ScoreFormatterTest
         assertEquals("Foo,20,3,20.0000:20.0000::0.0000:20.0000:10,3.4500:14.3500:5:10.4500:3.2400::", result);
     }
 
+    @Test
     public void test_dumpScoreScummary() {
 
         ScoreSummary summary = new ScoreSummary("FOO");
