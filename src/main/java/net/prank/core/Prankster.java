@@ -154,15 +154,15 @@ public class Prankster<T> {
         List<Long> timeouts = getTimeouts(defaultTimeoutInMillis, objectsToScore.getOptions());
         int current = 0;
 
-        for (Future<Result> future : futures)
+        for ( Future<Result> future : futures )
         {
             try
             {
                 future.get(timeouts.get(current), TimeUnit.MILLISECONDS);
             }
-            catch (Throwable t)
+            catch ( Throwable t )
             {
-                LOG.warn("Failed To Complete Scoring For: " + objectsToScore.getRequestObject());
+                LOG.warn("Failed To Complete Scoring", t);
             }
 
             current++;
@@ -196,7 +196,7 @@ public class Prankster<T> {
         return futures;
     }
 
-
+    // Empty or null options indicate default card use.
     private List<Long> getTimeouts(long defaultTimeoutMilis, Map<String, RequestOptions> options) {
 
         if ( options == null || options.isEmpty() )
@@ -270,6 +270,7 @@ public class Prankster<T> {
 
     /**
      * Create a Callable from a stateless setupScoring card execution and some object to setupScoring (T).
+     * Will use 'RequestOptions' if that object is not null.
      *
      * @param <T> The object to setupScoring.
      */
@@ -294,7 +295,12 @@ public class Prankster<T> {
             }
 
             RequestOptions options = _request.getOptionsForScoreCard(_scoreCard.getName());
-            return _scoreCard.scoreWith(_request.getRequestObject(), options);
+            if ( options != null )
+            {
+                return _scoreCard.scoreWith(_request.getRequestObject(), options);
+            }
+
+            return _scoreCard.score(_request.getRequestObject());
         }
     }
 }
