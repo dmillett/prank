@@ -34,17 +34,31 @@ public class Request<T> {
     private final T _requestObject;
     /** Options to use for each ScoreCard submittal to Prankster */
     private final Map<String, RequestOptions> _options;
+    /** Whether or not to globally ignore scoring for this request */
+    private final boolean _disabled;
+
+    public Request(boolean disabled) {
+        _disabled = disabled;
+        _requestObject = null;
+        _options = new HashMap<String, RequestOptions>();
+    }
 
     /** Using this relies on options specified in each ScoreCard implementation */
     public Request(T requestObject) {
         _requestObject = requestObject;
         _options = new HashMap<String, RequestOptions>();
+        _disabled = false;
     }
 
     /** Use specific scoring options that override defaults in ScoreCard implementation */
     public Request(T requestObject, Map<String, RequestOptions> options) {
         _requestObject = requestObject;
         _options = options;
+        _disabled = false;
+    }
+
+    public boolean isDisabled() {
+        return _disabled;
     }
 
     public T getRequestObject() {

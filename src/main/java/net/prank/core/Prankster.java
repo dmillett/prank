@@ -144,9 +144,9 @@ public class Prankster<T> {
      */
     public void updateObjectScore(Request<T> objectsToScore, int defaultTimeoutInMillis) {
 
-        if ( objectsToScore == null)
+        if ( objectsToScore == null || objectsToScore.isDisabled() )
         {
-            LOG.warn("Cannot ScoreData Null Objects!");
+            LOG.warn("Cannot ScoreData Null Objects OR Scoring Is Disabled");
             return;
         }
 
@@ -162,7 +162,8 @@ public class Prankster<T> {
             }
             catch ( Throwable t )
             {
-                LOG.warn("Failed To Complete Scoring", t);
+                LOG.warn("Failed To Complete Scoring In time: %s, For: %s", timeouts.get(current),
+                         objectsToScore.getRequestObject());
             }
 
             current++;
@@ -179,11 +180,18 @@ public class Prankster<T> {
      */
     public Set<Future<Result>> setupScoring(Request<T> scoreIt) {
 
-        Set<Future<Result>> futures = new HashSet<Future<Result>>(_scoring.size());
+        if ( scoreIt == null || scoreIt.isDisabled() )
+        {
+            LOG.info("Scoring Request Is Null Or Disabled");
+            return new HashSet<Future<Result>>();
+        }
+
+        int futuresCount = scoreIt.getOptions().isEmpty() ? _scoring.size() : scoreIt.getOptions().size();
+        Set<Future<Result>> futures = new HashSet<Future<Result>>(futuresCount);
 
         for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
         {
-            if (!executeWithScoreCard(entry.getKey(), scoreIt))
+            if ( !executeWithScoreCard(entry.getKey(), scoreIt) )
             {
                 continue;
             }
@@ -197,9 +205,9 @@ public class Prankster<T> {
     }
 
     // Empty or null options indicate default card use.
-    private List<Long> getTimeouts(long defaultTimeoutMilis, Map<String, RequestOptions> options) {
+    private List<Long> getTimeouts(long defaultTimeoutMilis, Map<String, RequestOptions> requestOptions) {
 
-        if ( options == null || options.isEmpty() )
+        if ( requestOptions == null || requestOptions.isEmpty() )
         {
             List<Long> timeouts = new ArrayList<Long>();
             for (ScoreCard<T> card : _scoring.keySet())
@@ -210,11 +218,15 @@ public class Prankster<T> {
             return timeouts;
         }
 
-        List<Long> perRequestTimeouts = new ArrayList<Long>();
+        return getPerRequestTimeouts(requestOptions);
+    }
 
-        for (Map.Entry<String, RequestOptions> entry : options.entrySet())
+    private List<Long> getPerRequestTimeouts(Map<String, RequestOptions> requestOptions) {
+
+        List<Long> perRequestTimeouts = new ArrayList<Long>();
+        for ( Map.Entry<String, RequestOptions> entry : requestOptions.entrySet() )
         {
-            if (entry.getValue().isEnabled())
+            if ( entry.getValue().isEnabled() )
             {
                 perRequestTimeouts.add(entry.getValue().getTimeoutMillis());
             }
@@ -223,16 +235,22 @@ public class Prankster<T> {
         return perRequestTimeouts;
     }
 
-    private boolean executeWithScoreCard(ScoreCard scoreCard, Request request) {
+
+    private boolean executeWithScoreCard(ScoreCard scoreCard, Request<T> request) {
+
+        if ( request.getOptions().isEmpty() )
+        {
+            return true;
+        }
 
         RequestOptions options = request.getOptionsForScoreCard(scoreCard.getName());
 
-        if (options != null && !options.isEnabled())
+        if (options != null && options.isEnabled())
         {
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -247,8 +265,9 @@ public class Prankster<T> {
         int maxThreads = corePoolSize * 2;
         Map<ScoreCard<T>, ExecutorService> scoring = new HashMap<ScoreCard<T>, ExecutorService>(scoreCards.size());
 
-        for (ScoreCard scoreCard : scoreCards)
+        for ( ScoreCard scoreCard : scoreCards )
         {
+            LOG.info("Initializing ScoreCard: %s, With Max Threads %s", scoreCard, maxThreads);
             scoring.put(scoreCard, Executors.newFixedThreadPool(maxThreads));
         }
 
