@@ -18,7 +18,7 @@ apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'findbugs'
 
-version=0.91
+version=0.92
 
 repositories {
   mavenCentral()
@@ -33,7 +33,7 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.12'
+  gradleVersion = '2.3'
 }
 
 tasks.withType(FindBugs) {
