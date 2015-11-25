@@ -76,7 +76,6 @@ public class ExampleScoreCard
         double standardDeviation = _standardDeviationAdjustment;
 
         // Calculate stats with primitives for performance
-        // Create BigDecimal's from String for consistent values
         ScoreData.Builder scoreBuilder = new ScoreData.Builder();
         scoreBuilder.setScore(new BigDecimal(String.valueOf(score)));
 

@@ -40,8 +40,7 @@ public class ScoringToolTest {
         Set<ScoringRange> scores = tool.scoreBucketsEvenlyLowValueAsHighScore(0, 10, 5, 100.0, 575.0);
         assertNotNull(scores);
 
-        // 0.0 -- 10.0 (5 buckets + 1 best score)
-        assertEquals(6, scores.size());
+        assertEquals(5, scores.size());
 
         for ( ScoringRange scr : scores )
         {
@@ -52,23 +51,23 @@ public class ScoringToolTest {
             }
             else if (scr.getScorePoints() == 8.0)
             {
-                assertEquals(101, (int)scr.getMin(), DELTA);
-                assertEquals(195, (int)scr.getMax(), DELTA);
+                assertEquals(100, (int)scr.getMin(), DELTA);
+                assertEquals(218, (int)scr.getMax(), DELTA);
             }
             else if (scr.getScorePoints() == 6.0)
             {
-                assertEquals(195, (int)scr.getMin(), DELTA);
-                assertEquals(290, (int)scr.getMax(), DELTA);
+                assertEquals(218, (int)scr.getMin(), DELTA);
+                assertEquals(337, (int)scr.getMax(), DELTA);
             }
             else if (scr.getScorePoints() == 4.0)
             {
-                assertEquals(290, (int)scr.getMin(), DELTA);
-                assertEquals(384, (int)scr.getMax(), DELTA);
+                assertEquals(337, (int)scr.getMin(), DELTA);
+                assertEquals(456, (int)scr.getMax(), DELTA);
             }
             else if (scr.getScorePoints() == 2.0)
             {
-                assertEquals(384, (int)scr.getMin(), DELTA);
-                assertEquals(479, (int)scr.getMax(), DELTA);
+                assertEquals(456, (int)scr.getMin(), DELTA);
+                assertEquals(575, (int)scr.getMax(), DELTA);
             }
             else if (scr.getScorePoints() == 0.0)
             {
@@ -83,7 +82,6 @@ public class ScoringToolTest {
 
         ScoringTool tool = new ScoringTool();
         Set<ScoringRange> scores = tool.scoreBucketsEvenlyLowValueAsHighScore(0, 10, 3, 0, 2);
-        assertNotNull(scores);
         assertEquals(3, scores.size());
 
         for ( ScoringRange scr : scores )
@@ -105,6 +103,18 @@ public class ScoringToolTest {
             }
         }
     }
+
+//    @Test
+//    public void test__scoreSlicesEvenlyLowValueAsHighScore__issue() {
+//
+//        ScoringTool st = new ScoringTool();
+//        Set<ScoringRange> ranges = st.scoreBucketsEvenlyLowValueAsHighScore(0.0, 20.0, 10, 9.99, 13.44);
+//
+//        assertEquals(10, ranges.size());
+//
+//        for (ScoringRange range :)
+//
+//    }
 
     @Test
     public void test__scoreBucketsEvenlyHighValueAsHighScore() {

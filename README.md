@@ -24,38 +24,60 @@ data that can be used for;
   5. per request scoring conditions
 
 ##Usage
+After adding the dependency to the build, see the examples below or in the *example* package and code
+directly or use a dependency injection manager (Spring, Guice, etc) & configuration to set scoring values. 
 
 ```
-<groupId>com.github.dmillett</groupId>
-<artifactId>prank</artifactId>
-<version>1.0</version>
+<dependency>
+  <groupId>com.github.dmillett</groupId>
+  <artifactId>prank</artifactId>
+  <version>1.0.1</version>
+</dependency>  
 ```
 
-See the *example* package in the test directory for other examples. After defining
-individual ScoreCard implementations, usage is as simple as:
+After defining individual ScoreCard implementations, usage is as simple as:
 
 #### Setup applicable ScoreCard objects
 ```java
 // Establish score cards
-ScoreCard<List<BookExample>> priceCard = new PriceScoreCard(minPoints, maxPoints, slices);
-ScoreCard<List<BookExample>> deliveryTimeCard = new DeliveryTimeScoreCard(minPoints, maxPoints, slices);
+ScoreCard examplePrice = new PriceScoreCard(0, 20, 10);
+ScoreCard exampleShippingCost = new ShippingCostScoreCard(0, 10, 10);
+ScoreCard exampleShippingTime = new ShippingTimeScoreCard(0, 5, 5);
+        
+Set<ScoreCard> scoreCards = new HashSet<ScoreCard>();
+scoreCards.add(examplePrice);
+scoreCards.add(exampleShippingCost);
+scoreCards.add(exampleShippingTime);        
+                
+// Setup scoring mechanism (can wire up a Prankster with dependency injection) 
+Prankster prankster = new Prankster(scoreCards, executorPoolSize);
 
-// Setup scoring mechanism (wire up a Prankster with dependency injection)
-Prankster<List<BookExample>> prankster = buildPrankster(priceCard, deliveryTimeCard);
-
-// Score the request (futures will return within specified scoring timeout)
-Request<List<BookExample> request = new Request<List<BookExample>>();
+// Score a List of 'ExampleObject' objects
+List<ExampleObject> examples = someSearchRequest();
+Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
 prankster.updateObjectScore(request, scoringTimeoutInMillis);
+```
+#### Sort the results according to score
+```java
+// Sort 'Scorable' results by 'ORIGINAL' score for all ScoreCard objects
+Collections.sort(examples, new ScoreComparator());
+
+// Sort 'Scorable' results by 'ADJUSTED' (<- customization) score for PriceScoreCard
+Set<String> priceCard = new HashSet<String>();
+priceCard.add(PriceScoreCard.NAME);
+Collections.sort(examples, new ScoreComparator(priceCard, Result.ResultScoreType.ADJUSTED)); 
 ```
 
 #### Per request configuration options
 ```java
 // Establish score cards
-ScoreCard<List<BookExample>> priceCard = new PriceScoreCard(minPoints, maxPoints, slices);
-ScoreCard<List<BookExample>> deliveryTimeCard = new DeliveryTimeScoreCard(minPoints, maxPoints, slices);
+// Establish score cards
+ScoreCard examplePrice = new PriceScoreCard(0, 20, 10);
+ScoreCard exampleShippingCost = new ShippingCostScoreCard(0, 10, 10);
+ScoreCard exampleShippingTime = new ShippingTimeScoreCard(0, 5, 5);
 
-// Setup scoring mechanism (wire up a Prankster with dependency injection)
-Prankster<List<BookExample>> prankster = buildPrankster(priceCard, deliveryTimeCard);
+// Setup scoring mechanism (can wire up a Prankster with dependency injection) 
+Prankster prankster = new Prankster(scoreCards, executorPoolSize);
 
 // Setup per-request overrides for PriceScoreCard
 RequestOptions priceCardOptions = new RequestOptions.RequestOptionsBuilder().build();
@@ -63,7 +85,8 @@ Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
 optionsMap.put(priceCard.getName(), priceCardOptions);
 
 // Score the request (PriceCard with overrides, DeliveryCard with default values)
-Request<List<BookExample> request = new Request<List<BookExample>>();
+Request<List<ExampleObject> request = new Request<List<ExampleObject>>();
+request.addOptions(optionsMap);
 prankster.updateObjectScore(request, scoringTimeoutInMillis);
 ```
 
@@ -72,35 +95,26 @@ Building unit tests for each ScoreCard implementation is fairly easy. The comple
 test cases depends on how complex the ScoreCard scoring algorithm is.
 
 ```java
-// Relative ranking by price of books in a search result (updates each BookExample)
-private List<BookExample> scoreByPrice(List<BookExample> books, int minPoints, int maxPoints, int slices) {
-    
-    // A single threaded test
-    ScoreCard<List<BookExample>> card = new PriceScoreCard(minPoints, maxPoints, slices);
-    card.score(books);
-    return books;
-}
+// Relative ranking by price of books in a search result (updates each ExampleObject)
 
 @Test
-public void test_scoreSolutionsByPrice() {
-    
-    List<BookExample> books = bookSearchResults();
-    scoreSolutionsByPrice(books, 0, 10, 10);
-    Collections.sort(books, new ScoreComparator());
-    
-    BookExample first = books.iterator().next();
-    assertEquals(10, first.getScoreSummary().getResultByScoreCard("ByPrice").getScoreData().getScore());   
-}
+public void test_PriceScoreCard_for_ExampleObject() {
 
-// Relative ranking by delivery time estimate of books in a search result (updates each BookExample)
-private List<BookExample> scoreByDeliveryTime(List<BookExample> books, int minPoints, int maxPoints, int slices) {
- 
-    // A single threaded test
-    List<BookExample> solutions = getSolutionsFromFile();
-    ScoreCard<List<BookExample>> card = new DeliveryTimeScoreCard(minPoints, maxPoints, slices);
-    card.score(books);
-    return books;
-}
+    PranksterExample pe = new PranksterExample();
+    List<ExampleObject> examples = pe.getExamples();
+    Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
 
-// @Test here (similar to above)
+    Set<ScoreCard<List<ExampleObject>>> scoreCards = new HashSet<ScoreCard<List<ExampleObject>>>();
+    scoreCards.add(new PriceScoreCard(0, 20, 10));
+
+    Prankster<List<ExampleObject>> prankster = new Prankster<List<ExampleObject>>(scoreCards, 1);
+    prankster.updateObjectScore(request, 20);
+
+    assertEquals(new BigDecimal("2.0"), examples.get(0).getScoreSummary().tallyScore());
+    assertEquals(new BigDecimal("16.0"), examples.get(1).getScoreSummary().tallyScore());
+    assertEquals(new BigDecimal("12.0"), examples.get(2).getScoreSummary().tallyScore());
+    assertEquals(new BigDecimal("2.0"), examples.get(3).getScoreSummary().tallyScore());
+    assertEquals(new BigDecimal("20.0"), examples.get(4).getScoreSummary().tallyScore());
+    assertEquals(new BigDecimal("8.0"), examples.get(5).getScoreSummary().tallyScore());
+}
 ```

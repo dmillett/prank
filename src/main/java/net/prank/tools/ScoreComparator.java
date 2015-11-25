@@ -1,5 +1,6 @@
 package net.prank.tools;
 
+import net.prank.core.Result;
 import net.prank.core.Scorable;
 
 import java.io.Serializable;
@@ -30,15 +31,26 @@ public class ScoreComparator
     implements Comparator<Scorable>, Serializable {
 
     private static final long serialVersionUID = 42L;
-
+    /** A subset of score cards (by name) */
     private final Set<String> _scoreCardNames;
+    /** The type of score to check: ORIGINAL, ADJUSTED, or NORMALIZED */
+    private final Result.ResultScoreType _scoreType;
 
     public ScoreComparator() {
-        _scoreCardNames = new HashSet<String>();
+        this(new HashSet<String>(), Result.ResultScoreType.ORIGINAL);
+    }
+
+    public ScoreComparator(Result.ResultScoreType scoreType) {
+        this(new HashSet<String>(), scoreType);
     }
 
     public ScoreComparator(Set<String> scoreCardNames) {
+        this(scoreCardNames, Result.ResultScoreType.ORIGINAL);
+    }
+
+    public ScoreComparator(Set<String> scoreCardNames, Result.ResultScoreType scoreType) {
         _scoreCardNames = scoreCardNames;
+        _scoreType = scoreType;
     }
 
     @Override
@@ -62,13 +74,13 @@ public class ScoreComparator
 
         if (_scoreCardNames.isEmpty())
         {
-            score1 = one.getScoreSummary().tallyScore();
-            score2 = two.getScoreSummary().tallyScore();
+            score1 = one.getScoreSummary().tallyScore(_scoreType);
+            score2 = two.getScoreSummary().tallyScore(_scoreType);
         }
         else
         {
-            score1 = one.getScoreSummary().tallyScoreFor(_scoreCardNames);
-            score2 = two.getScoreSummary().tallyScoreFor(_scoreCardNames);
+            score1 = one.getScoreSummary().tallyScoreFor(_scoreCardNames, _scoreType);
+            score2 = two.getScoreSummary().tallyScoreFor(_scoreCardNames, _scoreType);
         }
 
         if (score1 == null && score2 == null)

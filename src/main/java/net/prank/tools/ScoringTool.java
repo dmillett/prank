@@ -44,8 +44,8 @@ public class ScoringTool {
      * @param grossMax
      * @return
      */
-    public Set<ScoringRange> scoreBucketsEvenlyLowValueAsHighScore(double minPoints, double maxPoints, int bucketCount,
-                                                                   double grossMin, double grossMax) {
+    public Set<ScoringRange> scoreBucketsEvenlyLowValueAsHighScore2(double minPoints, double maxPoints, int bucketCount,
+                                                                    double grossMin, double grossMax) {
 
         Set<ScoringRange> scores = new HashSet<ScoringRange>();
         if (minPoints == maxPoints)
@@ -81,6 +81,33 @@ public class ScoringTool {
         }
 
         return scores;
+    }
+
+    public Set<ScoringRange> scoreBucketsEvenlyLowValueAsHighScore(double minPoints, double maxPoints, int bucketCount,
+                                                                   double grossMin, double grossMax) {
+
+        double pointsPerSlice = (maxPoints - minPoints) / bucketCount;
+        double remainingBucketCount = bucketCount - 1;
+        double simpleRange = findRange(grossMin, grossMax);
+        double sliceRange = simpleRange / remainingBucketCount;
+
+        // Should be BigDecimal to determine scale and decrease by the smallest amount
+        double minRange = grossMin + 0.00001;
+        double maxRange = minRange + sliceRange;
+        int maxSlice = bucketCount - 1;
+
+        Set<ScoringRange> ranges = new HashSet<ScoringRange>();
+        ranges.add(new ScoringRange(grossMin, grossMin, maxPoints));
+
+        for (int i = maxSlice; i > 0; i--)
+        {
+            double points = i * pointsPerSlice;
+            ranges.add(new ScoringRange(minRange, maxRange, points));
+            minRange = maxRange;
+            maxRange += sliceRange;
+        }
+
+        return ranges;
     }
 
     /**
@@ -419,12 +446,7 @@ public class ScoringTool {
             return min - max;
         }
 
-        if (max > min)
-        {
-
-        }
-
-        return (max > min) ? -1 * (max - min) : max - min;
+        return (max > min) ? (max - min) : -1 * (max - min);
     }
 }
 
