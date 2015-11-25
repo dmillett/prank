@@ -24,8 +24,7 @@ data that can be used for;
   5. per request scoring conditions
 
 ##Usage
-After adding the dependency to the build, see the examples below or in the *example* package and code
-directly or use a dependency injection manager (Spring, Guice, etc) & configuration to set scoring values. 
+After adding the dependency to the build, see the examples below or in the *src/test/java/net/prank/example/* package and code directly or use a dependency injection manager (Spring, Guice, etc) & configuration to set scoring values. 
 
 ```
 <dependency>
@@ -36,7 +35,7 @@ directly or use a dependency injection manager (Spring, Guice, etc) & configurat
 ```
 
 After defining individual ScoreCard implementations, usage is as simple as:
-
+(see src/test/java/net/prank/example package)
 #### Setup applicable ScoreCard objects
 ```java
 // Establish score cards
@@ -70,7 +69,6 @@ Collections.sort(examples, new ScoreComparator(priceCard, Result.ResultScoreType
 
 #### Per request configuration options
 ```java
-// Establish score cards
 // Establish score cards
 ScoreCard examplePrice = new PriceScoreCard(0, 20, 10);
 ScoreCard exampleShippingCost = new ShippingCostScoreCard(0, 10, 10);
