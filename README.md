@@ -26,9 +26,11 @@ data that can be used for;
 ##Usage
 
 ```
-<groupId>com.github.dmillett</groupId>
-<artifactId>prank</artifactId>
-<version>1.0</version>
+<dependency>
+  <groupId>com.github.dmillett</groupId>
+  <artifactId>prank</artifactId>
+  <version>1.0</version>
+</dependency>  
 ```
 
 See the *example* package in the test directory for other examples. After defining
