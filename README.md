@@ -24,6 +24,8 @@ data that can be used for;
   5. per request scoring conditions
 
 ##Usage
+After adding the dependency to the build, see the examples below or in the *example* package and code
+directly or use a dependency injection manager (Spring, Guice, etc) & configuration to set scoring values. 
 
 ```
 <dependency>
@@ -33,8 +35,7 @@ data that can be used for;
 </dependency>  
 ```
 
-See the *example* package in the test directory for other examples. After defining
-individual ScoreCard implementations, usage is as simple as:
+After defining individual ScoreCard implementations, usage is as simple as:
 
 #### Setup applicable ScoreCard objects
 ```java
@@ -46,8 +47,14 @@ ScoreCard<List<BookExample>> deliveryTimeCard = new DeliveryTimeScoreCard(minPoi
 Prankster<List<BookExample>> prankster = buildPrankster(priceCard, deliveryTimeCard);
 
 // Score the request (futures will return within specified scoring timeout)
-Request<List<BookExample> request = new Request<List<BookExample>>();
+List<BookExample> books = bookSearchResults();
+Request<List<BookExample> request = new Request<List<BookExample>>(books);
 prankster.updateObjectScore(request, scoringTimeoutInMillis);
+```
+#### Sort the results according to score
+```java
+// Sort the 'Scorable' results
+Collections.sort(books, new ScoreComparator());
 ```
 
 #### Per request configuration options
@@ -66,6 +73,7 @@ optionsMap.put(priceCard.getName(), priceCardOptions);
 
 // Score the request (PriceCard with overrides, DeliveryCard with default values)
 Request<List<BookExample> request = new Request<List<BookExample>>();
+request.addOptions(optionsMap);
 prankster.updateObjectScore(request, scoringTimeoutInMillis);
 ```
 
