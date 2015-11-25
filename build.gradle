@@ -20,7 +20,7 @@ apply plugin: 'signing'
 
 group = 'com.github.dmillett'
 archivesBaseName = 'prank'
-version = '1.0'
+version = '1.0.1'
 
 task prankJar(type: Jar)
 

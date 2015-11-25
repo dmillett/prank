@@ -1,5 +1,6 @@
 package net.prank.example;
 
+import net.prank.core.Scorable;
 import net.prank.core.ScoreSummary;
 
 import java.math.BigDecimal;
@@ -21,7 +22,8 @@ import java.math.BigDecimal;
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-public class ExampleObject {
+public class ExampleObject
+    implements Scorable {
 
     private final BigDecimal _price;
     private final BigDecimal _shippingCost;
