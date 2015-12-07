@@ -28,6 +28,7 @@ import java.util.Set;
  */
 public class PranksterExample {
 
+    @Deprecated
     public void scoreObjects(List<ExampleObject> examples) {
 
         ScoreCard examplePrice = new PriceScoreCard(0, 20, 10);
@@ -44,11 +45,35 @@ public class PranksterExample {
         prankster.updateObjectScore(request, 100);
     }
 
+    @Deprecated
     public void scoreObjects(List<ExampleObject> examples, Set<ScoreCard> scoreCards) {
 
         Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
         Prankster prankster = new Prankster(scoreCards, scoreCards.size());
         prankster.updateObjectScore(request, 20);
+    }
+
+    public void updateObjectsWithScores(List<ExampleObject> examples) {
+
+        ScoreCard examplePrice = new PriceScoreCard(0, 20, 10);
+        ScoreCard exampleShippingCost = new ShippingCostScoreCard(0, 10, 10);
+        ScoreCard exampleShippingTime = new ShippingTimeScoreCard(0, 5, 5);
+
+        Set<ScoreCard> scoreCards = new HashSet<ScoreCard>();
+        scoreCards.add(examplePrice);
+        scoreCards.add(exampleShippingCost);
+        scoreCards.add(exampleShippingTime);
+
+        Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
+        Prankster prankster = new Prankster(scoreCards, 3);
+        prankster.updateObjectsWithScores(request, 100);
+    }
+
+    public void updateObjectsWithScores(List<ExampleObject> examples, Set<ScoreCard> scoreCards) {
+
+        Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
+        Prankster prankster = new Prankster(scoreCards, scoreCards.size());
+        prankster.updateObjectsWithScores(request, 20);
     }
 
     public List<ExampleObject> getExamples() {

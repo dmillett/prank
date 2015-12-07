@@ -142,7 +142,7 @@ public class Prankster<T> {
      * @param objectsToScore A single object or collection of objects with type T
      * @param defaultTimeoutInMillis The time to wait for scoring to complete.
      */
-    public void updateObjectScore(Request<T> objectsToScore, int defaultTimeoutInMillis) {
+    public void updateObjectsWithScores(Request<T> objectsToScore, int defaultTimeoutInMillis) {
 
         if ( objectsToScore == null || objectsToScore.isDisabled() )
         {
@@ -150,107 +150,88 @@ public class Prankster<T> {
             return;
         }
 
-        Set<Future<Result>> futures = setupScoring(objectsToScore);
-        List<Long> timeouts = getTimeouts(defaultTimeoutInMillis, objectsToScore.getOptions());
-        int current = 0;
-
-        for ( Future<Result> future : futures )
+        Set<ScoringFuture> scoringFutures = buildScoringUpdateFutures(objectsToScore, defaultTimeoutInMillis);
+        for (ScoringFuture scoringFuture : scoringFutures)
         {
+            long timeout = scoringFuture._timeout;
             try
             {
-                future.get(timeouts.get(current), TimeUnit.MILLISECONDS);
+                scoringFuture._future.get(timeout, TimeUnit.MILLISECONDS);
             }
-            catch ( Throwable t )
+            catch (Throwable t)
             {
-                LOG.warn("Failed To Complete Scoring In time: %s, For: %s", timeouts.get(current),
-                         objectsToScore.getRequestObject());
+                LOG.warn("Failed To Complete Scoring In time: %s, For: %s", timeout,
+                         objectsToScore.getRequestObject(), t);
             }
-
-            current++;
         }
     }
 
-    /**
-     * Return a Future with Result of type V. Origin is responsible for maintaining
-     * a Set of Future responses and interpreting them. This submits each ScoreCard
-     * as a Callable and returns a Future.
-     *
-     * @param scoreIt A request with optional Options
-     * @return A Set of Result Futures
-     */
-    public Set<Future<Result>> setupScoring(Request<T> scoreIt) {
+    /** Create and add Future Runnables to their appropriate executor pool. A generic request and timeout */
+    public Set<ScoringFuture> buildScoringUpdateFutures(Request<T> request, long defaultTimeoutMillis) {
 
-        if ( scoreIt == null || scoreIt.isDisabled() )
+        if (request == null || request.isDisabled())
         {
             LOG.info("Scoring Request Is Null Or Disabled");
-            return new HashSet<Future<Result>>();
+            return new HashSet<ScoringFuture>();
         }
 
-        int futuresCount = scoreIt.getOptions().isEmpty() ? _scoring.size() : scoreIt.getOptions().size();
-        Set<Future<Result>> futures = new HashSet<Future<Result>>(futuresCount);
+        int futuresCount = determineFuturesCount(request);
+        Set<ScoringFuture> scoringFutures = new HashSet<ScoringFuture>(futuresCount);
 
         for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
         {
-            if ( !executeWithScoreCard(entry.getKey(), scoreIt) )
+            if ( !isScoreCardEnableForRequest(entry.getKey(), request) )
             {
                 continue;
             }
 
-            ScoreCardCallable<T> callable = new ScoreCardCallable<T>(entry.getKey(), scoreIt);
-            Future<Result> future = entry.getValue().submit(callable);
-            futures.add(future);
+            long timeout = determineTimeout(defaultTimeoutMillis, entry.getKey().getName(), request.getOptions());
+            ScoreRunnable<T> runnable = new ScoreRunnable<T>(entry.getKey(), request);
+            Future future = entry.getValue().submit(runnable);
+            ScoringFuture scoringFuture = new ScoringFuture(future, timeout);
+            scoringFutures.add(scoringFuture);
         }
 
-        return futures;
+        return scoringFutures;
     }
 
-    // Empty or null options indicate default card use.
-    private List<Long> getTimeouts(long defaultTimeoutMilis, Map<String, RequestOptions> requestOptions) {
+    /** Use the default timeout or per-request timeout from RequestOptions */
+    long determineTimeout(long defaultTimeoutMillis, String cardName, Map<String, RequestOptions> requestOptions) {
 
-        if ( requestOptions == null || requestOptions.isEmpty() )
+        if (requestOptions == null || requestOptions.isEmpty())
         {
-            List<Long> timeouts = new ArrayList<Long>();
-            for (ScoreCard<T> card : _scoring.keySet())
-            {
-                timeouts.add(defaultTimeoutMilis);
-            }
-
-            return timeouts;
+            return defaultTimeoutMillis;
         }
 
-        return getPerRequestTimeouts(requestOptions);
-    }
-
-    private List<Long> getPerRequestTimeouts(Map<String, RequestOptions> requestOptions) {
-
-        List<Long> perRequestTimeouts = new ArrayList<Long>();
-        for ( Map.Entry<String, RequestOptions> entry : requestOptions.entrySet() )
+        RequestOptions options = requestOptions.get(cardName);
+        if (options != null && options.isEnabled())
         {
-            if ( entry.getValue().isEnabled() )
-            {
-                perRequestTimeouts.add(entry.getValue().getTimeoutMillis());
-            }
+            return options.getTimeoutMillis();
         }
 
-        return perRequestTimeouts;
+        return defaultTimeoutMillis;
     }
 
+    /** Check per request options to see if this ScoreCard is enabled */
+    private boolean isScoreCardEnableForRequest(ScoreCard scoreCard, Request<T> request) {
 
-    private boolean executeWithScoreCard(ScoreCard scoreCard, Request<T> request) {
-
-        if ( request.getOptions().isEmpty() )
+        if (request.getOptions().isEmpty())
         {
             return true;
         }
 
         RequestOptions options = request.getOptionsForScoreCard(scoreCard.getName());
-
         if (options != null && options.isEnabled())
         {
             return true;
         }
 
         return false;
+    }
+
+    /** How many score cards will be used? */
+    private int determineFuturesCount(Request<T> scoreIt) {
+        return scoreIt.getOptions().isEmpty() ? _scoring.size() : scoreIt.getOptions().size();
     }
 
     /**
@@ -274,17 +255,101 @@ public class Prankster<T> {
         return scoring;
     }
 
+    /** Setup a thread pool executor service for each ScoreCard */
     private Map<ScoreCard<T>, ExecutorService> initThreadPools(Set<ScoreCard<T>> scoreCards,
                                                                PrankThreadPoolFactory threadPoolFactory) {
 
         Map<ScoreCard<T>, ExecutorService> scoring = new HashMap<ScoreCard<T>, ExecutorService>(scoreCards.size());
-
         for ( ScoreCard<T> scoreCard : scoreCards )
         {
             scoring.put(scoreCard, threadPoolFactory.createThreadPool());
         }
 
         return scoring;
+    }
+
+    /** Encapsulates a Future and a Timeout */
+    public static class ScoringFuture<T> {
+
+        private final Future _future;
+        private final long _timeout;
+
+        private ScoringFuture(Future<T> future, long timeout) {
+            _future = future;
+            _timeout = timeout;
+        }
+
+        public Future<T> getFuture() {
+            return _future;
+        }
+
+        public long getTimeout() {
+            return _timeout;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+
+            if ( this == o )
+            {
+                return true;
+            }
+
+            if ( o == null || getClass() != o.getClass() )
+            {
+                return false;
+            }
+
+            ScoringFuture that = (ScoringFuture) o;
+
+            if ( _timeout != that._timeout )
+            {
+                return false;
+            }
+            return !(_future != null ? !_future.equals(that._future) : that._future != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = _future != null ? _future.hashCode() : 0;
+            result = 31 * result + (int) (_timeout ^ (_timeout >>> 32));
+            return result;
+        }
+    }
+
+    /**
+     * Create a Runnable from a stateless setupScoring card execution and some object to setupScoring (T).
+     * Will use 'RequestOptions' if that object is not null.
+     *
+     * @param <T> The object to setupScoring.
+     */
+    private class ScoreRunnable<T>
+        implements Runnable {
+
+        private final ScoreCard<T> _scoreCard;
+        private final Request<T> _request;
+
+        private ScoreRunnable(ScoreCard<T> scoreCard, Request<T> request) {
+            _scoreCard = scoreCard;
+            _request = request;
+        }
+
+        @Override
+        public void run() {
+
+            if (_request.getOptions() != null)
+            {
+                RequestOptions options = _request.getOptionsForScoreCard(_scoreCard.getName());
+                if (options != null)
+                {
+                    _scoreCard.updateObjectsWithScore(_request.getRequestObject(), options);
+                    return;
+                }
+            }
+
+            _scoreCard.updateObjectsWithScore(_request.getRequestObject());
+        }
     }
 
     /**
@@ -299,7 +364,6 @@ public class Prankster<T> {
         private final ScoreCard<T> _scoreCard;
         private final Request<T> _request;
 
-
         private ScoreCardCallable(ScoreCard<T> scoreCard, Request<T> request) {
             _scoreCard = scoreCard;
             _request = request;
@@ -308,19 +372,155 @@ public class Prankster<T> {
         public ScoreSummary call()
             throws Exception {
 
-            if (_request.getOptions() == null)
+            if (_request.getOptions() != null)
             {
-                return _scoreCard.score(_request.getRequestObject());
-            }
-
-            RequestOptions options = _request.getOptionsForScoreCard(_scoreCard.getName());
-            if ( options != null )
-            {
-                return _scoreCard.scoreWith(_request.getRequestObject(), options);
+                RequestOptions options = _request.getOptionsForScoreCard(_scoreCard.getName());
+                if ( options != null )
+                {
+                    return _scoreCard.scoreWith(_request.getRequestObject(), options);
+                }
             }
 
             return _scoreCard.score(_request.getRequestObject());
         }
+    }
+
+    /**
+     * Submit request and scorables to the work queues and wait the specified time for
+     * them to complete scoring. This eats all exceptions, but there is a chance some
+     * or all of the objects will not be scored.
+     *
+     * @param objectsToScore A single object or collection of objects with type T
+     * @param defaultTimeoutInMillis The time to wait for scoring to complete.
+     * @deprecated (Targeted removal: 2.0), Use 'updateObjectsWithScores()' instead, rename to scoreObject()
+     */
+    @Deprecated
+    public void updateObjectScore(Request<T> objectsToScore, int defaultTimeoutInMillis) {
+
+        if ( objectsToScore == null || objectsToScore.isDisabled() )
+        {
+            LOG.warn("Cannot ScoreData Null Objects OR Scoring Is Disabled");
+            return;
+        }
+
+        // todo: Make another internal class that has a Future and Timeout (settings)
+        Set<Future<Result>> futures = setupScoring(objectsToScore);
+        List<Long> timeouts = getTimeouts(defaultTimeoutInMillis, objectsToScore.getOptions());
+        int current = 0;
+
+        for (Future<Result> future : futures)
+        {
+            try
+            {
+                future.get(timeouts.get(current), TimeUnit.MILLISECONDS);
+            }
+            catch (Throwable t)
+            {
+                LOG.warn("Failed To Complete Scoring In time: %s, For: %s", timeouts.get(current),
+                         objectsToScore.getRequestObject());
+            }
+
+            current++;
+        }
+    }
+
+    /** Intended replacement for 'setupScoring()' */
+    private Set<ScoringFuture<Result>> buildScoringFutures(Request<T> request, long defaultTimeoutMillis) {
+
+        if (request == null || request.isDisabled())
+        {
+            LOG.info("Scoring Request Is Null Or Disabled");
+            return new HashSet<ScoringFuture<Result>>();
+        }
+
+        int futuresCount = determineFuturesCount(request);
+        Set<ScoringFuture<Result>> scoringFutures = new HashSet<ScoringFuture<Result>>(futuresCount);
+
+        for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
+        {
+            if ( !isScoreCardEnableForRequest(entry.getKey(), request) )
+            {
+                continue;
+            }
+
+            long timeout = determineTimeout(defaultTimeoutMillis, entry.getKey().getName(), request.getOptions());
+            ScoreCardCallable<T> callable = new ScoreCardCallable<T>(entry.getKey(), request);
+            Future future = entry.getValue().submit(callable);
+            ScoringFuture<Result> scoringFuture = new ScoringFuture<Result>(future, timeout);
+            scoringFutures.add(scoringFuture);
+        }
+
+        return scoringFutures;
+    }
+
+    /**
+     * Return a Future with Result of type V. Origin is responsible for maintaining
+     * a Set of Future responses and interpreting them. This submits each ScoreCard
+     * as a Callable and returns a Future.
+     *
+     * @param scoreIt A request with optional Options
+     * @return A Set of Result Futures
+     * @deprecated (Targeted removal: 2.0) Use 'setupScoringObjects' or 'setupScoringUpdates()' instead
+     */
+    @Deprecated
+    public Set<Future<Result>> setupScoring(Request<T> scoreIt) {
+
+        if ( scoreIt == null || scoreIt.isDisabled() )
+        {
+            LOG.info("Scoring Request Is Null Or Disabled");
+            return new HashSet<Future<Result>>();
+        }
+
+        int futuresCount = determineFuturesCount(scoreIt);
+        Set<Future<Result>> futures = new HashSet<Future<Result>>(futuresCount);
+
+        for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
+        {
+            if ( !isScoreCardEnableForRequest(entry.getKey(), scoreIt) )
+            {
+                continue;
+            }
+
+            ScoreCardCallable<T> callable = new ScoreCardCallable<T>(entry.getKey(), scoreIt);
+            Future<Result> future = entry.getValue().submit(callable);
+            futures.add(future);
+        }
+
+        return futures;
+    }
+
+    /** Empty or null options indicate default card use.  */
+    @Deprecated
+    private List<Long> getTimeouts(long defaultTimeoutMilis, Map<String, RequestOptions> requestOptions) {
+
+        if ( requestOptions == null || requestOptions.isEmpty() )
+        {
+            List<Long> timeouts = new ArrayList<Long>();
+            for (ScoreCard<T> card : _scoring.keySet())
+            {
+                timeouts.add(defaultTimeoutMilis);
+            }
+
+            return timeouts;
+        }
+
+        return getPerRequestTimeouts(requestOptions);
+    }
+
+    /** Update ScoreCard timeout from request options */
+    @Deprecated
+    private List<Long> getPerRequestTimeouts(Map<String, RequestOptions> requestOptions) {
+
+        List<Long> perRequestTimeouts = new ArrayList<Long>();
+        for ( Map.Entry<String, RequestOptions> entry : requestOptions.entrySet() )
+        {
+            if ( entry.getValue().isEnabled() )
+            {
+                perRequestTimeouts.add(entry.getValue().getTimeoutMillis());
+            }
+        }
+
+        return perRequestTimeouts;
     }
 }
 

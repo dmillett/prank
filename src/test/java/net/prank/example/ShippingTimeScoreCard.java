@@ -13,7 +13,9 @@ import net.prank.tools.ScoringTool;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -52,50 +54,73 @@ public class ShippingTimeScoreCard
 
     @Override
     public ScoreSummary score(List<ExampleObject> examples) {
+        updateObjectsWithScore(examples);
+        return null; // Better to throw UnsupportedHere until a better encapsulation comes along
+    }
 
-        if (examples == null || examples.isEmpty())
-        {
-            return null;
-        }
+    // Could perform misleading update, return null, or a score summary
+    @Override
+    public ScoreSummary scoreWith(List<ExampleObject> examples, RequestOptions options) {
+        updateObjectsWithScore(examples, options);
+        return null; // Better to throw UnsupportedHere until a better encapsulation comes along
+    }
 
+    private enum Data {
+        AVERAGE,
+        STD_DEVIATION,
+        GROSS_MAX,
+        GROSS_MIN,
+    }
+
+    private Map<Data, Double> determineShippingData(List<ExampleObject> examples) {
+
+        Map<Data, Double> data = new HashMap<Data, Double>();
         List<Long> shippingTimes = getShippingTimes(examples);
         double average = NumericTools.averageForLongs(shippingTimes);
-        double standardDeviation = NumericTools.standardDeviationForLongs(average, shippingTimes);
-        double grossMax = NumericTools.max(shippingTimes);
-        double grossMin = NumericTools.min(shippingTimes);
 
-        ScoringTool tool = new ScoringTool();
-        Set<ScoringRange> scoring = tool.scoreBucketsEvenlyLowValueAsHighScore(_minPoints, _maxPoints,
-                                                                               _pointSlices, grossMin, grossMax);
-
-        updateSolutionsWithScore(examples, scoring, average, standardDeviation, tool);
-
-        return null;
+        data.put(Data.AVERAGE, average);
+        data.put(Data.STD_DEVIATION, NumericTools.standardDeviationForLongs(average, shippingTimes));
+        data.put(Data.GROSS_MAX, NumericTools.max(shippingTimes));
+        data.put(Data.GROSS_MIN, NumericTools.min(shippingTimes));
+        return data;
     }
 
     @Override
-    public ScoreSummary scoreWith(List<ExampleObject> examples, RequestOptions options) {
+    public void updateObjectsWithScore(List<ExampleObject> examples) {
 
         if (examples == null || examples.isEmpty())
         {
-            return null;
+            return;
         }
 
-        List<Long> shippingTimes = getShippingTimes(examples);
-        double average = NumericTools.averageForLongs(shippingTimes);
-        double standardDeviation = NumericTools.standardDeviationForLongs(average, shippingTimes);
-        double grossMax = NumericTools.max(shippingTimes);
-        double grossMin = NumericTools.min(shippingTimes);
+        Map<Data, Double> data = determineShippingData(examples);
+        ScoringTool tool = new ScoringTool();
+        Set<ScoringRange> scoring = tool.scoreBucketsEvenlyLowValueAsHighScore(_minPoints,
+                                                                               _maxPoints,
+                                                                               _pointSlices,
+                                                                               data.get(Data.GROSS_MIN),
+                                                                               data.get(Data.GROSS_MAX));
 
+        updateSolutionsWithScore(examples, scoring, data.get(Data.AVERAGE), data.get(Data.STD_DEVIATION), tool);
+    }
+
+    @Override
+    public void updateObjectsWithScore(List<ExampleObject> examples, RequestOptions options) {
+
+        if (examples == null || examples.isEmpty())
+        {
+            return;
+        }
+
+        Map<Data, Double> data = determineShippingData(examples);
         ScoringTool tool = new ScoringTool();
         Set<ScoringRange> scoring = tool.scoreBucketsEvenlyLowValueAsHighScore(options.getMinPoints(),
                                                                                options.getMaxPoints(),
                                                                                options.getBucketCount(),
-                                                                               grossMin,
-                                                                               grossMax);
+                                                                               data.get(Data.GROSS_MIN),
+                                                                               data.get(Data.GROSS_MAX));
 
-        updateSolutionsWithScore(examples, scoring, average, standardDeviation, tool);
-        return null;
+        updateSolutionsWithScore(examples, scoring, data.get(Data.AVERAGE), data.get(Data.STD_DEVIATION), tool);
     }
 
     @Override

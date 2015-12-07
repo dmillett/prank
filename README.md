@@ -20,8 +20,8 @@ data that can be used for;
   1. scored value
   2. original position index
   3. ScoreData (calculated score, adjusted Score, min points, max points, number of score buckets)
-  4. Statistics average, mean deviation, median deviation, standard deviation
-  5. per request scoring conditions
+  4. Optional statistics average, mean deviation, median deviation, standard deviation
+  5. Optional per request scoring conditions
 
 ##Usage
 After adding the dependency to the build, see the examples below or in the *src/test/java/net/prank/example/* package and code directly or use a dependency injection manager (Spring, Guice, etc) & configuration to set scoring values. 
@@ -30,7 +30,7 @@ After adding the dependency to the build, see the examples below or in the *src/
 <dependency>
   <groupId>com.github.dmillett</groupId>
   <artifactId>prank</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.0</version>
 </dependency>  
 ```
 
@@ -48,13 +48,14 @@ scoreCards.add(examplePrice);
 scoreCards.add(exampleShippingCost);
 scoreCards.add(exampleShippingTime);        
                 
-// Setup scoring mechanism (can wire up a Prankster with dependency injection) 
-Prankster prankster = new Prankster(scoreCards, executorPoolSize);
+// Setup scoring mechanism (can wire up a Prankster with dependency injection)
+// Use the max expected number of concurrent requests for poolSize 
+Prankster prankster = new Prankster(scoreCards, maxConcurrentRequestCount);
 
 // Score a List of 'ExampleObject' objects
 List<ExampleObject> examples = someSearchRequest();
 Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
-prankster.updateObjectScore(request, scoringTimeoutInMillis);
+prankster.updateObjectsWithScores(request, scoringTimeoutInMillis);
 ```
 #### Sort the results according to score
 ```java
@@ -69,14 +70,6 @@ Collections.sort(examples, new ScoreComparator(priceCard, Result.ResultScoreType
 
 #### Per request configuration options
 ```java
-// Establish score cards
-ScoreCard examplePrice = new PriceScoreCard(0, 20, 10);
-ScoreCard exampleShippingCost = new ShippingCostScoreCard(0, 10, 10);
-ScoreCard exampleShippingTime = new ShippingTimeScoreCard(0, 5, 5);
-
-// Setup scoring mechanism (can wire up a Prankster with dependency injection) 
-Prankster prankster = new Prankster(scoreCards, executorPoolSize);
-
 // Setup per-request overrides for PriceScoreCard
 RequestOptions priceCardOptions = new RequestOptions.RequestOptionsBuilder().build();
 Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
@@ -85,7 +78,7 @@ optionsMap.put(priceCard.getName(), priceCardOptions);
 // Score the request (PriceCard with overrides, DeliveryCard with default values)
 Request<List<ExampleObject> request = new Request<List<ExampleObject>>();
 request.addOptions(optionsMap);
-prankster.updateObjectScore(request, scoringTimeoutInMillis);
+prankster.updateObjectsWithScores(request, scoringTimeoutInMillis);
 ```
 
 #### Unit testing ScoreCard implementations is straight forward
@@ -96,7 +89,7 @@ test cases depends on how complex the ScoreCard scoring algorithm is.
 // Relative ranking by price of books in a search result (updates each ExampleObject)
 
 @Test
-public void test_PriceScoreCard_for_ExampleObject() {
+public void test__score_updateObjectsWithScores() {
 
     PranksterExample pe = new PranksterExample();
     List<ExampleObject> examples = pe.getExamples();
@@ -106,7 +99,7 @@ public void test_PriceScoreCard_for_ExampleObject() {
     scoreCards.add(new PriceScoreCard(0, 20, 10));
 
     Prankster<List<ExampleObject>> prankster = new Prankster<List<ExampleObject>>(scoreCards, 1);
-    prankster.updateObjectScore(request, 20);
+    prankster.updateObjectsWithScores(request, 20);
 
     assertEquals(new BigDecimal("2.0"), examples.get(0).getScoreSummary().tallyScore());
     assertEquals(new BigDecimal("16.0"), examples.get(1).getScoreSummary().tallyScore());

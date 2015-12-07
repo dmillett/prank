@@ -9,7 +9,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 /**
  *
@@ -131,7 +130,7 @@ public class NumericToolsTest {
 
         for (int i = 1; i <= size; i++)
         {
-            values.add(Double.valueOf(i));
+            values.add((double) i);
         }
 
         return values;

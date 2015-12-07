@@ -1,12 +1,10 @@
 package net.prank.core;
 
-import net.prank.tools.DELIM;
 import net.prank.tools.ScoreFormatter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Formatter;
 
 /**
  * An encapsulation of statistics to surface in the Results object

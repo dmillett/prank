@@ -13,8 +13,9 @@ import net.prank.tools.ScoringTool;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -52,55 +53,78 @@ public class PriceScoreCard
         _pointSlices = pointSliceCount;
     }
 
+    // Should use 'updateObjectsWithScore()' instead of this (the name is misleading and dprecated)
     public ScoreSummary score(List<ExampleObject> solutions) {
-
-        if (solutions == null || solutions.isEmpty())
-        {
-            return null;
-        }
-
-        List<Double> totalPrices = getPrices(solutions);
-        double average = NumericTools.averageForDoubles(totalPrices);
-        double standardDeviation = NumericTools.standardDeviationForDoubles(average, totalPrices);
-        double grossMax = NumericTools.max(totalPrices);
-        double grossMin = NumericTools.min(totalPrices);
-
-        ScoringTool tool = new ScoringTool();
-        Set<ScoringRange> scoring = tool.scoreBucketsEvenlyLowValueAsHighScore(_minPoints, _maxPoints,
-                                                                               _pointSlices, grossMin, grossMax);
-
-        updateSolutionsWithScore(solutions, scoring, average, standardDeviation, tool);
-
-        return null;
+        updateObjectsWithScore(solutions);
+        return null; // Better to throw UnsupportedHere until a better encapsulation comes along
     }
 
     @Override
     public ScoreSummary scoreWith(List<ExampleObject> solutions, RequestOptions options) {
+        updateObjectsWithScore(solutions, options);
+        return null; // Better to throw UnsupportedHere until a better encapsulation comes along
+    }
 
-        if (solutions == null || solutions.isEmpty())
+    @Override
+    public void updateObjectsWithScore(List<ExampleObject> examples) {
+
+        if (examples == null || examples.isEmpty())
         {
-            return null;
+            return;
         }
 
-        List<Double> totalPrices = getPrices(solutions);
-        double average = NumericTools.averageForDoubles(totalPrices);
-        double standardDeviation = NumericTools.standardDeviationForDoubles(average, totalPrices);
-        double grossMax = NumericTools.max(totalPrices);
-        double grossMin = NumericTools.min(totalPrices);
+        Map<Data, Double> data = determinePrices(examples);
+        ScoringTool tool = new ScoringTool();
+        Set<ScoringRange> scoring = tool.scoreBucketsEvenlyLowValueAsHighScore(_minPoints,
+                                                                               _maxPoints,
+                                                                               _pointSlices,
+                                                                               data.get(Data.GROSS_MIN),
+                                                                               data.get(Data.GROSS_MAX));
 
+        updateSolutionsWithScore(examples, scoring, data.get(Data.AVERAGE), data.get(Data.STD_DEVIATION), tool);
+    }
+
+    @Override
+    public void updateObjectsWithScore(List<ExampleObject> examples, RequestOptions options) {
+
+        if (examples == null || examples.isEmpty())
+        {
+            return;
+        }
+
+        Map<Data, Double> data = determinePrices(examples);
         ScoringTool tool = new ScoringTool();
         Set<ScoringRange> scoring = tool.scoreBucketsEvenlyLowValueAsHighScore(options.getMinPoints(),
                                                                                options.getMaxPoints(),
                                                                                options.getBucketCount(),
-                                                                               grossMin,
-                                                                               grossMax);
+                                                                               data.get(Data.GROSS_MIN),
+                                                                               data.get(Data.GROSS_MAX));
 
-        updateSolutionsWithScore(solutions, scoring, average, standardDeviation, tool);
-        return null;
+        updateSolutionsWithScore(examples, scoring, data.get(Data.AVERAGE), data.get(Data.STD_DEVIATION), tool);
     }
 
     public String getName() {
         return NAME;
+    }
+
+    private enum Data {
+        AVERAGE,
+        STD_DEVIATION,
+        GROSS_MAX,
+        GROSS_MIN,
+    }
+
+    private Map<Data, Double> determinePrices(List<ExampleObject> examples) {
+
+        Map<Data, Double> data = new HashMap<Data, Double>();
+        List<Double> totalShippingCosts = getPrices(examples);
+        double average = NumericTools.averageForDoubles(totalShippingCosts);
+
+        data.put(Data.AVERAGE, average);
+        data.put(Data.STD_DEVIATION, NumericTools.standardDeviationForDoubles(average, totalShippingCosts));
+        data.put(Data.GROSS_MAX, NumericTools.max(totalShippingCosts));
+        data.put(Data.GROSS_MIN, NumericTools.min(totalShippingCosts));
+        return data;
     }
 
     void updateSolutionsWithScore(List<ExampleObject> solutions, Set<ScoringRange> scoringRange,

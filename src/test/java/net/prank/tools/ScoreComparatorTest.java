@@ -1,6 +1,5 @@
 package net.prank.tools;
 
-import net.prank.core.Result;
 import net.prank.example.ExampleObject;
 
 import net.prank.example.PranksterExample;
@@ -56,6 +55,42 @@ public class ScoreComparatorTest {
         PranksterExample pranksterExample = new PranksterExample();
         List<ExampleObject> examples = pranksterExample.getExamples();
         pranksterExample.scoreObjects(examples);
+
+        Set<String> priceCard = new HashSet<String>();
+        priceCard.add(PriceScoreCard.NAME);
+        Collections.sort(examples, new ScoreComparator(priceCard));
+
+        assertEquals(new BigDecimal("9.99"), examples.get(0).getPrice());
+        assertEquals(new BigDecimal("10.39"), examples.get(1).getPrice());
+        assertEquals(new BigDecimal("11.22"), examples.get(2).getPrice());
+        assertEquals(new BigDecimal("12.11"), examples.get(3).getPrice());
+        assertEquals(new BigDecimal("13.44"), examples.get(4).getPrice());
+        assertEquals(new BigDecimal("13.44"), examples.get(5).getPrice());
+    }
+
+    @Test
+    public void test__ScoreComparator_no_args_updateObjectsWithScores() {
+
+        PranksterExample pranksterExample = new PranksterExample();
+        List<ExampleObject> examples = pranksterExample.getExamples();
+        pranksterExample.updateObjectsWithScores(examples);
+
+        Collections.sort(examples, new ScoreComparator());
+
+        assertEquals(new BigDecimal("30.0"), examples.get(0).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("22.0"), examples.get(1).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("20.0"), examples.get(2).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("17.0"), examples.get(3).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("13.0"), examples.get(4).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("8.0"), examples.get(5).getScoreSummary().tallyScore());
+    }
+
+    @Test
+    public void test__ScoreComparator_one_card_updateObjectsWithScores() {
+
+        PranksterExample pranksterExample = new PranksterExample();
+        List<ExampleObject> examples = pranksterExample.getExamples();
+        pranksterExample.updateObjectsWithScores(examples);
 
         Set<String> priceCard = new HashSet<String>();
         priceCard.add(PriceScoreCard.NAME);

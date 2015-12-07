@@ -50,4 +50,25 @@ public class PriceScoreCardTest {
         assertEquals(new BigDecimal("20.0"), examples.get(4).getScoreSummary().tallyScore());
         assertEquals(new BigDecimal("8.0"), examples.get(5).getScoreSummary().tallyScore());
     }
+
+    @Test
+    public void test__score_updateObjectsWithScores() {
+
+        PranksterExample pe = new PranksterExample();
+        List<ExampleObject> examples = pe.getExamples();
+        Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
+
+        Set<ScoreCard<List<ExampleObject>>> scoreCards = new HashSet<ScoreCard<List<ExampleObject>>>();
+        scoreCards.add(new PriceScoreCard(0, 20, 10));
+
+        Prankster<List<ExampleObject>> prankster = new Prankster<List<ExampleObject>>(scoreCards, 1);
+        prankster.updateObjectsWithScores(request, 20);
+
+        assertEquals(new BigDecimal("2.0"), examples.get(0).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("16.0"), examples.get(1).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("12.0"), examples.get(2).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("2.0"), examples.get(3).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("20.0"), examples.get(4).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("8.0"), examples.get(5).getScoreSummary().tallyScore());
+    }
 }

@@ -70,6 +70,28 @@ public class ExampleScoreCard
 
     public ScoreSummary score(ExampleObject scoringObject) {
 
+        // Ignore the summary for now
+        performScoring(scoringObject);
+        return null;
+    }
+
+    @Override
+    public ScoreSummary scoreWith(ExampleObject scoringObject, RequestOptions options) {
+        return score(scoringObject);
+    }
+
+    @Override
+    public void updateObjectsWithScore(ExampleObject scoringObject) {
+        performScoring(scoringObject);
+    }
+
+    @Override
+    public void updateObjectsWithScore(ExampleObject scoringObject, RequestOptions options) {
+        performScoring(scoringObject);
+    }
+
+    private void performScoring(ExampleObject scoringObject) {
+
         int score = scoringObject.getAverageShippingTime() + _scoreAdjustment;
         int position = _positionAdjustment;
         double average = scoringObject.getShippingCost().doubleValue() + _averageAdjustment;
@@ -89,14 +111,6 @@ public class ExampleScoreCard
         Result result = resultBuilder.build();
 
         scoringObject.getScoreSummary().addResult(_name, result);
-
-        // Ignore the summary for now
-        return null;
-    }
-
-    @Override
-    public ScoreSummary scoreWith(ExampleObject scoringObject, RequestOptions options) {
-        return score(scoringObject);
     }
 
     public String getName() {

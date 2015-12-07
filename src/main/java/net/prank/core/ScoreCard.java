@@ -1,8 +1,5 @@
 package net.prank.core;
 
-import net.prank.core.RequestOptions;
-import net.prank.core.ScoreSummary;
-
 /**
  * A thread pool exists for each configured (spring) ScoreCard where it will examine all
  * the relevant ScoreCards and evaluate them. Implement a separate ScoreCard for ranking
@@ -24,10 +21,17 @@ import net.prank.core.ScoreSummary;
  *  limitations under the License.
  */
 public interface ScoreCard<T> {
-    /** A stateless method to prevent cross thread corruption. */
+
+    /** Score a single object with default options */
     public ScoreSummary score(T scoringObject);
-    /** ScoreData it with options, otherwise use defaults */
+    /** Score a single object with specified options, otherwise use defaults */
     public ScoreSummary scoreWith(T scoringObject, RequestOptions options);
+
+    /** Score and update an object or collection of objects with default options */
+    public void updateObjectsWithScore(T scoringObject);
+    /** Score and update an object or collection of objects with specific options */
+    public void updateObjectsWithScore(T scoringObject, RequestOptions options);
+
     /** A setupScoring card name to use as a key in ScoreSummary */
     public String getName();
 }

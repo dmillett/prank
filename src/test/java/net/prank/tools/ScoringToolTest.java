@@ -104,18 +104,6 @@ public class ScoringToolTest {
         }
     }
 
-//    @Test
-//    public void test__scoreSlicesEvenlyLowValueAsHighScore__issue() {
-//
-//        ScoringTool st = new ScoringTool();
-//        Set<ScoringRange> ranges = st.scoreBucketsEvenlyLowValueAsHighScore(0.0, 20.0, 10, 9.99, 13.44);
-//
-//        assertEquals(10, ranges.size());
-//
-//        for (ScoringRange range :)
-//
-//    }
-
     @Test
     public void test__scoreBucketsEvenlyHighValueAsHighScore() {
 
