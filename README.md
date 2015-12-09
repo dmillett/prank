@@ -10,21 +10,24 @@ selecting books from used booksellers where price, delivery time, shipping cost,
 etc may be important. Scoring is completed once in the distributed transaction but produces
 data that can be used for;
 * sorting (see tallyScore()), 
-* personalization (adjusted score from user preferences)
+* personalization (adjust score from preferences (user/configured/ML/etc)
 * Reporting and Machine Learning (summary statistics that help differentiate a selected option).
 
 ##Features
 * Parallel scoring of a generic collection of objects with 1 - N ScoreCards
+  1. A timeout is available for each scoring process, it will score as many as possible in the time
 * Each ScoreSummary result may be adjusted/customized during or after initial scoring
 * A result object for every scored object in the collection can contain:
   1. scored value
   2. original position index
   3. ScoreData (calculated score, adjusted Score, min points, max points, number of score buckets)
   4. Optional statistics average, mean deviation, median deviation, standard deviation
-  5. Optional per request scoring conditions
+  5. Optional per request scoring conditions and timeouts
+* Each ScoreCard thread pool size should be configured to the handle the maximum number of actual/expected
+concurrent requests
 
 ##Usage
-After adding the dependency to the build, see the examples below or in the *src/test/java/net/prank/example/* package and code directly or use a dependency injection manager (Spring, Guice, etc) & configuration to set scoring values. 
+After adding the dependency to the build, see the examples below or in the **src/test/java/net/prank/example/** package and code directly or use a dependency injection manager (Spring, Guice, etc) & configuration to set scoring values. 
 
 ```
 <dependency>
@@ -81,9 +84,52 @@ request.addOptions(optionsMap);
 prankster.updateObjectsWithScores(request, scoringTimeoutInMillis);
 ```
 
+#### Sample ScoreCard
+There are three examples in the **src/test/java/net/prank/example** directory. Here is code
+from the **PriceScoreCard**. Scoring is an isolated mechanism and can vary by ScoreCard implementation.
+For simplicity, **ShippingCostScoreCard** and **ShippingTimeScoreCard** score similarly to PriceScoreCard.
+
+```java
+// The statistics are optional (for performance) and could be computed with a library of choice
+void updateSolutionsWithScore(List<ExampleObject> solutions, Set<ScoringRange> scoringRange,
+                              double average, double standardDeviation, ScoringTool scoringTool) {
+
+    int i = 0;
+    for ( ExampleObject solution : solutions )
+    {
+        if ( solution.getPrice() == null )
+        {
+            i++;
+            continue;
+        }
+
+        double totalPrice = solution.getPrice().doubleValue();
+        double score = scoringTool.getScoreFromRange(totalPrice, scoringRange);
+        ScoreData.Builder scoreBuilder = new ScoreData.Builder();
+        scoreBuilder.setScore(new BigDecimal(String.valueOf(score)));
+
+        // Optional statistics
+        Statistics.Builder statsBuilder = new Statistics.Builder();
+        statsBuilder.setAverage(new BigDecimal(String.valueOf(average)));
+        statsBuilder.setStandardDeviation(new BigDecimal(String.valueOf(standardDeviation)));
+        Statistics stats = statsBuilder.build();
+
+        Result.Builder rb = new Result.Builder(NAME, scoreBuilder.build());
+        rb.setPosition(new Indices(i));
+        rb.setOriginal(totalPrice);
+        rb.setStatistics(stats);
+        Result result = rb.build();
+
+        solution.getScoreSummary().addResult(NAME, result);
+        i++;
+    }
+}
+```
+
 #### Unit testing ScoreCard implementations is straight forward
 Building unit tests for each ScoreCard implementation is fairly easy. The complexity of the
-test cases depends on how complex the ScoreCard scoring algorithm is.
+test cases depends on how complex the ScoreCard scoring algorithm is. This is also beneficial
+for building analyst tools to evaluate how scoring strategies affect known results.
 
 ```java
 // Relative ranking by price of books in a search result (updates each ExampleObject)
