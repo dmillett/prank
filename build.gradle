@@ -12,8 +12,13 @@
  * See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+plugins {
+  id 'com.github.ben-manes.versions' version '0.14.0'
+}
+
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'jacoco'
 apply plugin: 'findbugs'
 apply plugin: 'maven'
 apply plugin: 'signing'
@@ -22,6 +27,9 @@ group = 'com.github.dmillett'
 archivesBaseName = 'prank'
 version = '1.1.0'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 task prankJar(type: Jar)
 
 task prankSourcesJar(type: Jar) {
@@ -29,18 +37,19 @@ task prankSourcesJar(type: Jar) {
   from sourceSets.main.allSource
 }
 
-artifacts {
-  archives prankJar
-  archives prankSourcesJar
-}
-
 task javadocJar(type: Jar) {
   classifier = 'javadoc'
   from javadoc
 }
 
+artifacts {
+  archives prankJar
+  archives prankSourcesJar
+  archives javadocJar
+}
+
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.9'
+  gradleVersion = '3.5'
 }
 
 repositories {
@@ -48,10 +57,31 @@ repositories {
 }
 
 dependencies {
-  compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.13'
+  compile 'org.slf4j:slf4j-log4j12:1.7.25'
 
-  testCompile group: 'junit', name: 'junit', version: '4.11'
-  testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
+  testCompile 'junit:junit:4.12'
+  testCompile 'org.mockito:mockito-all:1.10.19'
+}
+
+dependencyUpdates.resolutionStrategy = {
+  componentSelection { rules ->
+    rules.all { ComponentSelection selection ->
+      boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
+        selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+      }
+      if (rejected) {
+        selection.reject('Release candidate')
+      }
+    }
+  }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/reports/jacocoHtml"
+    }
 }
 
 tasks.withType(FindBugs) {
@@ -70,13 +100,13 @@ uploadArchives {
     mavenDeployer {
       beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
-
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
+//      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+//        authentication(userName: ossrhUsername, password: ossrhPassword)
+//      }
+//
+//      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+//        authentication(userName: ossrhUsername, password: ossrhPassword)
+//      }
 
       pom.project {
         name 'prank'
@@ -110,3 +140,4 @@ uploadArchives {
   }
 }
 
+jacocoTestReport.dependsOn test
