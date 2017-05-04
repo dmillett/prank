@@ -91,12 +91,7 @@ public class ScoringRange {
             return false;
         }
 
-        if (Double.compare(that._scorePoints, _scorePoints) != 0)
-        {
-            return false;
-        }
-
-        return true;
+        return Double.compare(that._scorePoints, _scorePoints) == 0;
     }
 
     @Override

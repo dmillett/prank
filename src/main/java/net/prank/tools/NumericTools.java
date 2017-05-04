@@ -51,8 +51,8 @@ public class NumericTools {
     /**
      * Could replace this with commons-math:Mean
      *
-     * @param values
-     * @return
+     * @param values A list of Long numbers
+     * @return The average of 'values' as a Double
      */
     public static Double averageForLongs(List<Long> values) {
 
@@ -88,7 +88,12 @@ public class NumericTools {
         return total / values.size();
     }
 
-    /** Will throw an NPE for any null value in 'values' */
+    /**
+     * Will throw an NPE for any null value in 'values'
+     * @param mean A number representing the average
+     * @param values A list of numbers
+     * @return The mean deviation as a Double
+     */
     public static Double meanDeviation(Number mean, List<? extends Number> values) {
 
         if (mean == null || values == null || values.isEmpty())
@@ -113,6 +118,11 @@ public class NumericTools {
         return deviationSum / count;
     }
 
+    /**
+     * Calculates the mean deviation. Null 'numbers' will throw an error
+     * @param values A list of Numbers
+     * @return the mean deviation for 'values'
+     */
     public static Double meanDeviation(List<? extends Number> values) {
 
         if (values == null || values.isEmpty())
@@ -161,7 +171,11 @@ public class NumericTools {
         return Math.sqrt(squaredSum / (values.size() - 1));
     }
 
-    /** Calculate the average here, then hand off to the standard deviations */
+    /**
+     * Calculate the average here, then hand off to the standard deviations
+     * @param values A list of Numbers
+     * @return the standard deviation as a double
+     */
     public static Double standardDeviation(List<? extends Number> values) {
 
         double average = NumericTools.average(values);
@@ -172,9 +186,9 @@ public class NumericTools {
      * Could replace this with commons-math:StandardDeviation
      * It will throw an NPE for any null in 'values'
      *
-     * @param mean
-     * @param values
-     * @return
+     * @param mean The average or mean
+     * @param values A list of long numbers
+     * @return standard deviation
      */
     public static Double standardDeviationForLongs(double mean, List<Long> values) {
 
@@ -220,7 +234,7 @@ public class NumericTools {
      * via each Number's doubleValue().
      *
      * Will throw NPE as it assumes all numbers are not-null.
-     * @param values
+     * @param values A list of numbers
      * @return null for any invalid List, NPE for any null in List,
      *         or the maximum double value from List
      */
@@ -246,7 +260,7 @@ public class NumericTools {
      * via each Number's doubleValue().
      *
      * Will throw NPE as it assumes all numbers are not-null.
-     * @param values
+     * @param values A list of Numbers
      * @return null for any invalid List, NPE for any null in List,
      *         or the minimum double value from List
      */

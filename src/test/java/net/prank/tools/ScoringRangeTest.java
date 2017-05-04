@@ -56,6 +56,7 @@ public class ScoringRangeTest {
 
     @Test
     public void test_hashCode() {
+
         ScoringRange rangeOne = new ScoringRange(0.0, 1.0, 5.0);
         ScoringRange rangeTwo = new ScoringRange(0.0, 1.0, 4.0);
         Set<ScoringRange> ranges = new HashSet<>();

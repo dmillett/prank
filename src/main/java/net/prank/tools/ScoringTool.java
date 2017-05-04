@@ -34,52 +34,13 @@ public class ScoringTool {
      * Split the range of grossMax - grossMin and divide it evenly by the bucketCount.
      * Use for larger ranges.
      *
-     * @param minPoints
-     * @param maxPoints
-     * @param bucketCount
-     * @param grossMin
-     * @param grossMax
-     * @return
+     * @param minPoints The smallest score point value
+     * @param maxPoints The largest score point value
+     * @param bucketCount How many buckets with different score values
+     * @param grossMin The smallest actual value
+     * @param grossMax The largest actual value
+     * @return ScoringRange set with buckets and points
      */
-    public Set<ScoringRange> scoreBucketsEvenlyLowValueAsHighScore2(double minPoints, double maxPoints, int bucketCount,
-                                                                    double grossMin, double grossMax) {
-
-        Set<ScoringRange> scores = new HashSet<ScoringRange>();
-        if (minPoints == maxPoints)
-        {
-            scores.add(new ScoringRange(grossMin, grossMax, maxPoints));
-            return scores;
-        }
-
-        double pointsPerSlice = (maxPoints - minPoints) / bucketCount;
-        double range = findRange(grossMin + 1, grossMax - 1);
-        double sliceRange = range / bucketCount;
-
-        scores.add(new ScoringRange(grossMin, grossMin, maxPoints));
-        scores.add(new ScoringRange(grossMax, grossMax, minPoints));
-
-        if (bucketCount <= 3)
-        {
-            double averagePoints = minPoints + maxPoints / 2;
-            scores.add(new ScoringRange(grossMin + 1, grossMax - 1, averagePoints));
-            return scores;
-        }
-
-        double minRange = grossMin + 1;
-        double maxRange = minRange + sliceRange;
-        int maxSlice = bucketCount - 1;
-
-        for (int i = maxSlice; i > 0; i--)
-        {
-            double points = i * pointsPerSlice;
-            scores.add(new ScoringRange(minRange, maxRange, points));
-            minRange = maxRange;
-            maxRange += sliceRange;
-        }
-
-        return scores;
-    }
-
     public Set<ScoringRange> scoreBucketsEvenlyLowValueAsHighScore(double minPoints, double maxPoints, int bucketCount,
                                                                    double grossMin, double grossMax) {
 
@@ -93,7 +54,7 @@ public class ScoringTool {
         double maxRange = minRange + sliceRange;
         int maxSlice = bucketCount - 1;
 
-        Set<ScoringRange> ranges = new HashSet<ScoringRange>();
+        Set<ScoringRange> ranges = new HashSet<>();
         ranges.add(new ScoringRange(grossMin, grossMin, maxPoints));
 
         for (int i = maxSlice; i > 0; i--)
@@ -111,17 +72,17 @@ public class ScoringTool {
      * Provide a point range and number of buckets for that range. Then apply the highest score
      * to the highest value and the lowest score to the lowest value.
      *
-     * @param minPoints
-     * @param maxPoints
-     * @param bucketCount
-     * @param grossMin
-     * @param grossMax
-     * @return
+     * @param minPoints The smallest score point value
+     * @param maxPoints The largest score point value
+     * @param bucketCount How many buckets with different score values
+     * @param grossMin The smallest actual value
+     * @param grossMax The largest actual value
+     * @return ScoringRange set with buckets and points
      */
     public Set<ScoringRange> scoreBucketsEvenlyHighValueAsHighScore(double minPoints, double maxPoints, int bucketCount,
                                                                     double grossMin, double grossMax) {
 
-        Set<ScoringRange> scores = new HashSet<ScoringRange>();
+        Set<ScoringRange> scores = new HashSet<>();
         if (grossMin == grossMax)
         {
             scores.add(new ScoringRange(grossMin, grossMax, maxPoints));
@@ -280,7 +241,7 @@ public class ScoringTool {
             return null;
         }
 
-        Set<String> scoreCards = new HashSet<String>();
+        Set<String> scoreCards = new HashSet<>();
         for (String scoreCardName : summary.getResults().keySet())
         {
             if (scoreCardNames.contains(scoreCardName))
@@ -294,8 +255,6 @@ public class ScoringTool {
 
     /**
      * Normalize a tallied score with a maximum possible value and normalize target.
-     * @see normalize()
-     * @see tallyScoreFor()
      *
      * @param summary
      * @param scoreCards

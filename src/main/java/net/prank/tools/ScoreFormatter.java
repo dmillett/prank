@@ -124,7 +124,7 @@ public class ScoreFormatter {
     /**
      * Colon delimited output of ScoreData using DEFAULT_SCALE and DEFAULT_ROUNDING_MODE
      *
-     * @param scoreData
+     * @param scoreData The ScoreData for this row item
      * @return "null" for null 'scoreData', otherwise returns score:adj_score:min_pts:max_pts:buckets
      */
     public String dumpScoreData(ScoreData scoreData, String delimiter, int scale, RoundingMode roundingMode) {
@@ -171,7 +171,7 @@ public class ScoreFormatter {
      * Any null Statistics value is represented by an empty String.
      * 4.50:1.50:::  // null median_dev, std_dev
      *
-     * @param statistics
+     * @param statistics The statistics object
      * @return "null" for null 'statistics', otherwise returns avg:mean_dev:median_dev:std_dev
      */
     public String dumpStatistics(Statistics statistics, String delimiter, int scale, RoundingMode rm) {

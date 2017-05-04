@@ -37,11 +37,11 @@ public class ScoreComparator
     private final Result.ResultScoreType _scoreType;
 
     public ScoreComparator() {
-        this(new HashSet<String>(), Result.ResultScoreType.ORIGINAL);
+        this(new HashSet<>(), Result.ResultScoreType.ORIGINAL);
     }
 
     public ScoreComparator(Result.ResultScoreType scoreType) {
-        this(new HashSet<String>(), scoreType);
+        this(new HashSet<>(), scoreType);
     }
 
     public ScoreComparator(Set<String> scoreCardNames) {

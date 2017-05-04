@@ -40,13 +40,13 @@ public class Request<T> {
     public Request(boolean disabled) {
         _disabled = disabled;
         _requestObject = null;
-        _options = new HashMap<String, RequestOptions>();
+        _options = new HashMap<>();
     }
 
     /** Using this relies on options specified in each ScoreCard implementation */
     public Request(T requestObject) {
         _requestObject = requestObject;
-        _options = new HashMap<String, RequestOptions>();
+        _options = new HashMap<>();
         _disabled = false;
     }
 

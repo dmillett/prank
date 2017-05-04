@@ -67,13 +67,7 @@ public class Indices
         }
 
         Indices indices = (Indices) o;
-
-        if ( !_indices.equals(indices._indices) )
-        {
-            return false;
-        }
-
-        return true;
+        return _indices.equals(indices._indices);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package net.prank.tools;
 
+import net.prank.core.Result;
 import net.prank.example.ExampleObject;
 
 import net.prank.example.PranksterExample;
@@ -38,8 +39,23 @@ public class ScoreComparatorTest {
         PranksterExample pranksterExample = new PranksterExample();
         List<ExampleObject> examples = pranksterExample.getExamples();
         pranksterExample.scoreObjects(examples);
-
         Collections.sort(examples, new ScoreComparator());
+
+        assertEquals(new BigDecimal("30.0"), examples.get(0).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("22.0"), examples.get(1).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("20.0"), examples.get(2).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("17.0"), examples.get(3).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("13.0"), examples.get(4).getScoreSummary().tallyScore());
+        assertEquals(new BigDecimal("8.0"), examples.get(5).getScoreSummary().tallyScore());
+    }
+
+    @Test
+    public void test__ScoreComparator_one_args() {
+
+        PranksterExample pranksterExample = new PranksterExample();
+        List<ExampleObject> examples = pranksterExample.getExamples();
+        pranksterExample.scoreObjects(examples);
+        Collections.sort(examples, new ScoreComparator(Result.ResultScoreType.ORIGINAL));
 
         assertEquals(new BigDecimal("30.0"), examples.get(0).getScoreSummary().tallyScore());
         assertEquals(new BigDecimal("22.0"), examples.get(1).getScoreSummary().tallyScore());
@@ -75,7 +91,7 @@ public class ScoreComparatorTest {
         List<ExampleObject> examples = pranksterExample.getExamples();
         pranksterExample.updateObjectsWithScores(examples);
 
-        Collections.sort(examples, new ScoreComparator());
+        examples.sort(new ScoreComparator());
 
         assertEquals(new BigDecimal("30.0"), examples.get(0).getScoreSummary().tallyScore());
         assertEquals(new BigDecimal("22.0"), examples.get(1).getScoreSummary().tallyScore());
@@ -92,9 +108,9 @@ public class ScoreComparatorTest {
         List<ExampleObject> examples = pranksterExample.getExamples();
         pranksterExample.updateObjectsWithScores(examples);
 
-        Set<String> priceCard = new HashSet<String>();
+        Set<String> priceCard = new HashSet<>();
         priceCard.add(PriceScoreCard.NAME);
-        Collections.sort(examples, new ScoreComparator(priceCard));
+        examples.sort(new ScoreComparator(priceCard));
 
         assertEquals(new BigDecimal("9.99"), examples.get(0).getPrice());
         assertEquals(new BigDecimal("10.39"), examples.get(1).getPrice());

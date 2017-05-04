@@ -43,7 +43,7 @@ public class ScoreSummary
 
     public ScoreSummary(String name) {
         _name = name;
-        _results = new HashMap<String, Result>();
+        _results = new HashMap<>();
     }
 
     public void addResult(String key, Result result) {

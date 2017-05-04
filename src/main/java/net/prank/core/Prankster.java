@@ -65,7 +65,7 @@ public class Prankster<T> {
         else
         {
             LOG.info("No Scoring Thread Pools To Initialize");
-            _scoring = new HashMap<ScoreCard<T>, ExecutorService>(0);
+            _scoring = new HashMap<>(0);
             _corePoolSize = 0;
         }
     }
@@ -74,9 +74,9 @@ public class Prankster<T> {
      * Uses a specified factory class to create thread pools for each ScoreCard. Note the number
      * of core threads per thread pool should be higher than expected current traffic.
      *
-     * @param scoreCards
-     * @param corePoolSize
-     * @param threadPoolFactory
+     * @param scoreCards The score cards to apply
+     * @param corePoolSize The number of threads to use in the thread pool, think of concurrent request load
+     * @param threadPoolFactory To create a thread pool for the score cards.
      */
     public Prankster(Set<ScoreCard<T>> scoreCards, int corePoolSize, PrankThreadPoolFactory threadPoolFactory) {
 
@@ -88,7 +88,7 @@ public class Prankster<T> {
         else
         {
             LOG.info("No Scoring Thread Pool To Initialize!");
-            _scoring = new HashMap<ScoreCard<T>, ExecutorService>(0);
+            _scoring = new HashMap<>(0);
             _corePoolSize = 0;
         }
     }
@@ -167,16 +167,17 @@ public class Prankster<T> {
     }
 
     /** Create and add Future Runnables to their appropriate executor pool. A generic request and timeout */
+    @SuppressWarnings("unchecked")
     public Set<ScoringFuture> buildScoringUpdateFutures(Request<T> request, long defaultTimeoutMillis) {
 
         if (request == null || request.isDisabled())
         {
             LOG.info("Scoring Request Is Null Or Disabled");
-            return new HashSet<ScoringFuture>();
+            return new HashSet<>();
         }
 
         int futuresCount = determineFuturesCount(request);
-        Set<ScoringFuture> scoringFutures = new HashSet<ScoringFuture>(futuresCount);
+        Set<ScoringFuture> scoringFutures = new HashSet<>(futuresCount);
 
         for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
         {
@@ -186,7 +187,7 @@ public class Prankster<T> {
             }
 
             long timeout = determineTimeout(defaultTimeoutMillis, entry.getKey().getName(), request.getOptions());
-            ScoreRunnable<T> runnable = new ScoreRunnable<T>(entry.getKey(), request);
+            ScoreRunnable<T> runnable = new ScoreRunnable<>(entry.getKey(), request);
             Future future = entry.getValue().submit(runnable);
             ScoringFuture scoringFuture = new ScoringFuture(future, timeout);
             scoringFutures.add(scoringFuture);
@@ -221,12 +222,8 @@ public class Prankster<T> {
         }
 
         RequestOptions options = request.getOptionsForScoreCard(scoreCard.getName());
-        if (options != null && options.isEnabled())
-        {
-            return true;
-        }
+        return options != null && options.isEnabled();
 
-        return false;
     }
 
     /** How many score cards will be used? */
@@ -241,10 +238,11 @@ public class Prankster<T> {
      * @param corePoolSize the core pool size
      * @return The ScoreCard : Fixed Thread Pool map
      */
+    @SuppressWarnings("unchecked")
     private Map<ScoreCard<T>, ExecutorService> initFixedThreadPools(Set<ScoreCard<T>> scoreCards, int corePoolSize) {
 
         int maxThreads = corePoolSize * 2;
-        Map<ScoreCard<T>, ExecutorService> scoring = new HashMap<ScoreCard<T>, ExecutorService>(scoreCards.size());
+        Map<ScoreCard<T>, ExecutorService> scoring = new HashMap<>(scoreCards.size());
 
         for ( ScoreCard scoreCard : scoreCards )
         {
@@ -259,7 +257,7 @@ public class Prankster<T> {
     private Map<ScoreCard<T>, ExecutorService> initThreadPools(Set<ScoreCard<T>> scoreCards,
                                                                PrankThreadPoolFactory threadPoolFactory) {
 
-        Map<ScoreCard<T>, ExecutorService> scoring = new HashMap<ScoreCard<T>, ExecutorService>(scoreCards.size());
+        Map<ScoreCard<T>, ExecutorService> scoring = new HashMap<>(scoreCards.size());
         for ( ScoreCard<T> scoreCard : scoreCards )
         {
             scoring.put(scoreCard, threadPoolFactory.createThreadPool());
@@ -271,7 +269,7 @@ public class Prankster<T> {
     /** Encapsulates a Future and a Timeout */
     public static class ScoringFuture<T> {
 
-        private final Future _future;
+        private final Future<T> _future;
         private final long _timeout;
 
         private ScoringFuture(Future<T> future, long timeout) {
@@ -392,7 +390,7 @@ public class Prankster<T> {
      *
      * @param objectsToScore A single object or collection of objects with type T
      * @param defaultTimeoutInMillis The time to wait for scoring to complete.
-     * @deprecated (Targeted removal: 2.0), Use 'updateObjectsWithScores()' instead, rename to scoreObject()
+     * @deprecated (Targeted removal 2.0), Use 'updateObjectsWithScores()' instead, rename to scoreObject()
      */
     @Deprecated
     public void updateObjectScore(Request<T> objectsToScore, int defaultTimeoutInMillis) {
@@ -444,7 +442,7 @@ public class Prankster<T> {
             }
 
             long timeout = determineTimeout(defaultTimeoutMillis, entry.getKey().getName(), request.getOptions());
-            ScoreCardCallable<T> callable = new ScoreCardCallable<T>(entry.getKey(), request);
+            ScoreCardCallable<T> callable = new ScoreCardCallable<>(entry.getKey(), request);
             Future future = entry.getValue().submit(callable);
             ScoringFuture<Result> scoringFuture = new ScoringFuture<Result>(future, timeout);
             scoringFutures.add(scoringFuture);
@@ -468,11 +466,11 @@ public class Prankster<T> {
         if ( scoreIt == null || scoreIt.isDisabled() )
         {
             LOG.info("Scoring Request Is Null Or Disabled");
-            return new HashSet<Future<Result>>();
+            return new HashSet<>();
         }
 
         int futuresCount = determineFuturesCount(scoreIt);
-        Set<Future<Result>> futures = new HashSet<Future<Result>>(futuresCount);
+        Set<Future<Result>> futures = new HashSet<>(futuresCount);
 
         for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
         {
@@ -495,7 +493,7 @@ public class Prankster<T> {
 
         if ( requestOptions == null || requestOptions.isEmpty() )
         {
-            List<Long> timeouts = new ArrayList<Long>();
+            List<Long> timeouts = new ArrayList<>();
             for (ScoreCard<T> card : _scoring.keySet())
             {
                 timeouts.add(defaultTimeoutMilis);
@@ -511,7 +509,7 @@ public class Prankster<T> {
     @Deprecated
     private List<Long> getPerRequestTimeouts(Map<String, RequestOptions> requestOptions) {
 
-        List<Long> perRequestTimeouts = new ArrayList<Long>();
+        List<Long> perRequestTimeouts = new ArrayList<>();
         for ( Map.Entry<String, RequestOptions> entry : requestOptions.entrySet() )
         {
             if ( entry.getValue().isEnabled() )
