@@ -22,17 +22,38 @@ package net.prank.core;
  */
 public interface ScoreCard<T> {
 
-    /** Score a single object with default options */
+    /**
+     * Score a single object with default options
+     * @param scoringObject The object to score
+     * @return The score summary after scoring
+     */
     public ScoreSummary score(T scoringObject);
-    /** Score a single object with specified options, otherwise use defaults */
+    /**
+     * Score a single object with specified options, otherwise use defaults
+     * @param scoringObject The object to score
+     * @param options The request specific options to use for scoring
+     * @return The score summary
+     */
     public ScoreSummary scoreWith(T scoringObject, RequestOptions options);
 
-    /** Score and update an object or collection of objects with default options */
+    /**
+     * Score and update an object or collection of objects with default options
+     * @param scoringObject The object to score
+     */
     public void updateObjectsWithScore(T scoringObject);
-    /** Score and update an object or collection of objects with specific options */
+    /**
+     * Score and update an object or collection of objects with specific options
+     * @param scoringObject The object to score
+     * @param options The request specific scoring parameters
+     */
     public void updateObjectsWithScore(T scoringObject, RequestOptions options);
 
-    /** A setupScoring card name to use as a key in ScoreSummary */
+    /**
+     * A setupScoring card name to use as a key in ScoreSummary
+     * The name of the ScoreCard for reporting, applying, etc
+     *
+     * @return The name of the ScoreCard
+     */
     public String getName();
 }
 

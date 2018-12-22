@@ -41,6 +41,9 @@ public class ScoreFormatter {
     /**
      * Dumps the ScoreSummary name followed by each ScoreCard result (see dumpResults()).
      * Example: BookSellersScoring:scoreResult 1;scoreResult2;scoreResult3
+     *
+     * @param summary The summary to dump to string,
+     * @return A simple string representation of a ScoreSummary (all cards)
      */
     public String dumpScoreSummary(ScoreSummary summary) {
 
@@ -59,6 +62,9 @@ public class ScoreFormatter {
      * Dumps a result with the following format:
      * scoreCardName,value that was scored, sort indices, score data, statistics
      * Where indices, score data, and statistics have internal delimiters (default ":")
+     *
+     * @param result The result to dump to String
+     * @return A simple ':' delimited string of a Result
      */
     public String dumpResult(Result result) {
 
@@ -77,12 +83,21 @@ public class ScoreFormatter {
         return sb.toString();
     }
 
-    /** originalIndex:adjustedIndex */
+    /**
+     * originalIndex:adjustedIndex
+     * @param indices The indices for multiple scored objects
+     * @return Formatted indices a collection
+     */
     public String dumpIndices(Indices indices) {
         return dumpIndices(indices, DEFAULT_INTERNAL_DELIM);
     }
 
-    /** Similar to dumpIndices(indices), except with specific delimiter */
+    /**
+     * Similar to dumpIndices(indices), except with specific delimiter
+     * @param indices The indices for multiple scored objects
+     * @param delimiter The specified delimiter for metrics
+     * @return Formatted indices a collection
+     */
     public String dumpIndices(Indices indices, String delimiter) {
 
         if (indices == null)
@@ -106,17 +121,32 @@ public class ScoreFormatter {
         return sb.toString();
     }
 
-    /** Uses DEFAULT_INTERNAL_DELIM, DEFAULT_SCALE, DEFAULT_ROUNDING_MODE */
+    /**
+     * Uses DEFAULT_INTERNAL_DELIM, DEFAULT_SCALE, DEFAULT_ROUNDING_MODE
+     * @param scoreData The score data
+     * @return Scoring data with internal delim and scoring values formatted
+     */
     public String dumpScoreData(ScoreData scoreData) {
         return dumpScoreData(scoreData, DEFAULT_INTERNAL_DELIM, DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
-    /** Uses DEFAULT_INTERNAL_DELIM, DEFAULT_ROUNDING_MODE */
+    /**
+     * Uses DEFAULT_INTERNAL_DELIM, DEFAULT_ROUNDING_MODE
+     * @param scoreData The score data
+     * @param scale The formatted number scale
+     * @return Scoring data with internal delim and scoring values formatted
+     */
     public String dumpScoreData(ScoreData scoreData, int scale) {
         return dumpScoreData(scoreData, DEFAULT_INTERNAL_DELIM, scale, DEFAULT_ROUNDING_MODE);
     }
 
-    /** Uses DEFAULT_INTERNAL_DELIM */
+    /**
+     * Uses DEFAULT_INTERNAL_DELIM
+     * @param scoreData The score data
+     * @param scale The formatted number scale
+     * @param roundingMode The formatted rounding mode
+     * @return Scoring data with internal delim and scoring values formatted
+     */
     public String dumpScoreData(ScoreData scoreData, int scale, RoundingMode roundingMode) {
         return dumpScoreData(scoreData, DEFAULT_INTERNAL_DELIM, scale, roundingMode);
     }
@@ -125,6 +155,9 @@ public class ScoreFormatter {
      * Colon delimited output of ScoreData using DEFAULT_SCALE and DEFAULT_ROUNDING_MODE
      *
      * @param scoreData The ScoreData for this row item
+     * @param delimiter The output delimiter for score metrics
+     * @param scale The format scale for scoring
+     * @param  roundingMode The rounding mode for formatted output
      * @return "null" for null 'scoreData', otherwise returns score:adj_score:min_pts:max_pts:buckets
      */
     public String dumpScoreData(ScoreData scoreData, String delimiter, int scale, RoundingMode roundingMode) {
@@ -147,17 +180,32 @@ public class ScoreFormatter {
         return sb.toString();
     }
 
-    /** Uses DEFAULT_INTERNAL_DELIM, DEFAULT_SCALE, DEFAULT_ROUNDING_MODE */
+    /**
+     * Uses DEFAULT_INTERNAL_DELIM, DEFAULT_SCALE, DEFAULT_ROUNDING_MODE
+     * @param statistics The statistics do dump to a string with default delimiter, scale, and rounding mode
+     * @return The formatting scoring output
+     */
     public String dumpStatistics(Statistics statistics) {
         return dumpStatistics(statistics, DEFAULT_INTERNAL_DELIM, DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
     }
 
-    /** Uses DEFAULT_INTERNAL_DELIM and DEFAULT_ROUNDING_MODE */
+    /**
+     * Uses DEFAULT_INTERNAL_DELIM and DEFAULT_ROUNDING_MODE
+     * @param statistics The statistics for the score summary
+     * @param scale The scale to use for formatting the score
+     * @return The formatted scoring output
+     */
     public String dumpStatistics(Statistics statistics, int scale) {
         return dumpStatistics(statistics, DEFAULT_INTERNAL_DELIM, scale, DEFAULT_ROUNDING_MODE);
     }
 
-    /** Uses DEFAULT_INTERNAL_DELIM */
+    /**
+     * Uses DEFAULT_INTERNAL_DELIM
+     * @param statistics The statistics for the score summaries
+     * @param scale The scale to use for formatting the score
+     * @param rm The rounding mode to use for formatting the score
+     * @return The formatted score with default delimiter
+     */
     public String dumpStatistics(Statistics statistics, int scale, RoundingMode rm) {
         return dumpStatistics(statistics, DEFAULT_INTERNAL_DELIM, scale, rm);
     }
@@ -172,6 +220,9 @@ public class ScoreFormatter {
      * 4.50:1.50:::  // null median_dev, std_dev
      *
      * @param statistics The statistics object
+     * @param delimiter How to separate scoring metrics
+     * @param scale The scale for the BigDecimal score
+     * @param rm The rounding mode for score formatting
      * @return "null" for null 'statistics', otherwise returns avg:mean_dev:median_dev:std_dev
      */
     public String dumpStatistics(Statistics statistics, String delimiter, int scale, RoundingMode rm) {

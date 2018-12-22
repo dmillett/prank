@@ -24,9 +24,6 @@ import java.math.RoundingMode;
  *
  * @author dmillett
  *
- *
- * @author dmillett
- *
  * Copyright 2012 David Millett
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +112,7 @@ public class Statistics
      * Option:
      * Use a custom Formatter and the Statistics object
      *
-     * @return
+     * @return A formatted score, statistics, etc
      */
     public String dump() {
         return dump(-1, RoundingMode.UNNECESSARY);
@@ -124,7 +121,7 @@ public class Statistics
     /**
      * Same as dump(), but with a specified scale and RoundingMode.HALF_EVEN
      * @param scale will truncate to value
-     * @return
+     * @return A formatted score, statistics, etc
      */
     public String dump(int scale) {
         return dump(scale, null);
@@ -132,9 +129,9 @@ public class Statistics
 
     /**
      * Same as dump() but with both scale and rounding mode
-     * @param scale
-     * @param roundingMode
-     * @return
+     * @param scale The scale to use for score format printer
+     * @param roundingMode The rounding mode for the score format printer
+     * @return A formatted score, statistics, etc
      */
     public String dump(int scale, RoundingMode roundingMode) {
 

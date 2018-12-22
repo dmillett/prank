@@ -13,21 +13,20 @@ import java.util.Set;
 /**
  * Provide a mechanism to store and/or process results associated with a given
  * object. In all cases, getTally().. will return a 'null' if there are no matching
- * <p/>
- * <p/>
+ * <p>
  * To open up flexibility (in future):
  * 1) Summary (T,V) interface.
  * 2) ScoreTally (V) interface
- *
+ * <p>
  * @author dmillett
- * <p/>
+ * <p>
  * Copyright 2012 David Millett
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -78,14 +77,20 @@ public class ScoreSummary
     /**
      * Get the setupScoring for a subset of ScoreCards by name.
      *
-     * @param scoreCardNames
-     * @return
+     * @param scoreCardNames The names of score cards to apply
+     * @return The tallied BigDecimal score
      */
     public BigDecimal tallyScoreFor(Set<String> scoreCardNames) {
         return tallyScoreFor(scoreCardNames, Result.ResultScoreType.ORIGINAL);
     }
 
-    /** todo: use ScoringTool.tallyScoreFor()? */
+    /**
+     * Tally score based on score cards, by name, and scoring type
+     * @param scoreCardNames The score cards to apply
+     * @param scoreType The scoring type to use
+     * @return The score or 'null'
+     */
+    // todo: use ScoringTool.tallyScoreFor()?
     public BigDecimal tallyScoreFor(Set<String> scoreCardNames, Result.ResultScoreType scoreType) {
 
         if (scoreCardNames == null)
@@ -100,7 +105,8 @@ public class ScoreSummary
     /**
      * todo: use ScoringTool.tallyScoreFor()?
      *
-     * @param scoreCardNames
+     * @param scoreCardNames The names of score cards to apply
+     * @param  scoreType The score type to use when calculating the score
      * @return null if there are no matching ScoreCards, otherwise the tally(+)
      */
     public BigDecimal tallyScore(Set<String> scoreCardNames, Result.ResultScoreType scoreType) {
@@ -158,8 +164,8 @@ public class ScoreSummary
     /**
      * Flexible way of determining which scores to tally
      *
-     * @param scoreCards
-     * @return
+     * @param scoreCards The names of score cards to apply
+     * @return The BigDecimal score result
      */
     public BigDecimal tallyScoreFor(String... scoreCards) {
         return tallyScoreFor(Result.ResultScoreType.ORIGINAL, scoreCards);
@@ -170,8 +176,8 @@ public class ScoreSummary
      * (original or adjusted)
      *
      * @param scoreType  Original or Adjusted
-     * @param scoreCards
-     * @return
+     * @param scoreCards The score card names to apply
+     * @return The resulting score
      */
     public BigDecimal tallyScoreFor(Result.ResultScoreType scoreType, String... scoreCards) {
 
@@ -209,7 +215,10 @@ public class ScoreSummary
                 '}';
     }
 
-    /** Uses ScoreFormatter.dumpResult() for each ScoreCard result. */
+    /**
+     * Uses ScoreFormatter.dumpResult() for each ScoreCard result.
+     * @return A formatted score
+     */
     public String dump() {
 
         ScoreFormatter scf = new ScoreFormatter();

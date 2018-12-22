@@ -22,7 +22,10 @@ package net.prank.core;
  *  limitations under the License.
  */
 public interface Scorable {
-    /** Contains any ScoreCard's and their scores */
+    /**
+     * Contains any ScoreCard's and their scores
+     * @return The ScoreSummary
+     */
     public ScoreSummary getScoreSummary();
 }
 

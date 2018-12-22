@@ -7,14 +7,14 @@ import java.util.List;
  * own or Apache, etc.
  *
  * @author dmillett
- * <p/>
+ * <p>
  * Copyright 2012 David Millett
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,8 +29,10 @@ public class NumericTools {
      * Any null number in 'values' will generate an NPE
      *
      * Ex:
-     * (1,2,null,3) --> 6.0 / 3 = 2.0
+     * (1,2,null,3) -- 6.0 / 3 = 2.0
      *
+     * @param values A list of numbers
+     * @return The average value for 'values' as a double
      */
     public static Double average(List<? extends Number> values) {
 
@@ -70,7 +72,12 @@ public class NumericTools {
         return total / values.size();
     }
 
-    /** Average for a list of Double(s), will throw a NPE for any null in 'values' */
+    /**
+     * Average for a list of Double(s), will throw a NPE for any null in 'values'
+     *
+     * @param values A list of doubles
+     * @return The average for a list of doubles
+     */
     public static Double averageForDoubles(List<Double> values) {
 
         if (values == null || values.isEmpty())
@@ -210,6 +217,10 @@ public class NumericTools {
 
     /**
      * Standard deviation for a list of doubles.
+     *
+     * @param mean The mean for this collection of doubles
+     * @param values A list of doubles
+     * @return The standard deviation for collection of doubles and their mean
      */
     public static Double standardDeviationForDoubles(double mean, List<Double> values) {
 

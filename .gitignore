@@ -1,9 +1,7 @@
 .gradle/
 .idea/
 build/
-out/
-prank.ipr
-prank.iws
-prank.iml
+*.ipr
+*.iws
+*.iml
 gradlew.bat
-gradle.properties

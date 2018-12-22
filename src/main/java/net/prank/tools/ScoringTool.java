@@ -14,14 +14,14 @@ import java.util.Set;
  * Tools to build a Set of ScoreRange objects.
  *
  * @author dmillett
- * <p/>
+ * <p>
  * Copyright 2012 David Millett
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -122,9 +122,9 @@ public class ScoringTool {
     /**
      * Create a String dump from a Set of ScoringRange where each is separated by a newline.
      *
-     * @param scoringRanges
-     * @param contextInfo
-     * @return
+     * @param scoringRanges The scoring ranges
+     * @param contextInfo Contextual information for the string dump
+     * @return A space delimited simple output of the score relative to min and max
      */
     public String dumpScoringRanges(Set<ScoringRange> scoringRanges, String contextInfo) {
 
@@ -145,9 +145,9 @@ public class ScoringTool {
 
     /**
      * Determine what the bucketed score is for a particular value.
-     * @param value
-     * @param scoringRange
-     * @return
+     * @param value The raw value
+     * @param scoringRange The min, max, and buckets for all scoring ranges
+     * @return The points from the scoring range for this raw score
      */
     public double getScoreFromRange(double value, Set<ScoringRange> scoringRange) {
 
@@ -165,6 +165,7 @@ public class ScoringTool {
     /**
      * Add up all the scores for each Result.
      *
+     * @param summary The score summary for all cards
      * @return The sum of all Result.getScore() or null
      */
     public BigDecimal tallyScore(ScoreSummary summary) {
@@ -219,8 +220,9 @@ public class ScoringTool {
     /**
      * Get the setupScoring for a subset of ScoreCards by name.
      *
-     * @param scoreCardNames
-     * @return
+     * @param summary The score summary for all score cards
+     * @param scoreCardNames The score cards to tally scores for
+     * @return The tallied score for 'scoreCardNames'
      */
     public BigDecimal tallyScoreFor(ScoreSummary summary, Set<String> scoreCardNames) {
         return tallyScoreFor(summary, scoreCardNames, Result.ResultScoreType.ORIGINAL);
@@ -228,9 +230,9 @@ public class ScoringTool {
 
     /**
      *
-     * @param summary
-     * @param scoreCardNames
-     * @param scoreType
+     * @param summary The score summary of all cards
+     * @param scoreCardNames The score cards to tally with
+     * @param scoreType The type to use in the tally
      * @return The tallied score for specified ScoreCards, otherwise null
      */
     public BigDecimal tallyScoreFor(ScoreSummary summary, Set<String> scoreCardNames,
@@ -256,12 +258,12 @@ public class ScoringTool {
     /**
      * Normalize a tallied score with a maximum possible value and normalize target.
      *
-     * @param summary
-     * @param scoreCards
-     * @param scoreType
-     * @param maximumValue
-     * @param normalizedTarget
-     * @return
+     * @param summary The scoring summary for an object
+     * @param scoreCards The score cards used
+     * @param scoreType What type of scoring
+     * @param maximumValue The max value within the object groups
+     * @param normalizedTarget The normalizing multiplier
+     * @return The normalized score
      */
     public BigDecimal normalizeTalliedScore(ScoreSummary summary, Set<String> scoreCards,
                                             Result.ResultScoreType scoreType,BigDecimal maximumValue,
@@ -275,6 +277,8 @@ public class ScoringTool {
      * Update the current position index for every ScoreCard result. Position implies that
      * this is part of a collection (~usually is), perhaps this should be part of
      * a ScoreSummary instead of a result (easier to use if grouped with results though)
+     *
+     * @param sortedScorables The scored objects sorted
      */
     public void updateSortedCollectionIndices(Collection<Scorable> sortedScorables) {
 
@@ -299,9 +303,9 @@ public class ScoringTool {
      *
      * This could be used to set the adjusted score.
      *
-     * @param original
-     * @param maximum
-     * @param normalizer
+     * @param original The original score
+     * @param maximum The maximum value to normalize against
+     * @param normalizer The multiplier to normalize with
      * @return A normalized value
      */
     public BigDecimal normalize(BigDecimal original, BigDecimal maximum, BigDecimal normalizer) {

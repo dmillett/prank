@@ -42,7 +42,17 @@ public class ScoreData
     /** The minimum possible score */
     private final BigDecimal _minPoints;
 
-    /** Use this or the builder to create a ScoreData object in your ScoreCard implementation */
+    /**
+     * Use this or the builder to create a ScoreData object in your ScoreCard
+     * implementation. It represents the details/state of a specific Score
+     *
+     * @param score The score value
+     * @param adjustedScore The adjusted score value
+     * @param normalizedScore The normalized score
+     * @param buckets The number of scoring buckets between min and max
+     * @param maxPoints The maximum points in a group
+     * @param minPoints The minimum points in a group
+     */
     public ScoreData(BigDecimal score, BigDecimal adjustedScore, BigDecimal normalizedScore, int buckets,
                      BigDecimal maxPoints, BigDecimal minPoints) {
 

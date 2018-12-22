@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Each solution should have a Result where 'V' might typically be an integer
  * in a simple point system.
- * <p/>
+ * <p>
  * TODO: Generic expansion to accommodate more flexibility in the framework.
  *
  * @author dmillett
@@ -50,7 +50,14 @@ public class Result<T>
     /** Capture average and deviations (mean, median, standard) */
     private final Statistics _statistics;
 
-    /** Instantiate directly or use the Builder */
+    /**
+     * Instantiate directly or use the Builder
+     * @param scoreCardName The name of the score card that produced a result
+     * @param scoredValue The value that the score card produced
+     * @param indices Original index order position
+     * @param score The score data specifics
+     * @param stats Any statistical measurements for the collection
+     */
     public Result(String scoreCardName, T scoredValue, Indices indices, ScoreData score, Statistics stats) {
 
         _scoreCardName = scoreCardName;

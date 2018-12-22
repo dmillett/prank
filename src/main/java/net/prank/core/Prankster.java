@@ -13,26 +13,26 @@ import java.util.concurrent.*;
 
 /**
  * Singleton (via Spring),
- * <p/>
+ * <p>
  * 1) Spring configured list of ScoreCard implementations
  * 2) Thread pool for each ScoreCard (core = max peak concurrent searches)
  * 3) ScoreData an object T (List of AirPricingSolution)
  * -- update a Map (ScoreCard, Result) for each solution
  * 4) Build a summary of results (discard or not)
- * <p/>
+ * <p>
  * If it is necessary to update the setupScoring points (min, max, slices, or strategy),
  * then update and reload with "reload()" -- probably via JMX or something similar.
  * This Prankster could be instantiated for each search service.
  *
  * @author dmillett
- * <p/>
+ * <p>
  * Copyright 2012 David Millett
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -97,7 +97,7 @@ public class Prankster<T> {
      * Stop all existing thread pools and clear out the scoring map.
      * Reinitialize a new map of setupScoring cards.
      *
-     * @param scoreCards
+     * @param scoreCards The specified set of score cards for the pool
      */
     public synchronized void reload(Set<ScoreCard<T>> scoreCards) {
 
@@ -166,7 +166,12 @@ public class Prankster<T> {
         }
     }
 
-    /** Create and add Future Runnables to their appropriate executor pool. A generic request and timeout */
+    /**
+     * Create and add Future Runnables to their appropriate executor pool. A generic request and timeout.
+     * @param request The generic request object (list of 'x')
+     * @param defaultTimeoutMillis The timeout for the execution of the request
+     * @return A set of scoring futures that should eventually score the request object(s)
+     */
     @SuppressWarnings("unchecked")
     public Set<ScoringFuture> buildScoringUpdateFutures(Request<T> request, long defaultTimeoutMillis) {
 
