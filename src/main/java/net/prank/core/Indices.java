@@ -33,7 +33,7 @@ public class Indices
     private final List<Integer> _indices;
 
     public Indices(int originalIndex) {
-        _indices = new ArrayList<Integer>();
+        _indices = new ArrayList<>();
         _indices.add(originalIndex);
     }
 
@@ -46,7 +46,7 @@ public class Indices
     }
 
     public List<Integer> getIndices() {
-        return new ArrayList<Integer>(_indices);
+        return new ArrayList<>(_indices);
     }
 
     public void updateWithCurrentIndex(int currentIndex) {

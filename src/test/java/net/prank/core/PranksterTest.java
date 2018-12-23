@@ -45,10 +45,10 @@ public class PranksterTest {
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
 
         RequestOptions options = new RequestOptions.RequestOptionsBuilder().build();
-        Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
+        Map<String, RequestOptions> optionsMap = new HashMap<>();
         optionsMap.put(exampleScoreCard.getName(), options);
 
-        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject, optionsMap);
+        Request<ExampleObject> exampleRequest = new Request<>(exampleObject, optionsMap);
         Set<Future<Result>> futureResult = prankster.setupScoring(exampleRequest);
 
         for (Future<Result> future : futureResult)
@@ -83,11 +83,11 @@ public class PranksterTest {
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
 
         RequestOptions options = new RequestOptions.RequestOptionsBuilder().build();
-        Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
+        Map<String, RequestOptions> optionsMap = new HashMap<>();
         optionsMap.put(exampleScoreCard.getName(), options);
 
-        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject, optionsMap);
-        Set<Prankster.ScoringFuture> futureResult = prankster.buildScoringUpdateFutures(exampleRequest, 20);
+        Request<ExampleObject> exampleRequest = new Request<>(exampleObject, optionsMap);
+        Set<Prankster.ScoringFuture> futureResult = prankster.buildScoringUpdateFutures(exampleRequest, 50);
 
         for (Prankster.ScoringFuture scoringFuture : futureResult)
         {
@@ -119,15 +119,12 @@ public class PranksterTest {
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 2, 4.0, 50.0);
         Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
-        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
-
-        prankster.updateObjectScore(exampleRequest, 25);
-
+        Request<ExampleObject> exampleRequest = new Request<>(exampleObject);
+        prankster.updateObjectsWithScores(exampleRequest, 50);
         assertEquals(1, exampleObject.getScoreSummary().getResults().size());
 
         Result result = exampleObject.getScoreSummary().getResultByScoreCard(exampleScoreCard.getName());
         assertNotNull(result);
-
         assertEquals(5.0, result.getScoreData().getScore() .doubleValue(), DELTA);
         assertEquals(2, result.getPosition().getOriginalIndex());
         assertEquals(9.0, result.getStatistics().getAverage().doubleValue(), DELTA);
@@ -140,15 +137,13 @@ public class PranksterTest {
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 2, 4.0, 50.0);
         Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
-        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
+        Request<ExampleObject> exampleRequest = new Request<>(exampleObject);
 
-        prankster.updateObjectsWithScores(exampleRequest, 25);
-
+        prankster.updateObjectsWithScores(exampleRequest, 50);
         assertEquals(1, exampleObject.getScoreSummary().getResults().size());
 
         Result result = exampleObject.getScoreSummary().getResultByScoreCard(exampleScoreCard.getName());
         assertNotNull(result);
-
         assertEquals(5.0, result.getScoreData().getScore() .doubleValue(), DELTA);
         assertEquals(2, result.getPosition().getOriginalIndex());
         assertEquals(9.0, result.getStatistics().getAverage().doubleValue(), DELTA);
@@ -163,13 +158,11 @@ public class PranksterTest {
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
 
         RequestOptions options = new RequestOptions.RequestOptionsBuilder().setEnabledB(false).build();
-        Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
+        Map<String, RequestOptions> optionsMap = new HashMap<>();
         optionsMap.put(exampleScoreCard.getName(), options);
 
-        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject, optionsMap);
-
-        prankster.updateObjectScore(exampleRequest, 10);
-
+        Request<ExampleObject> exampleRequest = new Request<>(exampleObject, optionsMap);
+        prankster.updateObjectsWithScores(exampleRequest, 50);
         assertEquals(0, exampleObject.getScoreSummary().getResults().size());
     }
 
@@ -180,13 +173,12 @@ public class PranksterTest {
         Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
 
         RequestOptions options = new RequestOptions.RequestOptionsBuilder().setEnabledB(false).build();
-        Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
+        Map<String, RequestOptions> optionsMap = new HashMap<>();
         optionsMap.put(exampleScoreCard.getName(), options);
 
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("50.00"));
         Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject, optionsMap);
-        prankster.updateObjectsWithScores(exampleRequest, 10);
-
+        prankster.updateObjectsWithScores(exampleRequest, 50);
         assertEquals(0, exampleObject.getScoreSummary().getResults().size());
     }
 
@@ -195,15 +187,13 @@ public class PranksterTest {
 
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 4, 5.0, 0.75);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("55.00"));
-        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
+        Request<ExampleObject> exampleRequest = new Request<>(exampleObject);
         Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
-        prankster.updateObjectScore(exampleRequest, 5);
-
+        prankster.updateObjectsWithScores(exampleRequest, 50);
         assertEquals(1, exampleObject.getScoreSummary().getResults().size());
 
         Result result = exampleObject.getScoreSummary().getResultByScoreCard(exampleScoreCard.getName());
         assertNotNull(result);
-
         assertEquals(5.0, result.getScoreData().getScore().doubleValue(), DELTA);
         assertEquals(4, result.getPosition().getOriginalIndex());
         assertEquals(10.0, result.getStatistics().getAverage().doubleValue(), DELTA);
@@ -216,9 +206,9 @@ public class PranksterTest {
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 4, 5.0, 0.75);
         ExampleObject exampleObject = new ExampleObject(3, new BigDecimal("5.00"), new BigDecimal("55.00"));
 
-        Request<ExampleObject> exampleRequest = new Request<ExampleObject>(exampleObject);
+        Request<ExampleObject> exampleRequest = new Request<>(exampleObject);
         Prankster<ExampleObject> prankster = buildPrankster(exampleScoreCard);
-        prankster.updateObjectsWithScores(exampleRequest, 5);
+        prankster.updateObjectsWithScores(exampleRequest, 50);
 
         assertEquals(1, exampleObject.getScoreSummary().getResults().size());
 
@@ -241,7 +231,7 @@ public class PranksterTest {
         long timeoutNull = prankster.determineTimeout(defaultTimeout, exampleScoreCard.getName(), null);
         assertEquals(10, timeoutNull);
 
-        Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
+        Map<String, RequestOptions> optionsMap = new HashMap<>();
         long timeoutEmpty = prankster.determineTimeout(defaultTimeout, exampleScoreCard.getName(), optionsMap);
         assertEquals(10, timeoutEmpty);
     }
@@ -251,7 +241,7 @@ public class PranksterTest {
 
         long defaultTimeout = 10;
         RequestOptions options = new RequestOptions.RequestOptionsBuilder().setTimeoutMillisB(1).build();
-        Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
+        Map<String, RequestOptions> optionsMap = new HashMap<>();
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 4, 5.0, 0.75);
         optionsMap.put(exampleScoreCard.getName(), options);
 
@@ -266,7 +256,7 @@ public class PranksterTest {
 
         long defaultTimeout = 10;
         RequestOptions options = new RequestOptions.RequestOptionsBuilder().setTimeoutMillisB(1).setEnabledB(false).build();
-        Map<String, RequestOptions> optionsMap = new HashMap<String, RequestOptions>();
+        Map<String, RequestOptions> optionsMap = new HashMap<>();
         ScoreCard<ExampleObject> exampleScoreCard = new ExampleScoreCard(2, 4, 5.0, 0.75);
         optionsMap.put(exampleScoreCard.getName(), options);
 
@@ -278,12 +268,12 @@ public class PranksterTest {
 
     private Prankster<ExampleObject> buildPrankster(ScoreCard... scoreCard) {
 
-        Set<ScoreCard<ExampleObject>> scoreCards = new HashSet<ScoreCard<ExampleObject>>();
+        Set<ScoreCard<ExampleObject>> scoreCards = new HashSet<>();
         for (ScoreCard card : scoreCard)
         {
             scoreCards.add(card);
         }
 
-        return new Prankster<ExampleObject>(scoreCards, 1);
+        return new Prankster<>(scoreCards, 1);
     }
 }

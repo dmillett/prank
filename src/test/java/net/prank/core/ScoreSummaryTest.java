@@ -33,10 +33,6 @@ public class ScoreSummaryTest {
 
         ScoreSummary foo = new ScoreSummary("Foo");
         assertNull(foo.tallyScore());
-
-        Set<String> example = new HashSet<String>();
-        example.add("ExampleScoreCard");
-        assertNull(foo.tallyScore());
     }
 
     @Test

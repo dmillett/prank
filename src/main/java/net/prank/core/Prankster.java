@@ -118,20 +118,19 @@ public class Prankster<T> {
      */
     public synchronized void gameOver() {
 
-        if (_scoring != null && !_scoring.isEmpty())
-        {
-            for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
-            {
-                if (entry.getValue().isShutdown() || entry.getValue().isTerminated())
-                {
-                    continue;
-                }
-
-                entry.getValue().shutdown();
-            }
-
-            _scoring.clear();
+        if (_scoring == null || _scoring.isEmpty()) {
+            return;
         }
+
+        for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
+        {
+            if (entry.getValue().isShutdown() || entry.getValue().isTerminated())
+            {
+                continue;
+            }
+            entry.getValue().shutdown();
+        }
+        _scoring.clear();
     }
 
     /**
@@ -372,8 +371,7 @@ public class Prankster<T> {
             _request = request;
         }
 
-        public ScoreSummary call()
-            throws Exception {
+        public ScoreSummary call() {
 
             if (_request.getOptions() != null)
             {
@@ -433,11 +431,11 @@ public class Prankster<T> {
         if (request == null || request.isDisabled())
         {
             LOG.info("Scoring Request Is Null Or Disabled");
-            return new HashSet<ScoringFuture<Result>>();
+            return new HashSet<>();
         }
 
         int futuresCount = determineFuturesCount(request);
-        Set<ScoringFuture<Result>> scoringFutures = new HashSet<ScoringFuture<Result>>(futuresCount);
+        Set<ScoringFuture<Result>> scoringFutures = new HashSet<>(futuresCount);
 
         for (Map.Entry<ScoreCard<T>, ExecutorService> entry : _scoring.entrySet())
         {
@@ -484,7 +482,7 @@ public class Prankster<T> {
                 continue;
             }
 
-            ScoreCardCallable<T> callable = new ScoreCardCallable<T>(entry.getKey(), scoreIt);
+            ScoreCardCallable<T> callable = new ScoreCardCallable<>(entry.getKey(), scoreIt);
             Future<Result> future = entry.getValue().submit(callable);
             futures.add(future);
         }
@@ -499,7 +497,7 @@ public class Prankster<T> {
         if ( requestOptions == null || requestOptions.isEmpty() )
         {
             List<Long> timeouts = new ArrayList<>();
-            for (ScoreCard<T> card : _scoring.keySet())
+            for (ScoreCard<T> ignored : _scoring.keySet())
             {
                 timeouts.add(defaultTimeoutMilis);
             }

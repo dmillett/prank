@@ -104,6 +104,7 @@ public class ScoreFormatterTest {
         assertEquals("FOO:FooBar,20,3,20.0000:20.0000::0.0000:20.0000:10,3.4500:14.3500:5:10.4500:3.2400::;", result);
     }
 
+    @SuppressWarnings("unchecked")
     private Result buildSimpleResult(String scoreCardName) {
 
         Indices indices = new Indices(3);

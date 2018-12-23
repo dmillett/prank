@@ -329,7 +329,7 @@ public class ScoringTool {
      * Tally
      *
      * @param summary The summary of results
-     * @param scoreCardNames
+     * @param scoreCardNames The score cards, by name, to tally the score from
      * @return null if there are no matching ScoreCards, otherwise the tally(+)
      */
     private BigDecimal tallyScore(ScoreSummary summary, Set<String> scoreCardNames,

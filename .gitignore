@@ -1,7 +1,9 @@
 .gradle/
 .idea/
 build/
+out/
 *.ipr
 *.iws
 *.iml
 gradlew.bat
+gradle.properties

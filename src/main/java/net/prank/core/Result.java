@@ -31,11 +31,11 @@ public class Result<T>
      * ORIGINAL - setupScoring per original scoring
      * ADJUSTED - indicates that an adjustment (+/-/*) may have occurred
      */
-    public static enum ResultScoreType {
+    public enum ResultScoreType {
 
         ORIGINAL,
         NORMALIZED,
-        ADJUSTED;
+        ADJUSTED
     }
 
     /** Name of the ScoreCard for this result, corresponds to Prankster 'key'  */
@@ -209,7 +209,7 @@ public class Result<T>
         }
 
         public Result build() {
-            return new Result<T>(_bCardName, _bOriginal, _bIndices, _bScore, _bStatistics);
+            return new Result<>(_bCardName, _bOriginal, _bIndices, _bScore, _bStatistics);
         }
     }
 }

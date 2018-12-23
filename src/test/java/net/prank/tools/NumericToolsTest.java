@@ -126,7 +126,7 @@ public class NumericToolsTest {
 
     private List<Double> getSmallDoublesList(int size) {
 
-        List<Double> values = new ArrayList<Double>();
+        List<Double> values = new ArrayList<>();
 
         for (int i = 1; i <= size; i++)
         {

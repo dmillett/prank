@@ -35,12 +35,12 @@ public class PranksterExample {
         ScoreCard exampleShippingCost = new ShippingCostScoreCard(0, 10, 10);
         ScoreCard exampleShippingTime = new ShippingTimeScoreCard(0, 5, 5);
 
-        Set<ScoreCard> scoreCards = new HashSet<ScoreCard>();
+        Set<ScoreCard> scoreCards = new HashSet<>();
         scoreCards.add(examplePrice);
         scoreCards.add(exampleShippingCost);
         scoreCards.add(exampleShippingTime);
 
-        Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
+        Request<List<ExampleObject>> request = new Request<>(examples);
         Prankster prankster = new Prankster(scoreCards, 3);
         prankster.updateObjectScore(request, 100);
     }
@@ -48,37 +48,39 @@ public class PranksterExample {
     @Deprecated
     public void scoreObjects(List<ExampleObject> examples, Set<ScoreCard> scoreCards) {
 
-        Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
+        Request<List<ExampleObject>> request = new Request<>(examples);
         Prankster prankster = new Prankster(scoreCards, scoreCards.size());
         prankster.updateObjectScore(request, 20);
     }
 
+    @SuppressWarnings("unchecked")
     public void updateObjectsWithScores(List<ExampleObject> examples) {
 
         ScoreCard examplePrice = new PriceScoreCard(0, 20, 10);
         ScoreCard exampleShippingCost = new ShippingCostScoreCard(0, 10, 10);
         ScoreCard exampleShippingTime = new ShippingTimeScoreCard(0, 5, 5);
 
-        Set<ScoreCard> scoreCards = new HashSet<ScoreCard>();
+        Set<ScoreCard> scoreCards = new HashSet<>();
         scoreCards.add(examplePrice);
         scoreCards.add(exampleShippingCost);
         scoreCards.add(exampleShippingTime);
 
-        Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
+        Request<List<ExampleObject>> request = new Request<>(examples);
         Prankster prankster = new Prankster(scoreCards, 3);
         prankster.updateObjectsWithScores(request, 100);
     }
 
+    @SuppressWarnings("unchecked")
     public void updateObjectsWithScores(List<ExampleObject> examples, Set<ScoreCard> scoreCards) {
 
-        Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
+        Request<List<ExampleObject>> request = new Request<>(examples);
         Prankster prankster = new Prankster(scoreCards, scoreCards.size());
         prankster.updateObjectsWithScores(request, 20);
     }
 
     public List<ExampleObject> getExamples() {
 
-        List<ExampleObject> examples = new ArrayList<ExampleObject>();
+        List<ExampleObject> examples = new ArrayList<>();
         examples.add(new ExampleObject(13, new BigDecimal("0.00"), new BigDecimal("13.44")));
         examples.add(new ExampleObject(3, new BigDecimal("4.99"), new BigDecimal("10.39")));
         examples.add(new ExampleObject(9, new BigDecimal("1.99"), new BigDecimal("11.22")));

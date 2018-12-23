@@ -35,13 +35,11 @@ public class PriceScoreCardTest {
 
         PranksterExample pe = new PranksterExample();
         List<ExampleObject> examples = pe.getExamples();
-        Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
-
-        Set<ScoreCard<List<ExampleObject>>> scoreCards = new HashSet<ScoreCard<List<ExampleObject>>>();
+        Request<List<ExampleObject>> request = new Request<>(examples);
+        Set<ScoreCard<List<ExampleObject>>> scoreCards = new HashSet<>();
         scoreCards.add(new PriceScoreCard(0, 20, 10));
-
-        Prankster<List<ExampleObject>> prankster = new Prankster<List<ExampleObject>>(scoreCards, 1);
-        prankster.updateObjectScore(request, 20);
+        Prankster<List<ExampleObject>> prankster = new Prankster<>(scoreCards, 1);
+        prankster.updateObjectsWithScores(request, 50);
 
         assertEquals(new BigDecimal("2.0"), examples.get(0).getScoreSummary().tallyScore());
         assertEquals(new BigDecimal("16.0"), examples.get(1).getScoreSummary().tallyScore());
@@ -56,12 +54,12 @@ public class PriceScoreCardTest {
 
         PranksterExample pe = new PranksterExample();
         List<ExampleObject> examples = pe.getExamples();
-        Request<List<ExampleObject>> request = new Request<List<ExampleObject>>(examples);
+        Request<List<ExampleObject>> request = new Request<>(examples);
 
-        Set<ScoreCard<List<ExampleObject>>> scoreCards = new HashSet<ScoreCard<List<ExampleObject>>>();
+        Set<ScoreCard<List<ExampleObject>>> scoreCards = new HashSet<>();
         scoreCards.add(new PriceScoreCard(0, 20, 10));
 
-        Prankster<List<ExampleObject>> prankster = new Prankster<List<ExampleObject>>(scoreCards, 1);
+        Prankster<List<ExampleObject>> prankster = new Prankster<>(scoreCards, 1);
         prankster.updateObjectsWithScores(request, 20);
 
         assertEquals(new BigDecimal("2.0"), examples.get(0).getScoreSummary().tallyScore());

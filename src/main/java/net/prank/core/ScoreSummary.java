@@ -186,7 +186,7 @@ public class ScoreSummary
             return null;
         }
 
-        return tallyScore(new HashSet<String>(Arrays.asList(scoreCards)), scoreType);
+        return tallyScore(new HashSet<>(Arrays.asList(scoreCards)), scoreType);
     }
 
     /**
@@ -194,7 +194,7 @@ public class ScoreSummary
      */
     private Set<String> findScoreCardsByName(Set<String> scoreCardNames) {
 
-        Set<String> scoreCards = new HashSet<String>();
+        Set<String> scoreCards = new HashSet<>();
 
         for (String scoreCardName : _results.keySet())
         {
